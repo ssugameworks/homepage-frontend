@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color: rgba(255, 255, 255, 0.92);
+    background:
+      radial-gradient(circle at top, rgba(245, 158, 11, 0.22), transparent 30%),
+      linear-gradient(160deg, #1c1917 0%, #0c0a09 55%, #111827 100%);
+    font-family: "Satoshi", "Inter", "Segoe UI", sans-serif;
+  }
+
+  body {
+    @apply min-w-[320px] min-h-screen relative m-0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.45;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at center, black, transparent 78%);
+  pointer-events: none;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+  }
+}
