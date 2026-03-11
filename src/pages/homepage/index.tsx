@@ -748,7 +748,7 @@ function scrollTo(id: string) {
 
 /* ─── Main ───────────────────────────────────────────────────────────── */
 export function Homepage() {
-  const [activeSection, setActiveSection] = useState("");
+  const [activeSection, setActiveSection] = useState("home");
   const [heroReady, setHeroReady]         = useState(false);
   const [bgLoaded, setBgLoaded]           = useState(false);
   const reducedMotion = !!useReducedMotion();
