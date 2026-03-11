@@ -96,16 +96,16 @@ function useCursorFollower() {
       position: 'fixed',
       top: '0',
       left: '0',
-      width: '32px',
-      height: '32px',
+      width: '56px',
+      height: '56px',
       borderRadius: '50%',
-      background: 'rgba(26, 122, 255, 0.25)',
-      filter: 'blur(12px)',
+      background: 'rgba(26, 122, 255, 0.45)',
+      filter: 'blur(18px)',
       pointerEvents: 'none',
       zIndex: '9999',
       willChange: 'transform',
       mixBlendMode: 'multiply',
-      opacity: '0.25',
+      opacity: '0.45',
     });
     document.body.appendChild(el);
 
@@ -124,9 +124,9 @@ function useCursorFollower() {
     const tick = () => {
       cx += (tx - cx) * 0.12;
       cy += (ty - cy) * 0.12;
-      const scale = isHoveringInteractive ? 2.2 : 1;
-      const opacity = isHoveringInteractive ? 0.4 : 0.25;
-      el.style.transform = `translate(${cx - 16}px, ${cy - 16}px) scale(${scale})`;
+      const scale = isHoveringInteractive ? 2.5 : 1;
+      const opacity = isHoveringInteractive ? 0.6 : 0.45;
+      el.style.transform = `translate(${cx - 28}px, ${cy - 28}px) scale(${scale})`;
       el.style.opacity = String(opacity);
       raf = requestAnimationFrame(tick);
     };
