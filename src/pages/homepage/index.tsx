@@ -249,8 +249,6 @@ function useSectionBackground() {
 
 const EASE = "cubic-bezier(0.16,1,0.3,1)";
 
-const viewportOnce = { once: true, amount: 0.2 };
-
 const staggerContainer: Variants = {
   hidden: {},
   visible: {
@@ -393,8 +391,8 @@ function SectionTitle({ text, color = "#00204d" }: { text: string; color?: strin
 function MacFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative w-full" style={{ aspectRatio: '195.75 / 115' }}>
-      <div className="absolute inset-0 bg-[#0c0c0d] rounded-[20px]" />
-      <div className="absolute overflow-hidden rounded-[12px]" style={{ top: '3.7%', left: '2.17%', right: '2.17%', bottom: '3.7%' }}>
+       <div className="absolute inset-0 bg-[#0c0c0d] rounded-5" />
+      <div className="absolute overflow-hidden rounded-3" style={{ top: '3.7%', left: '2.17%', right: '2.17%', bottom: '3.7%' }}>
         {children}
       </div>
     </div>
@@ -403,7 +401,7 @@ function MacFrame({ children }: { children: React.ReactNode }) {
 
 /* ─── Event card ─────────────────────────────────────────────────────── */
 function EventCard({
-  reverse, title, titleHighlight, description, imgSrc, imgStyle, tags,
+  reverse, title, titleHighlight, description, imgSrc, imgStyle,
 }: {
   reverse?: boolean;
   title: string;
@@ -476,7 +474,7 @@ function MemberCard({ role, name, img, style, delay = 0 }: {
         transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ${EASE} ${delay}ms`,
         willChange: "transform",
       }}>
-      <div className="relative h-[250px] w-[200px] md:h-[300px] md:w-[240px] overflow-hidden rounded-lg">
+      <div className="relative h-62.5 w-50 md:h-75 md:w-60 overflow-hidden rounded-lg">
         <img alt={name} className="absolute max-w-none transition-transform duration-500 group-hover:scale-105"
           src={img} style={style} />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-[#1a7aff]/80 to-transparent
@@ -632,13 +630,13 @@ function CTASection() {
   const reducedMotion = !!useReducedMotion();
   return (
     <motion.section
-      className="flex min-h-[400px] lg:h-150 py-20 lg:py-0 items-center justify-center px-10 w-full"
+      className="flex min-h-100 lg:h-150 py-20 lg:py-0 items-center justify-center px-10 w-full"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.14 }}
       variants={staggerContainer}
     >
-      <div className="flex flex-col gap-10 items-center w-full max-w-[736px]">
+      <div className="flex flex-col gap-10 items-center w-full max-w-184">
         <div className="flex flex-col gap-8 items-center text-[#0c0c0d] text-center w-full">
           <motion.span
             className="font-semibold tracking-[-3.2px] leading-[1.3] w-full"
@@ -660,7 +658,7 @@ function CTASection() {
           </motion.span>
         </div>
         <motion.button
-          className="group cursor-pointer whitespace-nowrap rounded-[56px] px-5 py-1.5 font-semibold text-[15px]"
+          className="group cursor-pointer whitespace-nowrap rounded-14 px-5 py-1.5 font-semibold text-[15px]"
           variants={getFadeUpVariants(16, 0.3, reducedMotion)}
           whileHover={reducedMotion ? undefined : { y: -4, scale: 1.02 }}
           whileTap={reducedMotion ? undefined : { scale: 0.98 }}
@@ -689,8 +687,8 @@ function Footer() {
   });
   return (
     <footer ref={ref as React.RefObject<HTMLElement>} className="w-full bg-[#000b1a] px-6 md:px-16 lg:px-28 pt-16 pb-10">
-      <div className="flex flex-col lg:flex-row items-start justify-between gap-12 lg:gap-0 max-w-[1200px] mx-auto">
-        <div style={fadeStyle(0)} className="flex flex-col gap-6 items-start max-w-[300px]">
+      <div className="flex flex-col lg:flex-row items-start justify-between gap-12 lg:gap-0 max-w-300 mx-auto">
+        <div style={fadeStyle(0)} className="flex flex-col gap-6 items-start max-w-75">
           <span className="font-semibold text-[#fafafa] text-[24px] md:text-[32px] tracking-[-1.28px] leading-[1.3]">GAMEWORKS</span>
           <p className="font-medium text-[#a2a5a9] text-[16px] md:text-[20px] tracking-[-0.5px] leading-[1.5]">
             2000년부터 이어진<br />글로벌미디어학부 대표 학술 소모임입니다.
@@ -733,7 +731,7 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div style={fadeStyle(300)} className="mt-12 pt-8 border-t border-white/10 font-medium text-[#a2a5a9] text-[13px] md:text-[14px] text-center tracking-[-0.3px] leading-[1.5] max-w-[1200px] mx-auto">
+      <div style={fadeStyle(300)} className="mt-12 pt-8 border-t border-white/10 font-medium text-[#a2a5a9] text-[13px] md:text-[14px] text-center tracking-[-0.3px] leading-[1.5] max-w-300 mx-auto">
         <p>© 2026 GAMEWORKS, All rights reserved.</p>
         <p>25년째 같이 만들고 있는 학부 대표 소모임, GAMEWORKS</p>
       </div>
@@ -890,9 +888,9 @@ export function Homepage() {
             <span className="leading-[1.3] text-[#fafafa]" style={{ fontSize: "clamp(28px,4vw,50px)" }}>분야를 넘어 함께 성장하는 소모임</span>
           </FadeUp>
 
-          <div className="mx-auto flex w-full max-w-[1160px] flex-col items-center gap-10 px-4 md:px-10 lg:flex-row lg:justify-center lg:gap-12">
+          <div className="mx-auto flex w-full max-w-290 flex-col items-center gap-10 px-4 md:px-10 lg:flex-row lg:justify-center lg:gap-12">
             {/* Photos — 데스크탑에서만 표시 */}
-            <SlideIn from="left" className="hidden lg:block relative w-[340px] shrink-0 aspect-[124/244.75]">
+            <SlideIn from="left" className="hidden lg:block relative w-85 shrink-0 aspect-[124/244.75]">
               <div className="absolute overflow-hidden border border-white/20"
                 style={{ left: "0%", top: "0%", width: "80.65%", height: "61.29%" }}>
                 <img alt="" className="absolute max-w-none" src={imgFrame1}
@@ -906,7 +904,7 @@ export function Homepage() {
             </SlideIn>
 
             {/* 텍스트 — 모바일에서 전면에 */}
-            <SlideIn from="right" delay={150} className="flex min-w-0 w-full max-w-[520px] flex-col items-center justify-center gap-8 lg:items-start lg:text-left">
+            <SlideIn from="right" delay={150} className="flex min-w-0 w-full max-w-130 flex-col items-center justify-center gap-8 lg:items-start lg:text-left">
               {/* 로고 — 데스크탑에서만 */}
               <div className="hidden lg:flex flex-col gap-4 items-start shrink-0">
                 <div className="relative h-73.25 w-75"
@@ -947,7 +945,7 @@ export function Homepage() {
         </section>
 
         {/* ── Marquee / Desktop-26 ──────────────────────────────── */}
-        <div className="overflow-hidden relative shrink-0 w-full h-[300px] md:h-[400px] lg:h-120" style={{ contain: "paint" }}>
+        <div className="overflow-hidden relative shrink-0 w-full h-75 md:h-100 lg:h-120" style={{ contain: "paint" }}>
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <img ref={marqueeBgRef} alt="" className="absolute block max-w-none size-full object-cover" src={imgDesktop26}
               style={{ willChange: "transform" }} />
@@ -968,7 +966,7 @@ export function Homepage() {
           </div>
 
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4">
-            <div className="h-[120px] w-[124px] md:h-[180px] md:w-[186px] lg:h-60 lg:w-62 relative shrink-0"
+            <div className="h-30 w-31 md:h-45 md:w-46.5 lg:h-60 lg:w-62 relative shrink-0"
               style={{ animation: "float 6s ease-in-out infinite" }}>
               <img alt="GAMEWORKS" className="absolute block max-w-none size-full" src={imgVector2} />
             </div>
