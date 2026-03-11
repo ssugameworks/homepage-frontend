@@ -324,6 +324,23 @@ function EventCard({
 }) {
   const { ref, visible } = useInView(0.1);
   const dx = reverse ? 60 : -60;
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imgInnerRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    const onScroll = () => {
+      if (!containerRef.current || !imgInnerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const progress = (rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight;
+      imgInnerRef.current.style.transform = `translateY(${progress * -20}px)`;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const text = (
     <div className="flex flex-[1_0_0] flex-col gap-10 items-start min-w-0">
       <div className="flex flex-col items-start text-[50px] font-bold tracking-[-1.5px] whitespace-nowrap">
@@ -334,9 +351,11 @@ function EventCard({
     </div>
   );
   const frame = (
-    <MacFrame>
-      <img alt="" className="absolute max-w-none" src={imgSrc} style={imgStyle} />
-    </MacFrame>
+    <div ref={containerRef}>
+      <MacFrame>
+        <img ref={imgInnerRef} alt="" className="absolute max-w-none" src={imgSrc} style={imgStyle} />
+      </MacFrame>
+    </div>
   );
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>}
@@ -369,6 +388,11 @@ function MemberCard({ role, name, img, style, delay = 0 }: {
       <div className="relative h-75 w-60 overflow-hidden rounded-lg">
         <img alt={name} className="absolute max-w-none transition-transform duration-500 group-hover:scale-105"
           src={img} style={style} />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#1a7aff]/80 to-transparent
+                        translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out
+                        flex items-end pb-3 px-3">
+          <span className="text-white text-[13px] font-medium leading-none">{role}</span>
+        </div>
       </div>
       <div className="flex flex-col items-start px-1 text-[#fafafa] w-full">
         <span className="font-bold text-[16px] tracking-[-0.48px] leading-[1.4]">{role}</span>
@@ -457,6 +481,73 @@ function CTASection() {
         </button>
       </div>
     </section>
+  );
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────── */
+function Footer() {
+  const { ref, visible } = useInView(0.1);
+  const fadeStyle = (delay: number): React.CSSProperties => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(24px)',
+    transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ${EASE} ${delay}ms`,
+  });
+  return (
+    <footer ref={ref as React.RefObject<HTMLElement>} className="relative h-135.75 w-full bg-[#000b1a]">
+      <div className="absolute left-1/2 -translate-x-1/2 top-18.75 flex items-start justify-between w-288.25">
+        <div style={fadeStyle(0)} className="flex flex-col gap-6 items-start w-75">
+          <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3]">GAMEWORKS</span>
+          <p className="font-medium text-[#a2a5a9] text-[24px] tracking-[-0.96px] leading-[1.3]">
+            2000년부터 시작된<br />글로벌미디어학부 유일 종합 학술 소모임입니다.
+          </p>
+        </div>
+        <div className="flex gap-25">
+          <div style={fadeStyle(100)} className="flex flex-col gap-6 items-start w-45">
+            <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3]">Quick Links</span>
+            <div className="flex flex-col gap-2 items-start">
+              {[
+                { label: "Home",    id: "home"    },
+                { label: "Member",  id: "people"  },
+                { label: "History", id: "history" },
+                { label: "Event",   id: "event"   },
+              ].map(({ label, id }) => (
+                <button key={label}
+                  onClick={() => id === "home" ? window.scrollTo({ top: 0, behavior: "smooth" }) : scrollTo(id)}
+                  className="font-medium text-[#a2a5a9] text-[24px] tracking-[-0.96px] leading-[1.3] hover:text-[#fafafa] transition-colors duration-200 bg-transparent cursor-pointer">
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={fadeStyle(200)} className="flex flex-col gap-6 items-start w-70">
+            <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3] whitespace-nowrap">Connect With Us</span>
+            <div className="flex flex-col gap-2 items-start">
+              {["Instagram", "Discord", "~~~@gmail.com", "000 : 010-0000-0000"].map((item) => (
+                <div key={item} className="flex gap-2.5 items-center group cursor-pointer">
+                  <div className="relative shrink-0 size-5">
+                    <div className="absolute inset-[-1.77%]">
+                      <img alt="" className="block max-w-none size-full" src={imgFrame14} />
+                    </div>
+                  </div>
+                  <span className="font-medium text-[#a2a5a9] text-[24px] tracking-[-0.96px] leading-[1.3] whitespace-nowrap group-hover:text-[#fafafa] transition-colors duration-200">
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute left-1/2 -translate-x-1/2 top-89.75 h-0 w-360">
+        <div className="absolute inset-[-0.5px_0]">
+          <img alt="" className="block max-w-none size-full" src={imgVector5} />
+        </div>
+      </div>
+      <div style={fadeStyle(300)} className="absolute left-1/2 -translate-x-1/2 top-112 font-medium text-[#a2a5a9] text-[16px] text-center tracking-[-0.48px] leading-[1.5] whitespace-nowrap">
+        <p>© 2026 GAMEWORKS, All rights reserved.</p>
+        <p>25년의 역사를 이어온 종합 학술 소모임, GAMEWORKS</p>
+      </div>
+    </footer>
   );
 }
 
@@ -779,61 +870,7 @@ export function Desktop() {
         <CTASection />
 
         {/* ── Footer ────────────────────────────────────────────── */}
-        <footer className="relative h-135.75 w-full bg-[#000b1a]">
-          <div className="absolute left-1/2 -translate-x-1/2 top-18.75 flex items-start justify-between w-288.25">
-            <div className="flex flex-col gap-6 items-start w-75">
-              <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3]">GAMEWORKS</span>
-              <p className="font-medium text-[#a2a5a9] text-[24px] tracking-[-0.96px] leading-[1.3]">
-                2000년부터 시작된<br />글로벌미디어학부 유일 종합 학술 소모임입니다.
-              </p>
-            </div>
-            <div className="flex gap-25">
-              <div className="flex flex-col gap-6 items-start w-45">
-                <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3]">Quick Links</span>
-                <div className="flex flex-col gap-2 items-start">
-                  {[
-                    { label: "Home",    id: "home"    },
-                    { label: "Member",  id: "people"  },
-                    { label: "History", id: "history" },
-                    { label: "Event",   id: "event"   },
-                  ].map(({ label, id }) => (
-                    <button key={label}
-                      onClick={() => id === "home" ? window.scrollTo({ top: 0, behavior: "smooth" }) : scrollTo(id)}
-                      className="font-medium text-[#a2a5a9] text-[24px] tracking-[-0.96px] leading-[1.3] hover:text-[#fafafa] transition-colors duration-200 bg-transparent cursor-pointer">
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex flex-col gap-6 items-start w-70">
-                <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3] whitespace-nowrap">Connect With Us</span>
-                <div className="flex flex-col gap-2 items-start">
-                  {["Instagram", "Discord", "~~~@gmail.com", "000 : 010-0000-0000"].map((item) => (
-                    <div key={item} className="flex gap-2.5 items-center group cursor-pointer">
-                      <div className="relative shrink-0 size-5">
-                        <div className="absolute inset-[-1.77%]">
-                          <img alt="" className="block max-w-none size-full" src={imgFrame14} />
-                        </div>
-                      </div>
-                      <span className="font-medium text-[#a2a5a9] text-[24px] tracking-[-0.96px] leading-[1.3] whitespace-nowrap group-hover:text-[#fafafa] transition-colors duration-200">
-                        {item}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="absolute left-1/2 -translate-x-1/2 top-89.75 h-0 w-360">
-            <div className="absolute inset-[-0.5px_0]">
-              <img alt="" className="block max-w-none size-full" src={imgVector5} />
-            </div>
-          </div>
-          <div className="absolute left-1/2 -translate-x-1/2 top-112 font-medium text-[#a2a5a9] text-[16px] text-center tracking-[-0.48px] leading-[1.5] whitespace-nowrap">
-            <p>© 2026 GAMEWORKS, All rights reserved.</p>
-            <p>25년의 역사를 이어온 종합 학술 소모임, GAMEWORKS</p>
-          </div>
-        </footer>
+        <Footer />
 
       </div>
     </>
