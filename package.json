@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9",
+    "@svgr/core": "^8.1.0",
     "@types/bun": "latest",
     "@types/react": "^19",
     "@types/react-dom": "^19",
