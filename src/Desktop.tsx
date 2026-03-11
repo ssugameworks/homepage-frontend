@@ -39,10 +39,17 @@ const glowColors = [
 
 /* ─── Hooks ───────────────────────────────────────────────────────────── */
 
+/** 사용자의 움직임 감소 설정 여부 (모듈 수준 상수 — SSR 없으므로 안전) */
+const prefersReducedMotion =
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
+  // 움직임 감소 설정 시 처음부터 visible로 시작
+  const [visible, setVisible] = useState(prefersReducedMotion);
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
@@ -55,24 +62,27 @@ function useInView(threshold = 0.15) {
   return { ref, visible };
 }
 
-/** Smoothed parallax scroll value. */
-function useParallax() {
-  const [y, setY] = useState(0);
+/**
+ * Parallax 효과를 state 없이 DOM에 직접 적용.
+ * Desktop 컴포넌트를 리렌더링하지 않으므로 헤더 흔들림 없음.
+ */
+function useParallaxEffect(
+  targets: Array<{ ref: React.RefObject<HTMLElement | null>; fn: (y: number) => string }>
+) {
   useEffect(() => {
+    if (prefersReducedMotion) return;
     let raf = 0;
     let current = 0;
-    const target = { val: 0 };
     const tick = () => {
-      current += (target.val - current) * 0.08;
-      setY(current);
+      current += (window.scrollY - current) * 0.08;
+      for (const { ref, fn } of targets) {
+        if (ref.current) ref.current.style.transform = fn(current);
+      }
       raf = requestAnimationFrame(tick);
     };
-    const onScroll = () => { target.val = window.scrollY; };
-    window.addEventListener("scroll", onScroll, { passive: true });
     raf = requestAnimationFrame(tick);
-    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(raf); };
-  }, []);
-  return y;
+    return () => cancelAnimationFrame(raf);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 /* ─── Primitives ──────────────────────────────────────────────────────── */
@@ -310,7 +320,7 @@ function CTASection() {
           </span>
         </div>
         <button
-          className="border-[#0c0c0d] border-[0.5px] px-5 py-2.5 rounded-14 bg-transparent transition-all duration-300 hover:bg-[#0c0c0d] group cursor-pointer"
+          className="border border-[#0c0c0d] px-5 py-2.5 rounded-14 bg-transparent transition-all duration-300 hover:bg-[#0c0c0d] group cursor-pointer"
           style={{
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0) scale(1)" : "translateY(16px) scale(0.96)",
@@ -341,7 +351,13 @@ export function Desktop() {
   const [scrolled, setScrolled]           = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [heroReady, setHeroReady]         = useState(false);
-  const scrollY = useParallax();
+
+  const heroBgRef    = useRef<HTMLImageElement>(null);
+  const marqueeBgRef = useRef<HTMLImageElement>(null);
+  useParallaxEffect([
+    { ref: heroBgRef,    fn: (y) => `translateY(${y * 0.25}px)` },
+    { ref: marqueeBgRef, fn: (y) => `translateY(${(y - 2000) * -0.08}px)` },
+  ]);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
@@ -425,8 +441,8 @@ export function Desktop() {
         <div id="home" className="relative h-screen min-h-225 w-full shrink-0 overflow-hidden">
           {/* Parallax background */}
           <div className="absolute inset-0 overflow-hidden">
-            <img alt="" src={imgRectangle} className="absolute w-full max-w-none left-0"
-              style={{ height: "220%", top: "-70%", transform: `translateY(${scrollY * 0.25}px)`, willChange: "transform" }} />
+            <img ref={heroBgRef} alt="" src={imgRectangle} className="absolute w-full max-w-none left-0"
+              style={{ height: "220%", top: "-70%", willChange: "transform" }} />
             <div className="absolute inset-0" style={{
               backgroundImage: "linear-gradient(180deg,rgba(255,255,255,0) 55%,rgba(255,255,255,0.85) 88%,#fafafa 100%)"
             }} />
@@ -535,8 +551,8 @@ export function Desktop() {
         {/* ── Marquee / Desktop-26 ──────────────────────────────── */}
         <div className="overflow-hidden relative shrink-0 w-full h-200" style={{ contain: "paint" }}>
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <img alt="" className="absolute block max-w-none size-full object-cover" src={imgDesktop26}
-              style={{ transform: `translateY(${(scrollY - 2000) * -0.08}px)` }} />
+            <img ref={marqueeBgRef} alt="" className="absolute block max-w-none size-full object-cover" src={imgDesktop26}
+              style={{ willChange: "transform" }} />
           </div>
 
           <div className="absolute top-50 w-full overflow-hidden" aria-hidden="true">
