@@ -21,12 +21,10 @@ import eventImg6    from "./assets/event-img-6.png";
 
 /* ─── Figma assets (no local equivalent yet) ─────────────────────────── */
 const imgRectangle = "https://www.figma.com/api/mcp/asset/f844113f-1290-4f7b-b756-c9535804cb22";
-const imgVector4   = "https://www.figma.com/api/mcp/asset/55fb0323-a424-40d2-9958-86933ccf386f";
 const imgVector    = "https://www.figma.com/api/mcp/asset/45dfd35e-c297-4d61-ade7-f9638d7c3a99";
 const imgVector1   = "https://www.figma.com/api/mcp/asset/13f7df68-6b6d-4bb0-997a-81e7a90df652";
 const imgFrame     = "https://www.figma.com/api/mcp/asset/23405a3e-0c8d-4d7e-8407-204e16b3f18e";
 const imgVector2   = "https://www.figma.com/api/mcp/asset/37dd5450-d8ed-4876-8bba-798ffa39318d";
-const imgVector3   = "https://www.figma.com/api/mcp/asset/d46ce243-3311-444a-938c-1cbaa2903e2e";
 const imgFrame14   = "https://www.figma.com/api/mcp/asset/bbcfd9b9-ad14-4adb-9f2a-3a7f383b5089";
 const imgVector5   = "https://www.figma.com/api/mcp/asset/e40cc6a4-0c2b-4b0c-a6f0-bb5beeab8d3a";
 
@@ -403,43 +401,146 @@ function MemberCard({ role, name, img, style, delay = 0 }: {
 }
 
 /* ─── History content ────────────────────────────────────────────────── */
-function HistoryContent() {
-  const { ref, visible } = useInView(0.1);
+const TIMELINE = [
+  { year: "2000", title: "GAMEWORKS 창립", desc: "글로벌미디어학부와 함께 시작된 종합 학술 소모임" },
+  { year: "2008", title: "첫 교내 대회 수상", desc: "아이디어톤에서 처음으로 수상하며 학술 역량을 증명" },
+  { year: "2013", title: "100명 회원 달성", desc: "누적 회원 100명을 돌파하며 글로미 최대 소모임으로 성장" },
+  { year: "2018", title: "멘토링 프로그램 론칭", desc: "선배-후배 연결 멘토링 시스템을 체계적으로 구축" },
+  { year: "2023", title: "글로미 우수 소모임 선정", desc: "학교 공식 우수 소모임으로 선정되며 위상 강화" },
+  { year: "2025", title: "25주년", desc: "25년의 역사와 함께 새로운 100년을 향해 나아갑니다" },
+];
+
+function TimelineItem({ year, title, desc, index }: { year: string; title: string; desc: string; index: number }) {
+  const { ref, visible } = useInView(0.2);
+  const isLeft = index % 2 === 0;
+
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>}
-      className="relative h-141.25 w-full shrink-0">
-      <div className="absolute bg-[#00204d] h-116.25 left-0 overflow-hidden top-0 w-255.75">
-        <div className="absolute flex flex-col gap-15 items-start left-33.25 top-25.5 w-110.75">
-          <div className="flex flex-col gap-5 items-start text-[#fafafa] w-full">
-            <p className="font-bold text-[38px] tracking-[-1.14px] leading-[1.3]">
-              게임웍스가 달려온<br />25년의 과정
-            </p>
-            <p className="font-medium text-[14px] tracking-[-0.42px] leading-[1.4]">
-              게임웍스는 2000년대 초반부터 글로벌미디어학부와 함께 <br />
-              시작하며 20년 이상 새로운 시도를 도전중입니다.
-            </p>
-          </div>
-          <button className="border border-[#fafafa] px-5 py-2.5 rounded-14 bg-transparent transition-all duration-200 hover:bg-white/10 cursor-pointer">
-            <span className="font-normal text-[#fafafa] text-[14px] text-center leading-none">자세히 보기 →</span>
-          </button>
-        </div>
-        <div className="absolute h-81.25 left-118.25 top-41.5 w-84.5">
-          <div className="absolute inset-[-4.89%_-4.7%_-4.6%_-4.7%]">
-            <img alt="" className="block max-w-none size-full" src={imgVector3} />
-          </div>
-        </div>
+      className="grid grid-cols-[1fr_auto_1fr] items-center gap-8 w-full"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(24px)",
+        transition: `opacity 0.7s ease ${index * 100}ms, transform 0.7s ${EASE} ${index * 100}ms`,
+      }}>
+      {/* 왼쪽 */}
+      <div className={`flex flex-col items-end ${isLeft ? "" : "opacity-0 pointer-events-none"}`}>
+        {isLeft && (
+          <>
+            <span className="font-bold text-[#1a7aff] text-[14px] tracking-widest">{year}</span>
+            <span className="font-bold text-[#fafafa] text-[24px] tracking-[-0.72px] leading-[1.3] text-right">{title}</span>
+            <span className="font-medium text-[#a2a5a9] text-[15px] leading-[1.5] text-right mt-1">{desc}</span>
+          </>
+        )}
       </div>
-      <div
-        className="absolute h-122.75 right-0 top-18.5 w-186.25"
-        style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateX(0)" : "translateX(140px)",
-          transition: `opacity 0.9s ease 0.15s, transform 0.9s ${EASE} 0.15s`,
-          willChange: "transform",
-        }}>
-        <img alt="" className="absolute block max-w-none size-full" src={imgVector4} />
+
+      {/* 중앙 점 */}
+      <div className="flex flex-col items-center">
+        <div className="w-3 h-3 rounded-full bg-[#1a7aff] border-2 border-[#fafafa] shadow-[0_0_12px_rgba(26,122,255,0.6)]" />
+      </div>
+
+      {/* 오른쪽 */}
+      <div className={`flex flex-col items-start ${!isLeft ? "" : "opacity-0 pointer-events-none"}`}>
+        {!isLeft && (
+          <>
+            <span className="font-bold text-[#1a7aff] text-[14px] tracking-widest">{year}</span>
+            <span className="font-bold text-[#fafafa] text-[24px] tracking-[-0.72px] leading-[1.3]">{title}</span>
+            <span className="font-medium text-[#a2a5a9] text-[15px] leading-[1.5] mt-1">{desc}</span>
+          </>
+        )}
       </div>
     </div>
+  );
+}
+
+function HistoryContent() {
+  return (
+    <div className="w-full bg-[#00204d] py-20 px-40 relative">
+      {/* 중앙 세로선 */}
+      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/20" />
+
+      <div className="flex flex-col gap-16 relative">
+        {TIMELINE.map((item, i) => (
+          <TimelineItem key={item.year} {...item} index={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Stats section ──────────────────────────────────────────────────── */
+function StatsSection() {
+  const { ref: sectionRef, visible } = useInView(0.3);
+  const ref1 = useRef<HTMLSpanElement>(null);
+  const ref2 = useRef<HTMLSpanElement>(null);
+  const ref3 = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!visible) return;
+    if (prefersReducedMotion) {
+      if (ref1.current) ref1.current.textContent = "25";
+      if (ref2.current) ref2.current.textContent = "100";
+      if (ref3.current) ref3.current.textContent = "30";
+      return;
+    }
+    const targets = [25, 100, 30];
+    const refs = [ref1, ref2, ref3];
+    const duration = 1800;
+    const start = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      targets.forEach((target, i) => {
+        const el = refs[i].current;
+        if (el) el.textContent = Math.round(eased * target).toString();
+      });
+
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+  }, [visible]);
+
+  return (
+    <section ref={sectionRef as React.RefObject<HTMLElement>} className="w-full py-20 bg-[#fafafa]">
+      <div className="flex justify-center w-full">
+        {/* stat 1: 25년 */}
+        <div className="flex flex-col items-center gap-2 px-20 border-r border-[#e4e4e4]">
+          <div className="flex items-end gap-1">
+            <span ref={ref1} className="font-bold text-[80px] tracking-[-3.2px] leading-none text-[#00204d]">0</span>
+            <span className="font-bold text-[40px] leading-none text-[#00204d] mb-2">년</span>
+          </div>
+          <span className="font-medium text-[18px] text-[#6e7177]">설립</span>
+        </div>
+
+        {/* stat 2: 100명+ */}
+        <div className="flex flex-col items-center gap-2 px-20 border-r border-[#e4e4e4]">
+          <div className="flex items-end gap-1">
+            <span ref={ref2} className="font-bold text-[80px] tracking-[-3.2px] leading-none text-[#00204d]">0</span>
+            <span className="font-bold text-[40px] leading-none text-[#00204d] mb-2">명+</span>
+          </div>
+          <span className="font-medium text-[18px] text-[#6e7177]">역대 회원</span>
+        </div>
+
+        {/* stat 3: 30개+ */}
+        <div className="flex flex-col items-center gap-2 px-20 border-r border-[#e4e4e4]">
+          <div className="flex items-end gap-1">
+            <span ref={ref3} className="font-bold text-[80px] tracking-[-3.2px] leading-none text-[#00204d]">0</span>
+            <span className="font-bold text-[40px] leading-none text-[#00204d] mb-2">개+</span>
+          </div>
+          <span className="font-medium text-[18px] text-[#6e7177]">연간 이벤트</span>
+        </div>
+
+        {/* stat 4: No.1 — 카운팅 없이 fade */}
+        <div className="flex flex-col items-center gap-2 px-20"
+          style={{ opacity: visible ? 1 : 0, transition: "opacity 0.8s ease 0.5s" }}>
+          <span className="font-bold text-[80px] tracking-[-3.2px] leading-none text-[#1a7aff]">No.1</span>
+          <span className="font-medium text-[18px] text-[#6e7177]">글로미 소모임</span>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -638,21 +739,33 @@ export function Desktop() {
             </span>
           </button>
 
-          <div className="flex items-start p-2.5 rounded-14 transition-all duration-300"
-            style={{ border: scrolled ? "0.5px solid rgba(12,12,13,0.2)" : "0.5px solid #fafafa" }}>
-            {NAV_ITEMS.map(({ label, id }) => {
-              const active = activeSection === id;
-              return (
-                <button key={id} onClick={() => scrollTo(id)}
-                  className="flex items-center justify-center px-6 py-2 rounded-25 transition-all duration-200 cursor-pointer"
-                  style={{ background: active ? (scrolled ? "rgba(26,122,255,0.1)" : "rgba(255,255,255,0.2)") : "transparent" }}>
-                  <span className="font-medium text-[18px] tracking-[-0.72px] leading-[1.3] transition-colors duration-300"
-                    style={{ color: active ? (scrolled ? "#1a7aff" : "#fff") : (scrolled ? "#0c0c0d" : "#fafafa") }}>
-                    {label}
-                  </span>
-                </button>
-              );
-            })}
+          <div className="flex gap-4 items-center">
+            <div className="flex items-start p-2.5 rounded-14 transition-all duration-300"
+              style={{ border: scrolled ? "0.5px solid rgba(12,12,13,0.2)" : "0.5px solid #fafafa" }}>
+              {NAV_ITEMS.map(({ label, id }) => {
+                const active = activeSection === id;
+                return (
+                  <button key={id} onClick={() => scrollTo(id)}
+                    className="flex items-center justify-center px-6 py-2 rounded-25 transition-all duration-200 cursor-pointer"
+                    style={{ background: active ? (scrolled ? "rgba(26,122,255,0.1)" : "rgba(255,255,255,0.2)") : "transparent" }}>
+                    <span className="font-medium text-[18px] tracking-[-0.72px] leading-[1.3] transition-colors duration-300"
+                      style={{ color: active ? (scrolled ? "#1a7aff" : "#fff") : (scrolled ? "#0c0c0d" : "#fafafa") }}>
+                      {label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              className="px-5 py-2 rounded-[56px] font-semibold text-[16px] transition-all duration-300 cursor-pointer whitespace-nowrap"
+              style={{
+                background: scrolled ? "#1a7aff" : "transparent",
+                color: "#fafafa",
+                border: scrolled ? "none" : "1px solid #fafafa",
+              }}
+            >
+              지금 가입하기 →
+            </button>
           </div>
         </nav>
 
@@ -725,6 +838,9 @@ export function Desktop() {
             </svg>
           </div>
         </div>
+
+        {/* ── Stats ─────────────────────────────────────────────── */}
+        <StatsSection />
 
         {/* ── About ─────────────────────────────────────────────── */}
         <section id="about" className="flex flex-col gap-25 items-center py-30 w-full">
