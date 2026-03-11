@@ -120,7 +120,7 @@ export function Header({
             ))}
           </motion.div>
           <motion.button
-            className="cursor-pointer whitespace-nowrap rounded-14 px-5 py-1.5 font-semibold text-[15px]"
+            className="cursor-pointer whitespace-nowrap rounded-[56px] px-5 py-1.5 font-semibold text-[15px]"
             style={{
               background: cta.background,
               color: "#fafafa",
