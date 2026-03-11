@@ -8,6 +8,7 @@ import {
   scrollTo,
   useCursorFollower,
   useInView,
+  useInViewOnce,
   useParallaxEffect,
   useScrollProgress,
   useSectionBackground,
@@ -152,7 +153,7 @@ function MemberCard({ role, name, img, style, delay = 0 }: {
 }
 
 function TimelineItem({ year, title, desc, index }: { year: string; title: string; desc: string; index: number }) {
-  const { ref, visible } = useInView(0.08);
+  const { ref, visible } = useInViewOnce(0.08);
   const isLeft = index % 2 === 0;
 
   return (
@@ -447,9 +448,6 @@ export function Homepage() {
                 글로벌미디어학부의 시작을<br />
                 함께한 학술 소모임입니다.
               </p>
-              <span className="font-semibold text-[13px] tracking-[0.24em] text-[#5b9dff] uppercase">
-                Since 2000
-              </span>
             </SlideIn>
           </div>
         </section>
@@ -460,7 +458,7 @@ export function Homepage() {
         {/* ── History ───────────────────────────────────────────── */}
         <section id="history" className="flex flex-col items-center w-full"
           style={{ background: "linear-gradient(to bottom, #0c0c0d 0%, #0e1628 30%, #00204d 55%)" }}>
-          <SectionTitle text="HISTORY" color="#fafafa" />
+          <SectionTitle text="HISTORY" color="#fafafa" once />
           <HistoryContent />
         </section>
 

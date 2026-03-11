@@ -31,6 +31,35 @@ export function useInView(threshold = 0.08) {
   return { ref, visible };
 }
 
+export function useInViewOnce(threshold = 0.08) {
+  const ref = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(prefersReducedMotion);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setVisible(true);
+      return;
+    }
+
+    const el = ref.current;
+    if (!el) return;
+
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setVisible(true);
+        obs.disconnect();
+      },
+      { threshold },
+    );
+
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+
+  return { ref, visible };
+}
+
 export function useParallaxEffect(
   targets: Array<{ ref: React.RefObject<HTMLElement | null>; fn: (y: number) => string }>,
 ) {

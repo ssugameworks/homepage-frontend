@@ -114,9 +114,11 @@ export function SlideIn({
 export function SectionTitle({
   text,
   color = "#00204d",
+  once = false,
 }: {
   text: string;
   color?: string;
+  once?: boolean;
 }) {
   const reducedMotion = !!useReducedMotion();
 
@@ -126,7 +128,7 @@ export function SectionTitle({
       aria-label={text}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: false, amount: 0.18 }}
+      viewport={{ once, amount: 0.18 }}
       variants={staggerContainer}
     >
       <div className="flex overflow-hidden">
