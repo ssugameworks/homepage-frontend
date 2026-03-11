@@ -85,6 +85,131 @@ function useParallaxEffect(
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
+/** 마우스를 따라다니는 블루 글로우 커서 팔로워 */
+function useCursorFollower() {
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    if (!window.matchMedia('(hover: hover)').matches) return;
+
+    const el = document.createElement('div');
+    Object.assign(el.style, {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '32px',
+      height: '32px',
+      borderRadius: '50%',
+      background: 'rgba(26, 122, 255, 0.25)',
+      filter: 'blur(12px)',
+      pointerEvents: 'none',
+      zIndex: '9999',
+      willChange: 'transform',
+      mixBlendMode: 'multiply',
+      opacity: '0.25',
+    });
+    document.body.appendChild(el);
+
+    let cx = -100, cy = -100;
+    let tx = -100, ty = -100;
+    let raf = 0;
+    let isHoveringInteractive = false;
+
+    const onMove = (e: MouseEvent) => {
+      tx = e.clientX;
+      ty = e.clientY;
+      const target = e.target as Element;
+      isHoveringInteractive = !!target.closest('button, a, [role="button"]');
+    };
+
+    const tick = () => {
+      cx += (tx - cx) * 0.12;
+      cy += (ty - cy) * 0.12;
+      const scale = isHoveringInteractive ? 2.2 : 1;
+      const opacity = isHoveringInteractive ? 0.4 : 0.25;
+      el.style.transform = `translate(${cx - 16}px, ${cy - 16}px) scale(${scale})`;
+      el.style.opacity = String(opacity);
+      raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(raf);
+      el.remove();
+    };
+  }, []);
+}
+
+/** 스크롤 진행률을 나타내는 상단 고정 바 */
+function useScrollProgress() {
+  useEffect(() => {
+    const bar = document.createElement('div');
+    Object.assign(bar.style, {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      height: '2px',
+      width: '0%',
+      background: '#1a7aff',
+      zIndex: '99999',
+      pointerEvents: 'none',
+      transformOrigin: 'left',
+    });
+    document.body.appendChild(bar);
+
+    const update = () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = total > 0 ? (scrolled / total) * 100 : 0;
+      bar.style.width = `${pct}%`;
+    };
+
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+
+    return () => {
+      window.removeEventListener('scroll', update);
+      bar.remove();
+    };
+  }, []);
+}
+
+/** 섹션별로 body 배경색을 부드럽게 전환 */
+function useSectionBackground() {
+  useEffect(() => {
+    const map: Record<string, string> = {
+      'home':   '#fafafa',
+      'about':  '#fafafa',
+      'event':  '#b2d3ff',
+      'people': '#fafafa',
+      'footer': '#000b1a',
+    };
+
+    const sections: Element[] = [];
+    for (const id of Object.keys(map)) {
+      const el = id === 'footer'
+        ? document.querySelector('footer')
+        : document.getElementById(id);
+      if (el) sections.push(el);
+    }
+
+    const obs = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          const id = entry.target.id || 'footer';
+          const color = map[id] ?? '#fafafa';
+          document.body.style.backgroundColor = color;
+        }
+      }
+    }, { threshold: 0.3 });
+
+    sections.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+}
+
 /* ─── Primitives ──────────────────────────────────────────────────────── */
 
 const EASE = "cubic-bezier(0.16,1,0.3,1)";
@@ -358,6 +483,9 @@ export function Desktop() {
     { ref: heroBgRef,    fn: (y) => `translateY(${y * 0.25}px)` },
     { ref: marqueeBgRef, fn: (y) => `translateY(${(y - 2000) * -0.08}px)` },
   ]);
+  useCursorFollower();
+  useScrollProgress();
+  useSectionBackground();
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
@@ -395,17 +523,17 @@ export function Desktop() {
         @keyframes scroll-bounce { 0%,100%{transform:translateY(0)}  50%{transform:translateY(8px)} }
         @keyframes nav-drop      { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
         @keyframes sub-slide     { from{opacity:0;transform:translateX(40px)}  to{opacity:1;transform:translateX(0)} }
+        .nav-ready { animation: nav-drop 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s both; }
       `}</style>
 
       <div className="flex flex-col items-start w-full bg-[#fafafa]">
 
         {/* ── Fixed nav ─────────────────────────────────────────── */}
-        <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-20 py-6 transition-all duration-300"
+        <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-20 py-6 transition-all duration-300${heroReady ? ' nav-ready' : ''}`}
           style={{
             background: scrolled ? "rgba(255,255,255,0.92)" : "transparent",
             backdropFilter: scrolled ? "blur(12px)" : "none",
             borderBottom: scrolled ? "1px solid rgba(0,0,0,0.06)" : "none",
-            animation: heroReady ? `nav-drop 0.7s ${EASE} 0.1s both` : "none",
           }}>
           <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             className="flex items-center gap-0.5 px-1 py-1.5 transition-opacity duration-200 hover:opacity-70">
