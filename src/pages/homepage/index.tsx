@@ -890,9 +890,9 @@ export function Homepage() {
             <span className="leading-[1.3] text-[#fafafa]" style={{ fontSize: "clamp(28px,4vw,50px)" }}>분야를 넘어 함께 성장하는 소모임</span>
           </FadeUp>
 
-          <div className="flex flex-col lg:flex-row gap-10 lg:gap-20 items-center px-4 md:px-10 w-full">
+          <div className="mx-auto flex w-full max-w-[1160px] flex-col items-center gap-10 px-4 md:px-10 lg:flex-row lg:justify-center lg:gap-12">
             {/* Photos — 데스크탑에서만 표시 */}
-            <SlideIn from="left" className="hidden lg:block relative lg:w-[400px] lg:shrink-0 aspect-[124/244.75]">
+            <SlideIn from="left" className="hidden lg:block relative w-[340px] shrink-0 aspect-[124/244.75]">
               <div className="absolute overflow-hidden border border-white/20"
                 style={{ left: "0%", top: "0%", width: "80.65%", height: "61.29%" }}>
                 <img alt="" className="absolute max-w-none" src={imgFrame1}
@@ -906,7 +906,7 @@ export function Homepage() {
             </SlideIn>
 
             {/* 텍스트 — 모바일에서 전면에 */}
-            <SlideIn from="right" delay={150} className="flex w-full lg:flex-[1_0_0] flex-col gap-10 lg:gap-50 items-center lg:items-end justify-center min-w-0">
+            <SlideIn from="right" delay={150} className="flex min-w-0 w-full max-w-[520px] flex-col items-center justify-center gap-8 lg:items-start lg:text-left">
               {/* 로고 — 데스크탑에서만 */}
               <div className="hidden lg:flex flex-col gap-4 items-start shrink-0">
                 <div className="relative h-73.25 w-75"
@@ -920,10 +920,10 @@ export function Homepage() {
                   GAMEWORKS
                 </span>
               </div>
-              <div className="hidden lg:block h-px w-24 bg-white/20" />
+              <div className="hidden lg:block h-px w-20 bg-white/20" />
 
               {/* 본문 — 모바일 핵심 콘텐츠 */}
-              <p className="font-bold text-[#fafafa] leading-[1.4] text-center lg:text-right"
+              <p className="font-bold text-[#fafafa] leading-[1.4] text-center lg:text-left"
                 style={{ fontSize: "clamp(26px,3.5vw,42px)", letterSpacing: "-0.03em" }}>
                 게임웍스는 2000년대 초<br />
                 글로벌미디어학부의 시작을<br />
