@@ -763,13 +763,13 @@ export function Homepage() {
   useSectionBackground();
 
   useEffect(() => {
-    const ids = ["people", "event", "history", "about"];
+    const ids = ["home", "about", "history", "people", "event"];
     const observers = ids.map((id) => {
       const el = document.getElementById(id);
       if (!el) return null;
       const obs = new IntersectionObserver(
         ([e]) => { if (e?.isIntersecting) setActiveSection(id); },
-        { threshold: 0.3 }
+        { threshold: 0.15 }
       );
       obs.observe(el);
       return obs;
@@ -839,8 +839,8 @@ export function Homepage() {
             {["전공을 넘어서는 경험이,", "여기서 시작됩니다"].map((line, i) => (
               <motion.div
                 key={i}
-                className="font-bold text-[#fafafa] text-center leading-[1.2] whitespace-nowrap pointer-events-none"
-                style={{ fontSize: "clamp(52px, 6vw, 88px)", letterSpacing: "-0.03em" }}
+                className="font-bold text-[#fafafa] text-center leading-[1.2] pointer-events-none"
+                style={{ fontSize: "clamp(36px, 6vw, 88px)", letterSpacing: "-0.03em" }}
                 initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 36 }}
                 animate={heroReady ? { opacity: 1, y: 0 } : undefined}
                 transition={{ duration: 0.9, delay: 0.3 + i * 0.14, ease: [0.16, 1, 0.3, 1] }}
