@@ -660,13 +660,18 @@ function CTASection() {
           </motion.span>
         </div>
         <motion.button
-          className="border border-[#0c0c0d] px-5 py-2.5 rounded-14 bg-transparent transition-all duration-300 hover:bg-[#0c0c0d] group cursor-pointer"
+          className="group cursor-pointer whitespace-nowrap rounded-[56px] px-5 py-1.5 font-semibold text-[15px]"
           variants={getFadeUpVariants(16, 0.3, reducedMotion)}
           whileHover={reducedMotion ? undefined : { y: -4, scale: 1.02 }}
           whileTap={reducedMotion ? undefined : { scale: 0.98 }}
+          style={{
+            background: "#1a7aff",
+            color: "#fafafa",
+            border: "1px solid #1a7aff",
+          }}
         >
-          <span className="font-medium text-[#0c0c0d] tracking-[-0.96px] leading-[1.3] whitespace-nowrap transition-colors duration-300 group-hover:text-[#fafafa]" style={{ fontSize: "clamp(16px,2vw,24px)" }}>
-            지원 하기 →
+          <span className="font-semibold tracking-[-0.48px] leading-[1.3] whitespace-nowrap transition-opacity duration-300 group-hover:opacity-85">
+            지원하러 가기 →
           </span>
         </motion.button>
       </div>
@@ -697,9 +702,9 @@ function Footer() {
             <div className="flex flex-col gap-2 items-start">
               {[
                 { label: "홈", id: "home" },
-                { label: "임원진", id: "people" },
-                { label: "연혁", id: "history" },
                 { label: "활동", id: "event" },
+                { label: "연혁", id: "history" },
+                { label: "임원진", id: "people" },
               ].map(({ label, id }) => (
                 <button key={label}
                   onClick={() => id === "home" ? window.scrollTo({ top: 0, behavior: "smooth" }) : scrollTo(id)}
@@ -737,9 +742,10 @@ function Footer() {
 }
 
 const NAV_ITEMS = [
-  { label: "임원진", id: "people" },
-  { label: "연혁", id: "history" },
+  { label: "홈", id: "home" },
   { label: "활동", id: "event" },
+  { label: "연혁", id: "history" },
+  { label: "임원진", id: "people" },
 ];
 
 function scrollTo(id: string) {
@@ -972,34 +978,6 @@ export function Homepage() {
           </div>
         </div>
 
-        {/* ── People ────────────────────────────────────────────── */}
-        <section id="people" className="flex flex-col items-center w-full">
-          <SectionTitle text="PEOPLE" />
-
-          <div className="flex flex-col gap-10 items-center px-10 pb-12 md:pb-20 w-full">
-            <FadeUp threshold={0.2} className="flex flex-col items-center text-[#0c0c0d] text-center">
-              <span className="font-medium tracking-[-2.4px] leading-[1.3]" style={{ fontSize: "clamp(36px,6vw,80px)" }}>2026 GAMEWORKS</span>
-              <span className="font-bold tracking-[-1.14px] leading-[1.3]" style={{ fontSize: "clamp(22px,3vw,38px)" }}>임원진을 소개합니다</span>
-            </FadeUp>
-
-            <div className="flex flex-wrap justify-center gap-4 md:gap-6 lg:gap-10 w-full">
-              <MemberCard role="회장"  name="장윤아" img={imgFrame7}  delay={0}   style={{ height: "112.66%", left: "-3.52%",  top: "-3.54%", width: "106.8%"  }} />
-              <MemberCard role="회장"  name="조영찬" img={imgFrame8}  delay={80}  style={{ height: "115.78%", left: "-4.82%",  top: "-5.19%", width: "109.76%" }} />
-              <MemberCard role="총무"  name="박서영" img={imgFrame9}  delay={160} style={{ height: "121.45%", left: "-10.96%", top: "-7.3%",  width: "115.94%" }} />
-              <MemberCard role="부회장" name="유다은" img={imgFrame10} delay={0}   style={{ height: "111.61%", left: "-3.17%",  top: "-5.98%", width: "105.81%" }} />
-              <MemberCard role="부회장" name="최서정" img={imgFrame11} delay={80}  style={{ height: "111.78%", left: "-3.15%",  top: "-5.74%", width: "105.97%" }} />
-              <MemberCard role="부회장" name="최지원" img={imgFrame12} delay={160} style={{ height: "110.35%", left: "-2.37%",  top: "-5.22%", width: "104.61%" }} />
-              <MemberCard role="부회장" name="홍준우" img={imgFrame13} delay={240} style={{ height: "102.78%", left: "-12.76%", top: "-2.86%", width: "124.99%" }} />
-            </div>
-
-            <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
-              <span className="font-medium text-[#0c0c0d] text-[20px] leading-none group-hover:opacity-50 transition-opacity duration-200">
-                이전 임원진도 보기 →
-              </span>
-            </button>
-          </div>
-        </section>
-
         {/* ── Event ─────────────────────────────────────────────── */}
         <section id="event" className="flex flex-col items-center w-full">
           <div className="w-full" style={{ background: "linear-gradient(to bottom,#fafafa,#b2d3ff)" }}>
@@ -1036,6 +1014,34 @@ export function Homepage() {
             <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
               <span className="font-medium text-[#0c0c0d] text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
                 활동 더 보기 →
+              </span>
+            </button>
+          </div>
+        </section>
+
+        {/* ── People ────────────────────────────────────────────── */}
+        <section id="people" className="flex flex-col items-center w-full">
+          <SectionTitle text="PEOPLE" />
+
+          <div className="flex flex-col gap-10 items-center px-10 pb-12 md:pb-20 w-full">
+            <FadeUp threshold={0.2} className="flex flex-col items-center text-[#0c0c0d] text-center">
+              <span className="font-medium tracking-[-2.4px] leading-[1.3]" style={{ fontSize: "clamp(36px,6vw,80px)" }}>2026 GAMEWORKS</span>
+              <span className="font-bold tracking-[-1.14px] leading-[1.3]" style={{ fontSize: "clamp(22px,3vw,38px)" }}>임원진을 소개합니다</span>
+            </FadeUp>
+
+            <div className="flex flex-wrap justify-center gap-4 md:gap-6 lg:gap-10 w-full">
+              <MemberCard role="회장"  name="장윤아" img={imgFrame7}  delay={0}   style={{ height: "112.66%", left: "-3.52%",  top: "-3.54%", width: "106.8%"  }} />
+              <MemberCard role="회장"  name="조영찬" img={imgFrame8}  delay={80}  style={{ height: "115.78%", left: "-4.82%",  top: "-5.19%", width: "109.76%" }} />
+              <MemberCard role="총무"  name="박서영" img={imgFrame9}  delay={160} style={{ height: "121.45%", left: "-10.96%", top: "-7.3%",  width: "115.94%" }} />
+              <MemberCard role="부회장" name="유다은" img={imgFrame10} delay={0}   style={{ height: "111.61%", left: "-3.17%",  top: "-5.98%", width: "105.81%" }} />
+              <MemberCard role="부회장" name="최서정" img={imgFrame11} delay={80}  style={{ height: "111.78%", left: "-3.15%",  top: "-5.74%", width: "105.97%" }} />
+              <MemberCard role="부회장" name="최지원" img={imgFrame12} delay={160} style={{ height: "110.35%", left: "-2.37%",  top: "-5.22%", width: "104.61%" }} />
+              <MemberCard role="부회장" name="홍준우" img={imgFrame13} delay={240} style={{ height: "102.78%", left: "-12.76%", top: "-2.86%", width: "124.99%" }} />
+            </div>
+
+            <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
+              <span className="font-medium text-[#0c0c0d] text-[20px] leading-none group-hover:opacity-50 transition-opacity duration-200">
+                이전 임원진도 보기 →
               </span>
             </button>
           </div>

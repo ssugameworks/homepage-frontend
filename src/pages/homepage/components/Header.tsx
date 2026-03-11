@@ -2,6 +2,7 @@ import {
   motion,
   useReducedMotion,
 } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useHeaderMotion } from "@/pages/homepage/components/useHeaderMotion";
 
 type NavItem = {
@@ -18,6 +19,19 @@ type HeaderProps = {
   onNavigate: (id: string) => void;
 };
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return isMobile;
+}
+
 export function Header({
   activeSection,
   heroReady,
@@ -27,6 +41,7 @@ export function Header({
   onNavigate,
 }: HeaderProps) {
   const reducedMotion = !!useReducedMotion();
+  const isMobile = useIsMobile();
   const { wordmarkHidden, chrome, cta, menu } = useHeaderMotion(activeSection);
 
   return (
@@ -89,24 +104,20 @@ export function Header({
               boxShadow: menu.shadow,
             }}
           >
-            {navItems.map(({ label, id }) => {
-              const active = activeSection === id;
-              return (
-                <motion.button
-                  key={id}
-                  onClick={() => onNavigate(id)}
-                  className="flex cursor-pointer items-center justify-center rounded-25 px-6 py-1.5"
-                  style={{ background: active ? menu.activePillBackground : "transparent" }}
+            {navItems.map(({ label, id }) => (
+              <motion.button
+                key={id}
+                onClick={() => onNavigate(id)}
+                className="flex cursor-pointer items-center justify-center rounded-25 px-6 py-1.5"
+              >
+                <motion.span
+                  className="font-medium text-[17px] tracking-[-0.68px] leading-[1.3]"
+                  style={{ color: chrome.textColor }}
                 >
-                  <motion.span
-                    className="font-medium text-[17px] tracking-[-0.68px] leading-[1.3]"
-                    style={{ color: active ? "#1a7aff" : chrome.textColor }}
-                  >
-                    {label}
-                  </motion.span>
-                </motion.button>
-              );
-            })}
+                  {label}
+                </motion.span>
+              </motion.button>
+            ))}
           </motion.div>
           <motion.button
             className="cursor-pointer whitespace-nowrap rounded-[56px] px-5 py-1.5 font-semibold text-[15px]"
@@ -114,7 +125,7 @@ export function Header({
               background: cta.background,
               color: "#fafafa",
               border: cta.border,
-              opacity: cta.opacity,
+              opacity: isMobile ? cta.opacity : 1,
             }}
           >
             지금 가입하기 →
