@@ -1,23 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 
 /* ─── Local assets ────────────────────────────────────────────────────── */
 import imgLogo      from "./assets/gameworks-logo.svg";
-import imgFrame1    from "./assets/layer-2-img-1.png";
-import imgFrame2    from "./assets/layer-2-img-2.png";
-import imgDesktop26 from "./assets/layer-3-img-1.png";
-import imgFrame7    from "./assets/exec-img-1.png";
-import imgFrame8    from "./assets/exec-img-2.png";
-import imgFrame9    from "./assets/exec-img-3.png";
-import imgFrame10   from "./assets/exec-img-4.png";
-import imgFrame11   from "./assets/exec-img-5.png";
-import imgFrame12   from "./assets/exec-img-6.png";
-import imgFrame13   from "./assets/exec-img-7.png";
-import eventImg1    from "./assets/event-img-1.png";
-import eventImg2    from "./assets/event-img-2.png";
-import eventImg3    from "./assets/event-img-3.png";
-import eventImg4    from "./assets/event-img-4.png";
-import eventImg5    from "./assets/event-img-5.png";
-import eventImg6    from "./assets/event-img-6.png";
+import imgFrame1    from "./assets/layer-2-img-1.webp";
+import imgFrame2    from "./assets/layer-2-img-2.webp";
+import imgDesktop26 from "./assets/layer-3-img-1.webp";
+import imgFrame7    from "./assets/exec-img-1.webp";
+import imgFrame8    from "./assets/exec-img-2.webp";
+import imgFrame9    from "./assets/exec-img-3.webp";
+import imgFrame10   from "./assets/exec-img-4.webp";
+import imgFrame11   from "./assets/exec-img-5.webp";
+import imgFrame12   from "./assets/exec-img-6.webp";
+import imgFrame13   from "./assets/exec-img-7.webp";
+import eventImg1    from "./assets/event-img-1.webp";
+import eventImg2    from "./assets/event-img-2.webp";
+import eventImg3    from "./assets/event-img-3.webp";
+import eventImg4    from "./assets/event-img-4.webp";
+import eventImg5    from "./assets/event-img-5.webp";
+import eventImg6    from "./assets/event-img-6.webp";
 
 /* ─── Figma assets (no local equivalent yet) ─────────────────────────── */
 const imgRectangle = "https://www.figma.com/api/mcp/asset/f844113f-1290-4f7b-b756-c9535804cb22";
@@ -51,7 +52,7 @@ function useInView(threshold = 0.15) {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      ([e]) => { if (e?.isIntersecting) { setVisible(true); obs.disconnect(); } },
       { threshold }
     );
     obs.observe(el);
@@ -212,6 +213,53 @@ function useSectionBackground() {
 
 const EASE = "cubic-bezier(0.16,1,0.3,1)";
 
+const viewportOnce = { once: true, amount: 0.2 };
+
+const staggerContainer: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.12,
+    },
+  },
+};
+
+function getFadeUpVariants(distance: number, delay = 0, reducedMotion = false): Variants {
+  return {
+    hidden: reducedMotion ? { opacity: 0 } : { opacity: 0, y: distance },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        delay,
+        ease: [0.16, 1, 0.3, 1],
+      },
+    },
+  };
+}
+
+function getSlideInVariants(
+  from: "left" | "right",
+  delay = 0,
+  reducedMotion = false,
+): Variants {
+  const dx = from === "left" ? -60 : 60;
+  return {
+    hidden: reducedMotion ? { opacity: 0 } : { opacity: 0, x: dx },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.9,
+        delay,
+        ease: [0.16, 1, 0.3, 1],
+      },
+    },
+  };
+}
+
 function FadeUp({
   children, delay = 0, distance = 32, threshold = 0.15, className = "",
 }: {
@@ -221,20 +269,18 @@ function FadeUp({
   threshold?: number;
   className?: string;
 }) {
-  const { ref, visible } = useInView(threshold);
+  const reducedMotion = !!useReducedMotion();
   return (
-    <div
-      ref={ref as React.RefObject<HTMLDivElement>}
+    <motion.div
       className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : `translateY(${distance}px)`,
-        transition: `opacity 0.8s ease ${delay}ms, transform 0.8s ${EASE} ${delay}ms`,
-        willChange: "transform",
-      }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: threshold }}
+      variants={getFadeUpVariants(distance, delay / 1000, reducedMotion)}
+      style={{ willChange: "transform" }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
@@ -247,53 +293,63 @@ function SlideIn({
   threshold?: number;
   className?: string;
 }) {
-  const { ref, visible } = useInView(threshold);
-  const dx = from === "left" ? -60 : 60;
+  const reducedMotion = !!useReducedMotion();
   return (
-    <div
-      ref={ref as React.RefObject<HTMLDivElement>}
+    <motion.div
       className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateX(0)" : `translateX(${dx}px)`,
-        transition: `opacity 0.9s ease ${delay}ms, transform 0.9s ${EASE} ${delay}ms`,
-        willChange: "transform",
-      }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: threshold }}
+      variants={getSlideInVariants(from, delay / 1000, reducedMotion)}
+      style={{ willChange: "transform" }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
 /* ─── Section title — each character drops in ────────────────────────── */
 function SectionTitle({ text, color = "#00204d" }: { text: string; color?: string }) {
-  const { ref, visible } = useInView(0.4);
+  const reducedMotion = !!useReducedMotion();
   return (
-    <div
-      ref={ref as React.RefObject<HTMLDivElement>}
-      className="flex items-center justify-center px-10 h-120 w-full"
+    <motion.div
+      className="flex items-center justify-center px-10 h-70 w-full"
       aria-label={text}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.4 }}
+      variants={staggerContainer}
     >
       <div className="flex overflow-hidden">
         {text.split("").map((ch, i) => (
-          <span key={i}
+          <motion.span
+            key={i}
+            variants={{
+              hidden: reducedMotion ? { opacity: 0 } : { opacity: 0, y: "110%" },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: {
+                  duration: 0.7,
+                  delay: i * 0.03,
+                  ease: [0.16, 1, 0.3, 1],
+                },
+              },
+            }}
             style={{
               display: "inline-block",
               fontWeight: 700,
               fontSize: "143px",
               lineHeight: 1.24,
               color,
-              opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(110%)",
-              transition: `transform 0.7s ${EASE} ${i * 55}ms, opacity 0.5s ease ${i * 55}ms`,
               willChange: "transform",
             }}
           >
             {ch}
-          </span>
+          </motion.span>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -311,7 +367,7 @@ function MacFrame({ children }: { children: React.ReactNode }) {
 
 /* ─── Event card ─────────────────────────────────────────────────────── */
 function EventCard({
-  reverse, title, titleHighlight, description, imgSrc, imgStyle,
+  reverse, title, titleHighlight, description, imgSrc, imgStyle, tags,
 }: {
   reverse?: boolean;
   title: string;
@@ -319,6 +375,7 @@ function EventCard({
   description: React.ReactNode;
   imgSrc: string;
   imgStyle: React.CSSProperties;
+  tags?: string[];
 }) {
   const { ref, visible } = useInView(0.1);
   const dx = reverse ? 60 : -60;
@@ -341,6 +398,15 @@ function EventCard({
 
   const text = (
     <div className="flex flex-[1_0_0] flex-col gap-10 items-start min-w-0">
+      {tags && tags.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          {tags.map((tag) => (
+            <span key={tag} className="px-3 py-1 rounded-full border border-[#1a7aff]/30 text-[#1a7aff] text-[13px] font-medium tracking-wide">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="flex flex-col items-start text-[50px] font-bold tracking-[-1.5px] whitespace-nowrap">
         <span className="leading-[1.3] text-[#0c0c0d]">{title}</span>
         <span className="leading-[1.3] text-[#1a7aff]">{titleHighlight}</span>
@@ -387,10 +453,7 @@ function MemberCard({ role, name, img, style, delay = 0 }: {
         <img alt={name} className="absolute max-w-none transition-transform duration-500 group-hover:scale-105"
           src={img} style={style} />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#1a7aff]/80 to-transparent
-                        translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out
-                        flex items-end pb-3 px-3">
-          <span className="text-white text-[13px] font-medium leading-none">{role}</span>
-        </div>
+                        translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
       </div>
       <div className="flex flex-col items-start px-1 text-[#fafafa] w-full">
         <span className="font-bold text-[16px] tracking-[-0.48px] leading-[1.4]">{role}</span>
@@ -493,7 +556,7 @@ function StatsSection() {
       const eased = 1 - Math.pow(1 - progress, 3);
 
       targets.forEach((target, i) => {
-        const el = refs[i].current;
+        const el = refs[i]?.current;
         if (el) el.textContent = Math.round(eased * target).toString();
       });
 
@@ -546,42 +609,42 @@ function StatsSection() {
 
 /* ─── CTA section ────────────────────────────────────────────────────── */
 function CTASection() {
-  const { ref, visible } = useInView(0.3);
+  const reducedMotion = !!useReducedMotion();
   return (
-    <section ref={ref as React.RefObject<HTMLElement>}
-      className="flex h-150 items-center justify-center px-10 w-full">
+    <motion.section
+      className="flex h-150 items-center justify-center px-10 w-full"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.3 }}
+      variants={staggerContainer}
+    >
       <div className="flex flex-col gap-10 items-center w-184">
         <div className="flex flex-col gap-8 items-center text-[#0c0c0d] text-center w-full">
-          <span className="font-semibold text-[80px] tracking-[-3.2px] leading-[1.3] w-full"
-            style={{
-              opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(32px)",
-              transition: `opacity 0.8s ease, transform 0.8s ${EASE}`,
-            }}>
-            Ready to Join Us?
-          </span>
-          <span className="font-medium text-[36px] tracking-[-1.44px] leading-[1.3] w-full"
-            style={{
-              opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(24px)",
-              transition: `opacity 0.8s ease 0.15s, transform 0.8s ${EASE} 0.15s`,
-            }}>
-            지금 바로 GAMEWORKS의 새로운 멤버가 되어보세요!
-          </span>
+          <motion.span
+            className="font-semibold text-[80px] tracking-[-3.2px] leading-[1.3] w-full"
+            variants={getFadeUpVariants(32, 0, reducedMotion)}
+          >
+            함께 만들어가는<br />25년의 다음 이야기
+          </motion.span>
+          <motion.span
+            className="font-medium text-[36px] tracking-[-1.44px] leading-[1.3] w-full"
+            variants={getFadeUpVariants(24, 0.15, reducedMotion)}
+          >
+            기획, 개발, 디자인 — 분야를 넘어 함께 성장하는 곳
+          </motion.span>
         </div>
-        <button
+        <motion.button
           className="border border-[#0c0c0d] px-5 py-2.5 rounded-14 bg-transparent transition-all duration-300 hover:bg-[#0c0c0d] group cursor-pointer"
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0) scale(1)" : "translateY(16px) scale(0.96)",
-            transition: `opacity 0.7s ease 0.3s, transform 0.7s ${EASE} 0.3s, background-color 0.3s`,
-          }}>
+          variants={getFadeUpVariants(16, 0.3, reducedMotion)}
+          whileHover={reducedMotion ? undefined : { y: -4, scale: 1.02 }}
+          whileTap={reducedMotion ? undefined : { scale: 0.98 }}
+        >
           <span className="font-medium text-[#0c0c0d] text-[24px] tracking-[-0.96px] leading-[1.3] whitespace-nowrap transition-colors duration-300 group-hover:text-[#fafafa]">
-            GAMEWORKS 가입 바로가기
+            지금 지원하기 →
           </span>
-        </button>
+        </motion.button>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
@@ -668,6 +731,7 @@ export function Desktop() {
   const [scrolled, setScrolled]           = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [heroReady, setHeroReady]         = useState(false);
+  const reducedMotion = !!useReducedMotion();
 
   const heroBgRef    = useRef<HTMLImageElement>(null);
   const marqueeBgRef = useRef<HTMLImageElement>(null);
@@ -691,7 +755,7 @@ export function Desktop() {
       const el = document.getElementById(id);
       if (!el) return null;
       const obs = new IntersectionObserver(
-        ([e]) => { if (e.isIntersecting) setActiveSection(id); },
+        ([e]) => { if (e?.isIntersecting) setActiveSection(id); },
         { threshold: 0.3 }
       );
       obs.observe(el);
@@ -713,15 +777,16 @@ export function Desktop() {
         @keyframes float         { 0%,100%{transform:translateY(0)}   50%{transform:translateY(-14px)} }
         @keyframes pulse-glow    { 0%,100%{opacity:.7;transform:scale(1)}  50%{opacity:1;transform:scale(1.08)} }
         @keyframes scroll-bounce { 0%,100%{transform:translateY(0)}  50%{transform:translateY(8px)} }
-        @keyframes nav-drop      { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes sub-slide     { from{opacity:0;transform:translateX(40px)}  to{opacity:1;transform:translateX(0)} }
-        .nav-ready { animation: nav-drop 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s both; }
       `}</style>
 
       <div className="flex flex-col items-start w-full bg-[#fafafa]">
 
         {/* ── Fixed nav ─────────────────────────────────────────── */}
-        <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-20 py-6 transition-all duration-300${heroReady ? ' nav-ready' : ''}`}
+        <motion.nav
+          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-20 py-6 transition-all duration-300"
+          initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: -20 }}
+          animate={heroReady ? { opacity: 1, y: 0 } : undefined}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           style={{
             background: scrolled ? "rgba(255,255,255,0.92)" : "transparent",
             backdropFilter: scrolled ? "blur(12px)" : "none",
@@ -767,7 +832,7 @@ export function Desktop() {
               지금 가입하기 →
             </button>
           </div>
-        </nav>
+        </motion.nav>
 
         {/* ── Hero ──────────────────────────────────────────────── */}
         <div id="home" className="relative h-screen min-h-225 w-full shrink-0 overflow-hidden">
@@ -799,27 +864,50 @@ export function Desktop() {
           </div>
 
           {/* Hero title — letter-by-letter drop */}
-          <div className="absolute -translate-x-1/2 left-1/2 top-[47%] -translate-y-1/2 flex select-none" aria-label="GAMEWORKS">
+          <motion.div
+            className="absolute -translate-x-1/2 left-1/2 top-[47%] -translate-y-1/2 flex w-full justify-center whitespace-nowrap select-none pointer-events-none"
+            aria-label="GAMEWORKS"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={heroReady ? "visible" : "hidden"}
+          >
             {"GAMEWORKS".split("").map((ch, i) => (
-              <span key={i} className="font-bold text-[240px] tracking-[-9.6px] leading-[1.3] text-[#fafafa]"
+              <motion.span
+                key={i}
+                className="font-bold leading-none text-[#fafafa]"
+                variants={{
+                  hidden: reducedMotion ? { opacity: 0 } : { opacity: 0, y: -80, rotateX: -40 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    rotateX: 0,
+                    transition: {
+                      duration: 0.7,
+                      delay: 0.3 + i * 0.04,
+                      ease: [0.16, 1, 0.3, 1],
+                    },
+                  },
+                }}
                 style={{
                   display: "inline-block",
-                  opacity: heroReady ? 1 : 0,
-                  transform: heroReady ? "translateY(0) rotateX(0deg)" : "translateY(-80px) rotateX(-40deg)",
-                  transition: `opacity 0.7s ease ${300 + i * 60}ms, transform 0.7s ${EASE} ${300 + i * 60}ms`,
+                  fontSize: "clamp(112px, 15vw, 240px)",
+                  letterSpacing: "-0.04em",
                   willChange: "transform",
-                }}>
+                }}
+              >
                 {ch}
-              </span>
+              </motion.span>
             ))}
-          </div>
+          </motion.div>
 
           {/* Sub caption — slides from right */}
-          <div className="absolute flex gap-4 items-center right-26.5"
-            style={{
-              top: "calc(47% + 132px)",
-              animation: heroReady ? `sub-slide 0.8s ${EASE} 1s both` : "none",
-            }}>
+          <motion.div
+            className="absolute flex gap-4 items-center right-26.5"
+            style={{ top: "calc(47% + 132px)" }}
+            initial={reducedMotion ? { opacity: 1 } : { opacity: 0, x: 40 }}
+            animate={heroReady ? { opacity: 1, x: 0 } : undefined}
+            transition={{ duration: 0.8, delay: 1, ease: [0.16, 1, 0.3, 1] }}
+          >
             <span className="font-bold text-[#fafafa] text-[38px] tracking-[-1.14px] leading-[1.3]">글로벌미디어학부</span>
             <div className="relative h-0 w-50">
               <div className="absolute inset-[-1px_-0.5%]">
@@ -827,20 +915,39 @@ export function Desktop() {
               </div>
             </div>
             <span className="font-bold text-[#fafafa] text-[38px] tracking-[-1.14px] leading-[1.3]">종합 학술 소모임</span>
-          </div>
+          </motion.div>
+
+          {/* Hero CTA */}
+          <motion.div
+            className="absolute bottom-28 left-1/2 -translate-x-1/2"
+            initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 28, scale: 0.96 }}
+            animate={heroReady ? { opacity: 1, y: 0, scale: 1 } : undefined}
+            transition={{ duration: 0.8, delay: 1.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <motion.button
+              onClick={() => scrollTo("about")}
+              className="px-8 py-3.5 rounded-full font-semibold text-[18px] tracking-[-0.54px] leading-none cursor-pointer transition-all duration-300 whitespace-nowrap"
+              style={{ background: "rgba(255,255,255,0.15)", color: "#fafafa", border: "1px solid rgba(255,255,255,0.4)", backdropFilter: "blur(8px)" }}
+              whileHover={reducedMotion ? undefined : {
+                y: -4,
+                scale: 1.03,
+                backgroundColor: "rgba(255,255,255,0.28)",
+              }}
+              whileTap={reducedMotion ? undefined : { scale: 0.98 }}
+            >
+              지금 지원하기 →
+            </motion.button>
+          </motion.div>
 
           {/* Scroll hint */}
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
             style={{ animation: "scroll-bounce 1.8s ease-in-out 2s infinite" }}>
-            <span className="font-medium text-[#0c0c0d] text-[13px] tracking-[-0.42px] opacity-50">scroll</span>
+            <span className="font-medium text-[#fafafa] text-[13px] tracking-[-0.42px] opacity-40">scroll</span>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 4v12M4 10l6 6 6-6" stroke="#0c0c0d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
+              <path d="M10 4v12M4 10l6 6 6-6" stroke="#fafafa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
             </svg>
           </div>
         </div>
-
-        {/* ── Stats ─────────────────────────────────────────────── */}
-        <StatsSection />
 
         {/* ── About ─────────────────────────────────────────────── */}
         <section id="about" className="flex flex-col gap-25 items-center py-30 w-full">
@@ -883,32 +990,8 @@ export function Desktop() {
           </div>
         </section>
 
-        {/* ── Marquee / Desktop-26 ──────────────────────────────── */}
-        <div className="overflow-hidden relative shrink-0 w-full h-200" style={{ contain: "paint" }}>
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <img ref={marqueeBgRef} alt="" className="absolute block max-w-none size-full object-cover" src={imgDesktop26}
-              style={{ willChange: "transform" }} />
-          </div>
-
-          <div className="absolute top-50 w-full overflow-hidden" aria-hidden="true">
-            <div className="flex whitespace-nowrap font-semibold text-[#ececec] text-[240px] leading-none"
-              style={{ animation: "marquee-left 20s linear infinite" }}>
-              {Array(4).fill("GAMEWORKS\u00A0\u00A0\u00A0").map((t, i) => <span key={i}>{t}</span>)}
-            </div>
-          </div>
-
-          <div className="absolute bottom-50 w-full overflow-hidden" aria-hidden="true">
-            <div className="flex whitespace-nowrap font-semibold text-[#ececec] text-[240px] leading-none"
-              style={{ animation: "marquee-right 20s linear infinite" }}>
-              {Array(4).fill("GAMEWORKS\u00A0\u00A0\u00A0").map((t, i) => <span key={i}>{t}</span>)}
-            </div>
-          </div>
-
-          <div className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 h-134 w-139.25"
-            style={{ animation: "float 6s ease-in-out infinite" }}>
-            <img alt="GAMEWORKS" className="absolute block max-w-none size-full" src={imgVector2} />
-          </div>
-        </div>
+        {/* ── Stats ─────────────────────────────────────────────── */}
+        <StatsSection />
 
         {/* ── History ───────────────────────────────────────────── */}
         <section id="history" className="flex flex-col items-center w-full">
@@ -916,52 +999,49 @@ export function Desktop() {
           <HistoryContent />
         </section>
 
-        {/* ── Event ─────────────────────────────────────────────── */}
-        <section id="event" className="flex flex-col items-center w-full">
-          <div className="w-full" style={{ background: "linear-gradient(to bottom,#fafafa,#b2d3ff)" }}>
-            <SectionTitle text="EVENT" />
+        {/* ── Marquee / Desktop-26 ──────────────────────────────── */}
+        <div className="overflow-hidden relative shrink-0 w-full h-120" style={{ contain: "paint" }}>
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <img ref={marqueeBgRef} alt="" className="absolute block max-w-none size-full object-cover" src={imgDesktop26}
+              style={{ willChange: "transform" }} />
           </div>
 
-          <div className="flex flex-col gap-40 items-center px-10 py-20 w-full"
-            style={{ background: "linear-gradient(to bottom,#b2d3ff 0%,#b2d3ff 76%,#fafafa 100%)" }}>
-            <EventCard title="벚꽃과 함께" titleHighlight="봄나들이"
-              description={<>벚꽃이 가득한 봄에 동기들과 선배들과<br />함께 놀러가요.</>}
-              imgSrc={eventImg1} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }} />
-            <EventCard reverse title="가르치고 배우는" titleHighlight="멘토링"
-              description={<>기획, 개발, 디자인 분야 등<br />지식 경험을 가르치고 배울 수 있어요.</>}
-              imgSrc={eventImg2} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }} />
-            <EventCard title="서로 친해지는" titleHighlight="짝선짝후"
-              description={<>선배와 미션을 클리어하며<br />서로 친해지는 시간을 가져요.</>}
-              imgSrc={eventImg3} imgStyle={{ height: "139.2%", left: "-1.69%", top: "-10.62%", width: "103.47%" }} />
-            <EventCard reverse title="멋진 선배님과의" titleHighlight="커피챗"
-              description="함께 커피를 마시며 노하우를 전수받고 진솔한 이야기를 나눠요."
-              imgSrc={eventImg4} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }} />
-            <EventCard title="대회를 경험해보는" titleHighlight="아이디어톤"
-              description={<>여러 분야 간의 협업을 통해<br />프로젝트 완성 과정을 경험해봐요.</>}
-              imgSrc={eventImg5} imgStyle={{ height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" }} />
-            <EventCard reverse title="다가온 여름에 함께" titleHighlight="MT"
-              description={<>무더운 여름날 동기들과 함께<br />즐거운 추억을 쌓아요.</>}
-              imgSrc={eventImg6} imgStyle={{ height: "231.99%", left: "0", top: "-82.61%", width: "100%" }} />
-
-            <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
-              <span className="font-medium text-[#0c0c0d] text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
-                더 많은 활동 보러가기→
-              </span>
-            </button>
+          <div className="absolute top-8 w-full overflow-hidden" aria-hidden="true">
+            <div className="flex whitespace-nowrap font-semibold text-[#ececec] text-[240px] leading-none"
+              style={{ animation: "marquee-left 20s linear infinite" }}>
+              {Array(4).fill("GAMEWORKS\u00A0\u00A0\u00A0").map((t, i) => <span key={i}>{t}</span>)}
+            </div>
           </div>
-        </section>
+
+          <div className="absolute bottom-8 w-full overflow-hidden" aria-hidden="true">
+            <div className="flex whitespace-nowrap font-semibold text-[#ececec] text-[240px] leading-none"
+              style={{ animation: "marquee-right 20s linear infinite" }}>
+              {Array(4).fill("GAMEWORKS\u00A0\u00A0\u00A0").map((t, i) => <span key={i}>{t}</span>)}
+            </div>
+          </div>
+
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4">
+            <div className="h-60 w-62 relative shrink-0"
+              style={{ animation: "float 6s ease-in-out infinite" }}>
+              <img alt="GAMEWORKS" className="absolute block max-w-none size-full" src={imgVector2} />
+            </div>
+            <span className="font-medium text-[16px] tracking-[0.2em] text-white/70 uppercase whitespace-nowrap">
+              25 Years of Passion &amp; Growth
+            </span>
+          </div>
+        </div>
 
         {/* ── People ────────────────────────────────────────────── */}
         <section id="people" className="flex flex-col items-center w-full">
           <SectionTitle text="PEOPLE" />
 
-          <div className="flex flex-col gap-40 items-center px-10 pb-20 w-full">
+          <div className="flex flex-col gap-10 items-center px-10 pb-20 w-full">
             <FadeUp threshold={0.2} className="flex flex-col items-center text-[#0c0c0d] whitespace-nowrap">
               <span className="font-medium text-[80px] tracking-[-2.4px] leading-[1.3]">2026 GAMEWORKS</span>
               <span className="font-bold text-[38px] tracking-[-1.14px] leading-[1.3]">임원진을 소개합니다</span>
             </FadeUp>
 
-            <div className="flex flex-col gap-40 items-center">
+            <div className="flex flex-col gap-10 items-center">
               <div className="flex gap-10 items-center">
                 <MemberCard role="회장"  name="장윤아" img={imgFrame7}  delay={0}   style={{ height: "112.66%", left: "-3.52%",  top: "-3.54%", width: "106.8%"  }} />
                 <MemberCard role="회장"  name="조영찬" img={imgFrame8}  delay={80}  style={{ height: "115.78%", left: "-4.82%",  top: "-5.19%", width: "109.76%" }} />
@@ -978,6 +1058,47 @@ export function Desktop() {
             <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
               <span className="font-medium text-[#0c0c0d] text-[20px] leading-none group-hover:opacity-50 transition-opacity duration-200">
                 역대 임원진 보러가기→
+              </span>
+            </button>
+          </div>
+        </section>
+
+        {/* ── Event ─────────────────────────────────────────────── */}
+        <section id="event" className="flex flex-col items-center w-full">
+          <div className="w-full" style={{ background: "linear-gradient(to bottom,#fafafa,#b2d3ff)" }}>
+            <SectionTitle text="EVENT" />
+          </div>
+
+          <div className="flex flex-col gap-24 items-center px-10 py-20 w-full"
+            style={{ background: "linear-gradient(to bottom,#b2d3ff 0%,#b2d3ff 76%,#fafafa 100%)" }}>
+            <EventCard title="벚꽃과 함께" titleHighlight="봄나들이"
+              description={<>벚꽃이 가득한 봄에 동기들과 선배들과<br />함께 놀러가요.</>}
+              imgSrc={eventImg1} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }}
+              tags={["OUTING", "SOCIAL"]} />
+            <EventCard reverse title="가르치고 배우는" titleHighlight="멘토링"
+              description={<>기획, 개발, 디자인 분야 등<br />지식 경험을 가르치고 배울 수 있어요.</>}
+              imgSrc={eventImg2} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }}
+              tags={["MENTORING", "GROWTH"]} />
+            <EventCard title="서로 친해지는" titleHighlight="짝선짝후"
+              description={<>선배와 미션을 클리어하며<br />서로 친해지는 시간을 가져요.</>}
+              imgSrc={eventImg3} imgStyle={{ height: "139.2%", left: "-1.69%", top: "-10.62%", width: "103.47%" }}
+              tags={["NETWORKING", "SOCIAL"]} />
+            <EventCard reverse title="멋진 선배님과의" titleHighlight="커피챗"
+              description="함께 커피를 마시며 노하우를 전수받고 진솔한 이야기를 나눠요."
+              imgSrc={eventImg4} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }}
+              tags={["COFFEE CHAT", "NETWORKING"]} />
+            <EventCard title="대회를 경험해보는" titleHighlight="아이디어톤"
+              description={<>여러 분야 간의 협업을 통해<br />프로젝트 완성 과정을 경험해봐요.</>}
+              imgSrc={eventImg5} imgStyle={{ height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" }}
+              tags={["IDEATHON", "ACADEMIC"]} />
+            <EventCard reverse title="다가온 여름에 함께" titleHighlight="MT"
+              description={<>무더운 여름날 동기들과 함께<br />즐거운 추억을 쌓아요.</>}
+              imgSrc={eventImg6} imgStyle={{ height: "231.99%", left: "0", top: "-82.61%", width: "100%" }}
+              tags={["MT", "SUMMER"]} />
+
+            <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
+              <span className="font-medium text-[#0c0c0d] text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
+                더 많은 활동 보러가기→
               </span>
             </button>
           </div>
