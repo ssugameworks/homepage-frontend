@@ -1,24 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { Header } from "./components/Header";
 
 /* ─── Local assets ────────────────────────────────────────────────────── */
-import imgLogo      from "./assets/gameworks-logo.svg";
-import imgFrame1    from "./assets/layer-2-img-1.webp";
-import imgFrame2    from "./assets/layer-2-img-2.webp";
-import imgDesktop26 from "./assets/layer-3-img-1.webp";
-import imgFrame7    from "./assets/exec-img-1.webp";
-import imgFrame8    from "./assets/exec-img-2.webp";
-import imgFrame9    from "./assets/exec-img-3.webp";
-import imgFrame10   from "./assets/exec-img-4.webp";
-import imgFrame11   from "./assets/exec-img-5.webp";
-import imgFrame12   from "./assets/exec-img-6.webp";
-import imgFrame13   from "./assets/exec-img-7.webp";
-import eventImg1    from "./assets/event-img-1.webp";
-import eventImg2    from "./assets/event-img-2.webp";
-import eventImg3    from "./assets/event-img-3.webp";
-import eventImg4    from "./assets/event-img-4.webp";
-import eventImg5    from "./assets/event-img-5.webp";
-import eventImg6    from "./assets/event-img-6.webp";
+import imgLogo      from "../../assets/gameworks-logo.svg";
+import imgFrame1    from "../../assets/layer-2-img-1.webp";
+import imgFrame2    from "../../assets/layer-2-img-2.webp";
+import imgDesktop26 from "../../assets/layer-3-img-1.webp";
+import imgFrame7    from "../../assets/exec-img-1.webp";
+import imgFrame8    from "../../assets/exec-img-2.webp";
+import imgFrame9    from "../../assets/exec-img-3.webp";
+import imgFrame10   from "../../assets/exec-img-4.webp";
+import imgFrame11   from "../../assets/exec-img-5.webp";
+import imgFrame12   from "../../assets/exec-img-6.webp";
+import imgFrame13   from "../../assets/exec-img-7.webp";
+import eventImg1    from "../../assets/event-img-1.webp";
+import eventImg2    from "../../assets/event-img-2.webp";
+import eventImg3    from "../../assets/event-img-3.webp";
+import eventImg4    from "../../assets/event-img-4.webp";
+import eventImg5    from "../../assets/event-img-5.webp";
+import eventImg6    from "../../assets/event-img-6.webp";
 
 /* ─── Figma assets (no local equivalent yet) ─────────────────────────── */
 const imgRectangle = "https://www.figma.com/api/mcp/asset/f844113f-1290-4f7b-b756-c9535804cb22";
@@ -43,7 +44,7 @@ const prefersReducedMotion =
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-function useInView(threshold = 0.15) {
+function useInView(threshold = 0.08) {
   const ref = useRef<HTMLElement>(null);
   // 움직임 감소 설정 시 처음부터 visible로 시작
   const [visible, setVisible] = useState(prefersReducedMotion);
@@ -112,21 +113,59 @@ function useCursorFollower() {
     let tx = -100, ty = -100;
     let raf = 0;
     let isHoveringInteractive = false;
+    let currentScale = 1;
+    let targetScale = 1;
+    let currentOpacity = 0.45;
+    let targetOpacity = 0.45;
+    let activeNav: HTMLElement | null = null;
+    let navRestoreOverflow = "";
+
+    const setFollowerHost = (nextNav: HTMLElement | null) => {
+      if (activeNav === nextNav) return;
+
+      if (activeNav) {
+        activeNav.style.overflow = navRestoreOverflow;
+      }
+
+      activeNav = nextNav;
+
+      if (activeNav) {
+        navRestoreOverflow = activeNav.style.overflow;
+        activeNav.style.overflow = "hidden";
+        if (el.parentElement !== activeNav) activeNav.appendChild(el);
+        el.style.position = "absolute";
+      } else {
+        if (el.parentElement !== document.body) document.body.appendChild(el);
+        el.style.position = "fixed";
+      }
+    };
 
     const onMove = (e: MouseEvent) => {
-      tx = e.clientX;
-      ty = e.clientY;
       const target = e.target as Element;
       isHoveringInteractive = !!target.closest('button, a, [role="button"]');
+      const nextNav = target.closest('nav') as HTMLElement | null;
+      setFollowerHost(nextNav);
+
+      if (nextNav) {
+        const rect = nextNav.getBoundingClientRect();
+        tx = e.clientX - rect.left;
+        ty = e.clientY - rect.top;
+      } else {
+        tx = e.clientX;
+        ty = e.clientY;
+      }
+
+      targetScale = isHoveringInteractive ? 1.9 : 1;
+      targetOpacity = isHoveringInteractive ? 0.56 : 0.45;
     };
 
     const tick = () => {
-      cx += (tx - cx) * 0.12;
-      cy += (ty - cy) * 0.12;
-      const scale = isHoveringInteractive ? 2.5 : 1;
-      const opacity = isHoveringInteractive ? 0.6 : 0.45;
-      el.style.transform = `translate(${cx - 28}px, ${cy - 28}px) scale(${scale})`;
-      el.style.opacity = String(opacity);
+      cx += (tx - cx) * 0.32;
+      cy += (ty - cy) * 0.32;
+      currentScale += (targetScale - currentScale) * 0.14;
+      currentOpacity += (targetOpacity - currentOpacity) * 0.12;
+      el.style.transform = `translate(${cx - 28}px, ${cy - 28}px) scale(${currentScale})`;
+      el.style.opacity = String(currentOpacity);
       raf = requestAnimationFrame(tick);
     };
 
@@ -136,6 +175,7 @@ function useCursorFollower() {
     return () => {
       window.removeEventListener('mousemove', onMove);
       cancelAnimationFrame(raf);
+      if (activeNav) activeNav.style.overflow = navRestoreOverflow;
       el.remove();
     };
   }, []);
@@ -183,21 +223,18 @@ function useSectionBackground() {
       'about':  '#fafafa',
       'event':  '#b2d3ff',
       'people': '#fafafa',
-      'footer': '#000b1a',
     };
 
     const sections: Element[] = [];
     for (const id of Object.keys(map)) {
-      const el = id === 'footer'
-        ? document.querySelector('footer')
-        : document.getElementById(id);
+      const el = document.getElementById(id);
       if (el) sections.push(el);
     }
 
     const obs = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          const id = entry.target.id || 'footer';
+          const id = entry.target.id;
           const color = map[id] ?? '#fafafa';
           document.body.style.backgroundColor = color;
         }
@@ -220,7 +257,7 @@ const staggerContainer: Variants = {
   visible: {
     transition: {
       staggerChildren: 0.08,
-      delayChildren: 0.12,
+      delayChildren: 0.24,
     },
   },
 };
@@ -233,7 +270,7 @@ function getFadeUpVariants(distance: number, delay = 0, reducedMotion = false): 
       y: 0,
       transition: {
         duration: 0.8,
-        delay,
+        delay: delay + 0.12,
         ease: [0.16, 1, 0.3, 1],
       },
     },
@@ -253,7 +290,7 @@ function getSlideInVariants(
       x: 0,
       transition: {
         duration: 0.9,
-        delay,
+        delay: delay + 0.12,
         ease: [0.16, 1, 0.3, 1],
       },
     },
@@ -261,7 +298,7 @@ function getSlideInVariants(
 }
 
 function FadeUp({
-  children, delay = 0, distance = 32, threshold = 0.15, className = "",
+  children, delay = 0, distance = 32, threshold = 0.08, className = "",
 }: {
   children: React.ReactNode;
   delay?: number;
@@ -285,7 +322,7 @@ function FadeUp({
 }
 
 function SlideIn({
-  children, from = "left", delay = 0, threshold = 0.1, className = "",
+  children, from = "left", delay = 0, threshold = 0.06, className = "",
 }: {
   children: React.ReactNode;
   from?: "left" | "right";
@@ -317,7 +354,7 @@ function SectionTitle({ text, color = "#00204d" }: { text: string; color?: strin
       aria-label={text}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.4 }}
+      viewport={{ once: true, amount: 0.18 }}
       variants={staggerContainer}
     >
       <div className="flex overflow-hidden">
@@ -377,7 +414,7 @@ function EventCard({
   imgStyle: React.CSSProperties;
   tags?: string[];
 }) {
-  const { ref, visible } = useInView(0.1);
+  const { ref, visible } = useInView(0.04);
   const dx = reverse ? 60 : -60;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -439,7 +476,7 @@ function EventCard({
 function MemberCard({ role, name, img, style, delay = 0 }: {
   role: string; name: string; img: string; style: React.CSSProperties; delay?: number;
 }) {
-  const { ref, visible } = useInView(0.05);
+  const { ref, visible } = useInView(0.03);
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>}
       className="group bg-[#0c0c0d] flex flex-col gap-2.5 items-start overflow-hidden p-2.5 rounded-4 shadow-[10px_10px_8px_0px_rgba(0,0,0,0.1)] shrink-0 cursor-default transition-[transform,box-shadow] duration-300 hover:-translate-y-2 hover:shadow-[10px_18px_24px_0px_rgba(0,0,0,0.2)]"
@@ -452,7 +489,7 @@ function MemberCard({ role, name, img, style, delay = 0 }: {
       <div className="relative h-75 w-60 overflow-hidden rounded-lg">
         <img alt={name} className="absolute max-w-none transition-transform duration-500 group-hover:scale-105"
           src={img} style={style} />
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#1a7aff]/80 to-transparent
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-[#1a7aff]/80 to-transparent
                         translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
       </div>
       <div className="flex flex-col items-start px-1 text-[#fafafa] w-full">
@@ -465,16 +502,16 @@ function MemberCard({ role, name, img, style, delay = 0 }: {
 
 /* ─── History content ────────────────────────────────────────────────── */
 const TIMELINE = [
-  { year: "2000", title: "GAMEWORKS 창립", desc: "글로벌미디어학부와 함께 시작된 종합 학술 소모임" },
-  { year: "2008", title: "첫 교내 대회 수상", desc: "아이디어톤에서 처음으로 수상하며 학술 역량을 증명" },
+  { year: "2000", title: "GAMEWORKS 창립", desc: "학부의 시작과 함께 문을 열었습니다" },
+  { year: "2008", title: "첫 교내 대회 수상", desc: "첫 수상으로 팀의 가능성을 보여줬습니다" },
   { year: "2013", title: "100명 회원 달성", desc: "누적 회원 100명을 돌파하며 글로미 최대 소모임으로 성장" },
-  { year: "2018", title: "멘토링 프로그램 론칭", desc: "선배-후배 연결 멘토링 시스템을 체계적으로 구축" },
-  { year: "2023", title: "글로미 우수 소모임 선정", desc: "학교 공식 우수 소모임으로 선정되며 위상 강화" },
-  { year: "2025", title: "25주년", desc: "25년의 역사와 함께 새로운 100년을 향해 나아갑니다" },
+  { year: "2018", title: "멘토링 프로그램 시작", desc: "선배와 후배를 잇는 흐름을 만들었습니다" },
+  { year: "2023", title: "우수 소모임 선정", desc: "학교가 인정한 대표 소모임이 됐습니다" },
+  { year: "2025", title: "25주년", desc: "쌓아온 시간 위에 다음 25년을 준비합니다" },
 ];
 
 function TimelineItem({ year, title, desc, index }: { year: string; title: string; desc: string; index: number }) {
-  const { ref, visible } = useInView(0.2);
+  const { ref, visible } = useInView(0.08);
   const isLeft = index % 2 === 0;
 
   return (
@@ -491,7 +528,7 @@ function TimelineItem({ year, title, desc, index }: { year: string; title: strin
           <>
             <span className="font-bold text-[#1a7aff] text-[14px] tracking-widest">{year}</span>
             <span className="font-bold text-[#fafafa] text-[24px] tracking-[-0.72px] leading-[1.3] text-right">{title}</span>
-            <span className="font-medium text-[#a2a5a9] text-[15px] leading-[1.5] text-right mt-1">{desc}</span>
+            <span className="font-medium text-[#a2a5a9] text-[15px] leading-normal text-right mt-1">{desc}</span>
           </>
         )}
       </div>
@@ -507,7 +544,7 @@ function TimelineItem({ year, title, desc, index }: { year: string; title: strin
           <>
             <span className="font-bold text-[#1a7aff] text-[14px] tracking-widest">{year}</span>
             <span className="font-bold text-[#fafafa] text-[24px] tracking-[-0.72px] leading-[1.3]">{title}</span>
-            <span className="font-medium text-[#a2a5a9] text-[15px] leading-[1.5] mt-1">{desc}</span>
+            <span className="font-medium text-[#a2a5a9] text-[15px] leading-normal mt-1">{desc}</span>
           </>
         )}
       </div>
@@ -532,7 +569,7 @@ function HistoryContent() {
 
 /* ─── Stats section ──────────────────────────────────────────────────── */
 function StatsSection() {
-  const { ref: sectionRef, visible } = useInView(0.3);
+  const { ref: sectionRef, visible } = useInView(0.12);
   const ref1 = useRef<HTMLSpanElement>(null);
   const ref2 = useRef<HTMLSpanElement>(null);
   const ref3 = useRef<HTMLSpanElement>(null);
@@ -584,7 +621,7 @@ function StatsSection() {
             <span ref={ref2} className="font-bold text-[80px] tracking-[-3.2px] leading-none text-[#00204d]">0</span>
             <span className="font-bold text-[40px] leading-none text-[#00204d] mb-2">명+</span>
           </div>
-          <span className="font-medium text-[18px] text-[#6e7177]">역대 회원</span>
+          <span className="font-medium text-[18px] text-[#6e7177]">함께한 사람들</span>
         </div>
 
         {/* stat 3: 30개+ */}
@@ -593,14 +630,14 @@ function StatsSection() {
             <span ref={ref3} className="font-bold text-[80px] tracking-[-3.2px] leading-none text-[#00204d]">0</span>
             <span className="font-bold text-[40px] leading-none text-[#00204d] mb-2">개+</span>
           </div>
-          <span className="font-medium text-[18px] text-[#6e7177]">연간 이벤트</span>
+          <span className="font-medium text-[18px] text-[#6e7177]">매년 이어지는 활동</span>
         </div>
 
         {/* stat 4: No.1 — 카운팅 없이 fade */}
         <div className="flex flex-col items-center gap-2 px-20"
           style={{ opacity: visible ? 1 : 0, transition: "opacity 0.8s ease 0.5s" }}>
           <span className="font-bold text-[80px] tracking-[-3.2px] leading-none text-[#1a7aff]">No.1</span>
-          <span className="font-medium text-[18px] text-[#6e7177]">글로미 소모임</span>
+          <span className="font-medium text-[18px] text-[#6e7177]">학부 대표 소모임</span>
         </div>
       </div>
     </section>
@@ -615,7 +652,7 @@ function CTASection() {
       className="flex h-150 items-center justify-center px-10 w-full"
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 0.14 }}
       variants={staggerContainer}
     >
       <div className="flex flex-col gap-10 items-center w-184">
@@ -624,13 +661,17 @@ function CTASection() {
             className="font-semibold text-[80px] tracking-[-3.2px] leading-[1.3] w-full"
             variants={getFadeUpVariants(32, 0, reducedMotion)}
           >
-            함께 만들어가는<br />25년의 다음 이야기
+            같이 만들 다음 25년,
+            <br />
+            여기서 시작합니다
           </motion.span>
           <motion.span
             className="font-medium text-[36px] tracking-[-1.44px] leading-[1.3] w-full"
             variants={getFadeUpVariants(24, 0.15, reducedMotion)}
           >
-            기획, 개발, 디자인 — 분야를 넘어 함께 성장하는 곳
+            기획, 개발, 디자인.
+            <br />
+            분야를 넘어 함께 성장하는 곳
           </motion.span>
         </div>
         <motion.button
@@ -640,7 +681,7 @@ function CTASection() {
           whileTap={reducedMotion ? undefined : { scale: 0.98 }}
         >
           <span className="font-medium text-[#0c0c0d] text-[24px] tracking-[-0.96px] leading-[1.3] whitespace-nowrap transition-colors duration-300 group-hover:text-[#fafafa]">
-            지금 지원하기 →
+            지원 일정 보기 →
           </span>
         </motion.button>
       </div>
@@ -650,7 +691,7 @@ function CTASection() {
 
 /* ─── Footer ─────────────────────────────────────────────────────────── */
 function Footer() {
-  const { ref, visible } = useInView(0.1);
+  const { ref, visible } = useInView(0.04);
   const fadeStyle = (delay: number): React.CSSProperties => ({
     opacity: visible ? 1 : 0,
     transform: visible ? 'translateY(0)' : 'translateY(24px)',
@@ -662,18 +703,18 @@ function Footer() {
         <div style={fadeStyle(0)} className="flex flex-col gap-6 items-start w-75">
           <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3]">GAMEWORKS</span>
           <p className="font-medium text-[#a2a5a9] text-[24px] tracking-[-0.96px] leading-[1.3]">
-            2000년부터 시작된<br />글로벌미디어학부 유일 종합 학술 소모임입니다.
+            2000년부터 이어진<br />글로벌미디어학부 대표 학술 소모임입니다.
           </p>
         </div>
         <div className="flex gap-25">
           <div style={fadeStyle(100)} className="flex flex-col gap-6 items-start w-45">
-            <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3]">Quick Links</span>
+            <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3]">바로가기</span>
             <div className="flex flex-col gap-2 items-start">
               {[
-                { label: "Home",    id: "home"    },
-                { label: "Member",  id: "people"  },
-                { label: "History", id: "history" },
-                { label: "Event",   id: "event"   },
+                { label: "홈", id: "home" },
+                { label: "임원진", id: "people" },
+                { label: "연혁", id: "history" },
+                { label: "활동", id: "event" },
               ].map(({ label, id }) => (
                 <button key={label}
                   onClick={() => id === "home" ? window.scrollTo({ top: 0, behavior: "smooth" }) : scrollTo(id)}
@@ -684,7 +725,7 @@ function Footer() {
             </div>
           </div>
           <div style={fadeStyle(200)} className="flex flex-col gap-6 items-start w-70">
-            <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3] whitespace-nowrap">Connect With Us</span>
+            <span className="font-semibold text-[#fafafa] text-[32px] tracking-[-1.28px] leading-[1.3] whitespace-nowrap">연락하기</span>
             <div className="flex flex-col gap-2 items-start">
               {["Instagram", "Discord", "~~~@gmail.com", "000 : 010-0000-0000"].map((item) => (
                 <div key={item} className="flex gap-2.5 items-center group cursor-pointer">
@@ -709,17 +750,16 @@ function Footer() {
       </div>
       <div style={fadeStyle(300)} className="absolute left-1/2 -translate-x-1/2 top-112 font-medium text-[#a2a5a9] text-[16px] text-center tracking-[-0.48px] leading-[1.5] whitespace-nowrap">
         <p>© 2026 GAMEWORKS, All rights reserved.</p>
-        <p>25년의 역사를 이어온 종합 학술 소모임, GAMEWORKS</p>
+        <p>25년째 같이 만들고 있는 학부 대표 소모임, GAMEWORKS</p>
       </div>
     </footer>
   );
 }
 
-/* ─── Nav ────────────────────────────────────────────────────────────── */
 const NAV_ITEMS = [
-  { label: "Member",  id: "people"  },
-  { label: "History", id: "history" },
-  { label: "Event",   id: "event"   },
+  { label: "임원진", id: "people" },
+  { label: "연혁", id: "history" },
+  { label: "활동", id: "event" },
 ];
 
 function scrollTo(id: string) {
@@ -727,8 +767,7 @@ function scrollTo(id: string) {
 }
 
 /* ─── Main ───────────────────────────────────────────────────────────── */
-export function Desktop() {
-  const [scrolled, setScrolled]           = useState(false);
+export function Homepage() {
   const [activeSection, setActiveSection] = useState("");
   const [heroReady, setHeroReady]         = useState(false);
   const reducedMotion = !!useReducedMotion();
@@ -742,12 +781,6 @@ export function Desktop() {
   useCursorFollower();
   useScrollProgress();
   useSectionBackground();
-
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", fn, { passive: true });
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
 
   useEffect(() => {
     const ids = ["people", "event", "history", "about"];
@@ -781,58 +814,14 @@ export function Desktop() {
 
       <div className="flex flex-col items-start w-full bg-[#fafafa]">
 
-        {/* ── Fixed nav ─────────────────────────────────────────── */}
-        <motion.nav
-          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-20 py-6 transition-all duration-300"
-          initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: -20 }}
-          animate={heroReady ? { opacity: 1, y: 0 } : undefined}
-          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            background: scrolled ? "rgba(255,255,255,0.92)" : "transparent",
-            backdropFilter: scrolled ? "blur(12px)" : "none",
-            borderBottom: scrolled ? "1px solid rgba(0,0,0,0.06)" : "none",
-          }}>
-          <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="flex items-center gap-0.5 px-1 py-1.5 transition-opacity duration-200 hover:opacity-70">
-            <div className="relative shrink-0 size-6.5">
-              <img alt="" className="absolute block max-w-none size-full" src={imgVector1}
-                style={{ filter: scrolled ? "invert(1)" : "none", transition: "filter 0.3s" }} />
-            </div>
-            <span className="font-bold text-[32px] leading-[1.3] transition-colors duration-300"
-              style={{ color: scrolled ? "#0c0c0d" : "#fafafa" }}>
-              AMEWORKS
-            </span>
-          </button>
-
-          <div className="flex gap-4 items-center">
-            <div className="flex items-start p-2.5 rounded-14 transition-all duration-300"
-              style={{ border: scrolled ? "0.5px solid rgba(12,12,13,0.2)" : "0.5px solid #fafafa" }}>
-              {NAV_ITEMS.map(({ label, id }) => {
-                const active = activeSection === id;
-                return (
-                  <button key={id} onClick={() => scrollTo(id)}
-                    className="flex items-center justify-center px-6 py-2 rounded-25 transition-all duration-200 cursor-pointer"
-                    style={{ background: active ? (scrolled ? "rgba(26,122,255,0.1)" : "rgba(255,255,255,0.2)") : "transparent" }}>
-                    <span className="font-medium text-[18px] tracking-[-0.72px] leading-[1.3] transition-colors duration-300"
-                      style={{ color: active ? (scrolled ? "#1a7aff" : "#fff") : (scrolled ? "#0c0c0d" : "#fafafa") }}>
-                      {label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <button
-              className="px-5 py-2 rounded-[56px] font-semibold text-[16px] transition-all duration-300 cursor-pointer whitespace-nowrap"
-              style={{
-                background: scrolled ? "#1a7aff" : "transparent",
-                color: "#fafafa",
-                border: scrolled ? "none" : "1px solid #fafafa",
-              }}
-            >
-              지금 가입하기 →
-            </button>
-          </div>
-        </motion.nav>
+        <Header
+          activeSection={activeSection}
+          heroReady={heroReady}
+          logoSrc={imgVector1}
+          navItems={NAV_ITEMS}
+          onScrollTop={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onNavigate={scrollTo}
+        />
 
         {/* ── Hero ──────────────────────────────────────────────── */}
         <div id="home" className="relative h-screen min-h-225 w-full shrink-0 overflow-hidden">
@@ -855,7 +844,7 @@ export function Desktop() {
               maskSize: "1471px 174px",
             }}>
             {glowColors.map((color, i) => (
-              <div key={i} className="shrink-0 size-50 blur-[40px] rounded-full"
+              <div key={i} className="shrink-0 size-50 blur-2xl rounded-full"
                 style={{
                   backgroundColor: color,
                   animation: `pulse-glow ${2.4 + (i % 4) * 0.4}s ease-in-out ${i * 120}ms infinite`,
@@ -881,13 +870,13 @@ export function Desktop() {
                     opacity: 1,
                     y: 0,
                     rotateX: 0,
-                    transition: {
-                      duration: 0.7,
-                      delay: 0.3 + i * 0.04,
-                      ease: [0.16, 1, 0.3, 1],
+                      transition: {
+                        duration: 0.7,
+                        delay: 0.42 + i * 0.04,
+                        ease: [0.16, 1, 0.3, 1],
+                      },
                     },
-                  },
-                }}
+                  }}
                 style={{
                   display: "inline-block",
                   fontSize: "clamp(112px, 15vw, 240px)",
@@ -906,7 +895,7 @@ export function Desktop() {
             style={{ top: "calc(47% + 132px)" }}
             initial={reducedMotion ? { opacity: 1 } : { opacity: 0, x: 40 }}
             animate={heroReady ? { opacity: 1, x: 0 } : undefined}
-            transition={{ duration: 0.8, delay: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, delay: 1.16, ease: [0.16, 1, 0.3, 1] }}
           >
             <span className="font-bold text-[#fafafa] text-[38px] tracking-[-1.14px] leading-[1.3]">글로벌미디어학부</span>
             <div className="relative h-0 w-50">
@@ -914,7 +903,7 @@ export function Desktop() {
                 <img alt="" className="block max-w-none size-full" src={imgVector} />
               </div>
             </div>
-            <span className="font-bold text-[#fafafa] text-[38px] tracking-[-1.14px] leading-[1.3]">종합 학술 소모임</span>
+            <span className="font-bold text-[#fafafa] text-[38px] tracking-[-1.14px] leading-[1.3]">대표 학술 소모임</span>
           </motion.div>
 
           {/* Hero CTA */}
@@ -922,7 +911,7 @@ export function Desktop() {
             className="absolute bottom-28 left-1/2 -translate-x-1/2"
             initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 28, scale: 0.96 }}
             animate={heroReady ? { opacity: 1, y: 0, scale: 1 } : undefined}
-            transition={{ duration: 0.8, delay: 1.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, delay: 1.48, ease: [0.16, 1, 0.3, 1] }}
           >
             <motion.button
               onClick={() => scrollTo("about")}
@@ -935,7 +924,7 @@ export function Desktop() {
               }}
               whileTap={reducedMotion ? undefined : { scale: 0.98 }}
             >
-              지금 지원하기 →
+              지원하러 가기 →
             </motion.button>
           </motion.div>
 
@@ -956,10 +945,10 @@ export function Desktop() {
               <span className="leading-[1.3] text-[#1a7aff]">25년 역사</span>
               <span className="leading-[1.3] text-[#0c0c0d]">를 지닌</span>
             </div>
-            <span className="leading-[1.3] text-[#0c0c0d]">글로벌미디어학부 유일 종합 학술 소모임</span>
+            <span className="leading-[1.3] text-[#0c0c0d]">글로벌미디어학부 대표 학술 소모임</span>
           </FadeUp>
 
-          <div className="flex gap-20 items-center px-10 w-full">
+          <div className="mx-auto flex w-full max-w-7xl items-center justify-center gap-14 px-10">
             {/* Photos */}
             <SlideIn from="left" className="relative h-244.75 w-124 shrink-0">
               <div className="absolute border border-[#0c0c0d] h-150 left-0 top-0 w-100 overflow-hidden">
@@ -973,19 +962,23 @@ export function Desktop() {
             </SlideIn>
 
             {/* Logo + text */}
-            <SlideIn from="right" delay={150} className="flex flex-[1_0_0] flex-col gap-50 h-201.25 items-end justify-center min-w-0">
-              <div className="flex flex-col gap-4 items-center shrink-0">
+            <SlideIn from="right" delay={150} className="flex min-w-0 max-w-[36rem] flex-[0_1_36rem] flex-col items-start justify-center gap-12">
+              <div className="flex flex-col gap-4 items-start shrink-0">
                 <div className="relative h-73.25 w-75"
                   style={{ animation: "float 5s ease-in-out 1s infinite" }}>
                   <img alt="GAMEWORKS 로고" className="absolute block max-w-none size-full" src={imgLogo} />
                 </div>
-                <span className="font-bold text-[#00204d] text-[80px] text-center tracking-[-3.2px] leading-[1.3] whitespace-nowrap">
+                <span className="font-bold text-[#00204d] text-[80px] tracking-[-3.2px] leading-[1.1] whitespace-nowrap">
                   GAMEWORKS
                 </span>
               </div>
-              <p className="font-bold text-[#0c0c0d] text-[38px] tracking-[-1.14px] leading-[1.3] shrink-0 whitespace-pre-wrap">
-                {`게임웍스는  2000년대 초 \n글로벌미디어학부의 시작을 함께한 \n소모임으로  긴 역사를 자랑합니다.`}
+              <div className="h-px w-24 bg-[#0c0c0d]/12" />
+              <p className="font-bold text-[#0c0c0d] text-[38px] tracking-[-1.14px] leading-[1.36] text-left whitespace-pre-wrap">
+                {`게임웍스는 2000년대 초 \n글로벌미디어학부의 시작을 함께한 \n학술 소모임입니다.`}
               </p>
+              <span className="font-semibold text-[14px] tracking-[0.24em] text-[#1a7aff] uppercase">
+                Since 2000
+              </span>
             </SlideIn>
           </div>
         </section>
@@ -1038,7 +1031,7 @@ export function Desktop() {
           <div className="flex flex-col gap-10 items-center px-10 pb-20 w-full">
             <FadeUp threshold={0.2} className="flex flex-col items-center text-[#0c0c0d] whitespace-nowrap">
               <span className="font-medium text-[80px] tracking-[-2.4px] leading-[1.3]">2026 GAMEWORKS</span>
-              <span className="font-bold text-[38px] tracking-[-1.14px] leading-[1.3]">임원진을 소개합니다</span>
+              <span className="font-bold text-[38px] tracking-[-1.14px] leading-[1.3]">이번 학기를 함께 만드는 팀입니다</span>
             </FadeUp>
 
             <div className="flex flex-col gap-10 items-center">
@@ -1057,7 +1050,7 @@ export function Desktop() {
 
             <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
               <span className="font-medium text-[#0c0c0d] text-[20px] leading-none group-hover:opacity-50 transition-opacity duration-200">
-                역대 임원진 보러가기→
+                이전 임원진도 보기 →
               </span>
             </button>
           </div>
@@ -1072,33 +1065,33 @@ export function Desktop() {
           <div className="flex flex-col gap-24 items-center px-10 py-20 w-full"
             style={{ background: "linear-gradient(to bottom,#b2d3ff 0%,#b2d3ff 76%,#fafafa 100%)" }}>
             <EventCard title="벚꽃과 함께" titleHighlight="봄나들이"
-              description={<>벚꽃이 가득한 봄에 동기들과 선배들과<br />함께 놀러가요.</>}
+              description={<>봄에 같이 나갑니다.<br />가볍게 친해지기 좋은 시간이에요.</>}
               imgSrc={eventImg1} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }}
               tags={["OUTING", "SOCIAL"]} />
             <EventCard reverse title="가르치고 배우는" titleHighlight="멘토링"
-              description={<>기획, 개발, 디자인 분야 등<br />지식 경험을 가르치고 배울 수 있어요.</>}
+              description={<>서로 아는 걸 나눕니다.<br />실무 감각도 같이 익힐 수 있어요.</>}
               imgSrc={eventImg2} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }}
               tags={["MENTORING", "GROWTH"]} />
             <EventCard title="서로 친해지는" titleHighlight="짝선짝후"
-              description={<>선배와 미션을 클리어하며<br />서로 친해지는 시간을 가져요.</>}
+              description={<>미션을 같이 풀면서<br />어색함 없이 가까워집니다.</>}
               imgSrc={eventImg3} imgStyle={{ height: "139.2%", left: "-1.69%", top: "-10.62%", width: "103.47%" }}
               tags={["NETWORKING", "SOCIAL"]} />
             <EventCard reverse title="멋진 선배님과의" titleHighlight="커피챗"
-              description="함께 커피를 마시며 노하우를 전수받고 진솔한 이야기를 나눠요."
+              description="커피 한 잔 하면서 경험을 듣고, 궁금한 걸 바로 물어볼 수 있어요."
               imgSrc={eventImg4} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }}
               tags={["COFFEE CHAT", "NETWORKING"]} />
             <EventCard title="대회를 경험해보는" titleHighlight="아이디어톤"
-              description={<>여러 분야 간의 협업을 통해<br />프로젝트 완성 과정을 경험해봐요.</>}
+              description={<>팀으로 부딪혀 보면서<br />아이디어가 결과가 되는 과정을 배웁니다.</>}
               imgSrc={eventImg5} imgStyle={{ height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" }}
               tags={["IDEATHON", "ACADEMIC"]} />
             <EventCard reverse title="다가온 여름에 함께" titleHighlight="MT"
-              description={<>무더운 여름날 동기들과 함께<br />즐거운 추억을 쌓아요.</>}
+              description={<>학기 중엔 못 나눈 얘기까지,<br />한 번에 가까워지는 시간이에요.</>}
               imgSrc={eventImg6} imgStyle={{ height: "231.99%", left: "0", top: "-82.61%", width: "100%" }}
               tags={["MT", "SUMMER"]} />
 
             <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
               <span className="font-medium text-[#0c0c0d] text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
-                더 많은 활동 보러가기→
+                활동 더 보기 →
               </span>
             </button>
           </div>

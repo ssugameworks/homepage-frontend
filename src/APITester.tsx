@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { getHello } from "./lib/api";
-import { useCounterStore } from "./store/counter-store";
+import { getHello } from "@/lib/api";
+import { useCounterStore } from "@/store/counter-store";
 
 export function APITester() {
   const [name, setName] = useState("codex");
