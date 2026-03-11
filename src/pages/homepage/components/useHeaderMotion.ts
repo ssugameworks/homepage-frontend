@@ -108,6 +108,7 @@ export function useHeaderMotion(activeSection: string) {
   };
 
   const cta = {
+    opacity: useTransform(navProgress, [0, 0.5, 1], [0, 0, 1]),
     background: useMotionTemplate`rgba(26,122,255,${useTransform(navProgress, [0, 0.16, 1], [0, 0, 1])})`,
     border: useTransform(
       [navProgress, darkProgress],

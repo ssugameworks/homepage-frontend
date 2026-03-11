@@ -114,6 +114,7 @@ export function Header({
               background: cta.background,
               color: "#fafafa",
               border: cta.border,
+              opacity: cta.opacity,
             }}
           >
             지금 가입하기 →
