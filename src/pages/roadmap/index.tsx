@@ -10,7 +10,6 @@ import { EventPanel } from "@/pages/roadmap/components/EventPanel";
 import { useRoadmapStore } from "@/pages/roadmap/store/roadmap-store";
 import type { GameEvent } from "@/pages/roadmap/types";
 
-/* ── Page ────────────────────────────────────────────────────────────────────── */
 export function RoadmapPage() {
   const reducedMotion = useReducedMotion();
   const setEvents = useRoadmapStore((s) => s.setEvents);
@@ -21,56 +20,48 @@ export function RoadmapPage() {
       const response = await api.get<GameEvent[]>("/roadmap");
       return response.data;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Sync data to store only when it changes
   useEffect(() => {
     if (data) {
       setEvents(data);
     }
   }, [data, setEvents]);
 
-  useEffect(() => {
-    const prev = document.documentElement.style.scrollbarGutter;
-    document.documentElement.style.scrollbarGutter = "auto";
-    return () => {
-      document.documentElement.style.scrollbarGutter = prev;
-    };
-  }, []);
-
   return (
-    <div className="min-h-screen bg-surface relative overflow-x-hidden">
-      <Header
-        activeSection="people"
-        heroReady={true}
-        logoSrc={logoSrc}
-        navItems={NAV_ITEMS}
-        pageTitle="다가오는 일정"
-        onScrollTop={navigateHome}
-        onNavigate={navigateByNavId}
-        darkHero={false}
-      />
+    <div className="min-h-screen bg-white relative font-pretendard overflow-x-hidden">
+      {/* Header Container */}
+      <div className="fixed top-0 inset-x-0 z-[100] bg-white/80 backdrop-blur-md">
+        <Header
+          activeSection="roadmap"
+          heroReady={true}
+          logoSrc={logoSrc}
+          navItems={NAV_ITEMS}
+          pageTitle="다가오는 일정"
+          onScrollTop={navigateHome}
+          onNavigate={navigateByNavId}
+          darkHero={false}
+        />
+      </div>
 
-      <main className="flex min-h-[calc(100vh-4rem)] w-full flex-col gap-4 px-4 pb-6 pt-20 md:px-6 md:pb-8 lg:flex-row lg:items-start lg:justify-between lg:gap-6 lg:pl-8 lg:pr-0 lg:pt-24 xl:gap-8 xl:pl-10">
-        {isLoading ? (
-          <div className="flex flex-1 items-center justify-center text-ink/40 font-medium">
-            일정을 불러오는 중입니다...
-          </div>
-        ) : error ? (
-          <div className="flex flex-1 items-center justify-center text-red-500 font-medium">
-            일정을 불러오지 못했습니다.
-          </div>
-        ) : (
-          <>
-            <div className="order-2 w-full lg:order-1 lg:flex-1 lg:self-center">
-              <CalendarPane />
-            </div>
-            <div className="order-1 w-full lg:order-2 lg:w-auto">
-              <EventPanel reducedMotion={!!reducedMotion} />
-            </div>
-          </>
-        )}
+      <main className="flex min-h-screen w-full flex-col lg:flex-row">
+        {/* Left Side: Calendar */}
+        <div className="flex-[1.2] flex flex-col items-center justify-center pt-40 pb-20 px-8 lg:px-12">
+          {isLoading ? (
+            <div className="text-black/20 font-medium">일정을 불러오는 중...</div>
+          ) : error ? (
+            <div className="text-red-400 font-medium">일정을 불러오지 못했습니다.</div>
+          ) : (
+            <CalendarPane />
+          )}
+        </div>
+
+        {/* Right Side: Event Detail (Touches the right wall) */}
+        {/* Increased top margin to LG (Header height) to prevent overlap */}
+        <div className="w-full lg:w-[42%] xl:w-[38%] relative z-10 pt-24 lg:pt-32">
+          <EventPanel reducedMotion={!!reducedMotion} />
+        </div>
       </main>
     </div>
   );

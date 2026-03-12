@@ -38,12 +38,12 @@ export const DATE_HEADER_VARIANTS = {
 };
 
 export const CAT_COLOR: Record<Category, string> = {
-  recruitment: "#f59e0b",
-  gathering: "#8b5cf6",
-  social: "#ec4899",
-  networking: "#0ea5e9",
-  competition: "#10b981",
-  trip: "#f97316",
+  recruitment: "#1a7aff", // Blue
+  gathering: "#8b5cf6",    // Purple
+  social: "#ec4899",       // Pink
+  networking: "#0ea5e9",    // Sky
+  competition: "#10b981",  // Emerald
+  trip: "#f97316",         // Orange
 };
 
 export const CAT_LABEL: Record<Category, string> = {
