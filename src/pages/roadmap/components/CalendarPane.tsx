@@ -31,18 +31,16 @@ const calendarGridVariants = {
 export function CalendarPane({ state }: CalendarPaneProps) {
   return (
     <section className="min-w-0 flex-1">
-      <div className="mx-auto flex w-full max-w-[620px] items-start gap-2 sm:gap-3 lg:max-w-[540px] xl:max-w-[580px]">
-        <button
-          onClick={() => state.shiftView(-1)}
-          aria-label="이전 달"
-          className="mt-[78px] flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/8 bg-white transition-all hover:bg-black/4 active:scale-95 cursor-pointer sm:mt-[86px] sm:h-10 sm:w-10"
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M9 2.5L4 7L9 11.5" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-
-        <div className="min-w-0 flex-1">
+      <div className="mb-3 px-1 sm:mb-4 lg:hidden">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8a8d94]">
+          Calendar
+        </div>
+        <p className="mt-1 text-[13px] leading-relaxed text-[#6e7177]">
+          날짜를 탭해서 해당 일정을 바로 확인하세요.
+        </p>
+      </div>
+      <div className="mx-auto w-full max-w-[620px] lg:max-w-[540px] xl:max-w-[580px]">
+        <div className="min-w-0">
           <div className="mb-3 flex items-end justify-between sm:mb-4">
             <AnimatePresence mode="wait" custom={state.navDir}>
               <motion.div
@@ -65,20 +63,40 @@ export function CalendarPane({ state }: CalendarPaneProps) {
               </motion.div>
             </AnimatePresence>
 
-            <AnimatePresence>
-              {!state.isCurrentMonth && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.85 }}
-                  transition={{ duration: 0.14 }}
-                  onClick={state.goToday}
-                  className="mb-1 rounded-full border border-[#00204d]/30 bg-transparent px-2.5 py-1 text-[10px] font-semibold text-[#00204d] transition-all hover:bg-[#00204d] hover:text-white cursor-pointer sm:px-3 sm:text-[11px]"
-                >
-                  오늘
-                </motion.button>
-              )}
-            </AnimatePresence>
+            <div className="mb-0.5 flex items-center gap-1.5 sm:gap-2">
+              <AnimatePresence>
+                {!state.isCurrentMonth && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.85 }}
+                    transition={{ duration: 0.14 }}
+                    onClick={state.goToday}
+                    className="rounded-full border border-[#00204d]/30 bg-transparent px-2.5 py-1 text-[10px] font-semibold text-[#00204d] transition-all hover:bg-[#00204d] hover:text-white cursor-pointer sm:px-3 sm:text-[11px]"
+                  >
+                    오늘
+                  </motion.button>
+                )}
+              </AnimatePresence>
+              <button
+                onClick={() => state.shiftView(-1)}
+                aria-label="이전 달"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/8 bg-white transition-all hover:bg-black/4 active:scale-95 cursor-pointer sm:h-9 sm:w-9"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M9 2.5L4 7L9 11.5" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <button
+                onClick={() => state.shiftView(1)}
+                aria-label="다음 달"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/8 bg-white transition-all hover:bg-black/4 active:scale-95 cursor-pointer sm:h-9 sm:w-9"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M5 2.5L10 7L5 11.5" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div className="overflow-hidden rounded-[22px] border border-black/[0.06] bg-white shadow-[0_12px_30px_rgba(12,12,13,0.05)] sm:rounded-2xl">
@@ -177,16 +195,6 @@ export function CalendarPane({ state }: CalendarPaneProps) {
             </div>
           </div>
         </div>
-
-        <button
-          onClick={() => state.shiftView(1)}
-          aria-label="다음 달"
-          className="mt-[78px] flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/8 bg-white transition-all hover:bg-black/4 active:scale-95 cursor-pointer sm:mt-[86px] sm:h-10 sm:w-10"
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M5 2.5L10 7L5 11.5" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
       </div>
     </section>
   );

@@ -74,7 +74,7 @@ export function EventPanel({ reducedMotion, state }: EventPanelProps) {
 
   return (
     <div
-      className="mt-2 mb-4 flex w-full min-w-0 flex-col self-stretch overflow-hidden rounded-[28px] px-5 pt-6 pb-6 sm:mt-3 sm:mb-6 sm:min-h-[505px] sm:px-7 sm:pt-5 sm:pb-5 lg:mt-4 lg:mb-4 lg:ml-auto lg:min-h-[600px] lg:w-[clamp(500px,43vw,720px)] lg:min-w-[500px] lg:flex-none lg:self-start lg:rounded-tl-[24px] lg:rounded-bl-[24px] lg:rounded-tr-none lg:rounded-br-none lg:px-10 lg:pt-5 lg:pb-5 xl:px-12"
+      className="mt-2 mb-4 mx-auto flex w-full min-w-0 max-w-[620px] flex-col self-stretch overflow-hidden rounded-[28px] px-5 pt-6 pb-6 sm:mt-3 sm:mb-6 sm:min-h-[505px] sm:px-6 sm:pt-5 sm:pb-5 md:px-7 lg:mt-4 lg:mb-4 lg:ml-auto lg:min-h-[600px] lg:w-[clamp(500px,43vw,720px)] lg:min-w-[500px] lg:max-w-none lg:flex-none lg:self-start lg:rounded-tl-[24px] lg:rounded-bl-[24px] lg:rounded-tr-none lg:rounded-br-none lg:px-10 lg:pt-5 lg:pb-5 xl:px-12"
       style={{
         background: "linear-gradient(150deg, #0d1e3a 0%, #00204d 55%, #010f28 100%)",
       }}

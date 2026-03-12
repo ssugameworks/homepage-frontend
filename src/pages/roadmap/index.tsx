@@ -27,9 +27,13 @@ export function RoadmapPage() {
         darkHero={false}
       />
 
-      <main className="flex min-h-[calc(100vh-4rem)] w-full flex-col gap-6 px-4 pb-6 pt-20 md:px-6 md:pb-8 lg:flex-row lg:items-start lg:justify-between lg:gap-0 lg:pl-8 lg:pr-0 lg:pt-24 xl:pl-10">
-        <CalendarPane state={state} />
-        <EventPanel reducedMotion={!!reducedMotion} state={state} />
+      <main className="flex min-h-[calc(100vh-4rem)] w-full flex-col gap-4 px-4 pb-6 pt-20 md:px-6 md:pb-8 lg:flex-row lg:items-start lg:justify-between lg:gap-0 lg:pl-8 lg:pr-0 lg:pt-24 xl:pl-10">
+        <div className="order-2 w-full lg:order-1 lg:flex-1">
+          <CalendarPane state={state} />
+        </div>
+        <div className="order-1 w-full lg:order-2 lg:w-auto">
+          <EventPanel reducedMotion={!!reducedMotion} state={state} />
+        </div>
       </main>
     </div>
   );
