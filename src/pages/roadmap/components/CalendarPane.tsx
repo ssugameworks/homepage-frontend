@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { DAY_LABELS, EASE, MONTH_NAMES, ROADMAP_INDICATOR_COLOR, ROADMAP_INDICATOR_LABEL } from "@/pages/roadmap/constants";
+import { DAY_LABELS, EASE, EVENTS, MONTH_NAMES, ROADMAP_INDICATOR_COLOR, ROADMAP_INDICATOR_LABEL } from "@/pages/roadmap/constants";
 import type { useRoadmapCalendar } from "@/pages/roadmap/hooks/useRoadmapCalendar";
+import { toKey } from "@/pages/roadmap/utils";
 
 type CalendarState = ReturnType<typeof useRoadmapCalendar>;
 
@@ -27,6 +28,71 @@ const calendarGridVariants = {
     },
   },
 };
+
+type RowSegment = {
+  id: string;
+  start: number;
+  end: number;
+  lane: number;
+  roundLeft: boolean;
+  roundRight: boolean;
+};
+
+function buildRowSegments(
+  row: CalendarState["rows"][number],
+  getCellDate: CalendarState["getCellDate"],
+) {
+  const rowKeys = row.map((cell) => {
+    const [year, month, day] = getCellDate(cell);
+    return toKey(year, month, day);
+  });
+  const rowStart = rowKeys[0];
+  const rowEnd = rowKeys[rowKeys.length - 1];
+
+  if (!rowStart || !rowEnd) {
+    return [];
+  }
+
+  const overlappingEvents = EVENTS
+    .filter((event) => event.start <= rowEnd && event.end >= rowStart)
+    .sort((a, b) => a.start.localeCompare(b.start));
+
+  const laneEnds: number[] = [];
+  const segments: RowSegment[] = [];
+
+  for (const event of overlappingEvents) {
+    let start = -1;
+    let end = -1;
+
+    rowKeys.forEach((key, index) => {
+      if (event.start <= key && key <= event.end) {
+        if (start === -1) start = index;
+        end = index;
+      }
+    });
+
+    if (start === -1 || end === -1) continue;
+
+    let lane = laneEnds.findIndex((laneEnd) => laneEnd < start);
+    if (lane === -1) {
+      lane = laneEnds.length;
+      laneEnds.push(end);
+    } else {
+      laneEnds[lane] = end;
+    }
+
+    segments.push({
+      id: event.id,
+      start,
+      end,
+      lane,
+      roundLeft: start === 0 || event.start === rowKeys[start],
+      roundRight: end === row.length - 1 || event.end === rowKeys[end],
+    });
+  }
+
+  return segments.slice(0, 3);
+}
 
 export function CalendarPane({ state }: CalendarPaneProps) {
   return (
@@ -111,36 +177,66 @@ export function CalendarPane({ state }: CalendarPaneProps) {
                 className="py-1"
               >
                 {state.rows.map((row, rowIndex) => (
-                  <div key={rowIndex} className="grid grid-cols-7">
+                  <div key={rowIndex} className="relative grid grid-cols-7">
+                    {(() => {
+                      const segments = buildRowSegments(row, state.getCellDate);
+                      const laneHeight = 4;
+                      const laneGap = 2;
+                      const baseBottom = 6;
+
+                      return segments.length > 0 ? (
+                        <div className="pointer-events-none absolute inset-x-0 bottom-0 top-0 z-0">
+                          {segments.map((segment) => {
+                            const left = `calc(${(segment.start / 7) * 100}% + 8px)`;
+                            const width = `calc(${((segment.end - segment.start + 1) / 7) * 100}% - 16px)`;
+
+                            return (
+                              <div
+                                key={segment.id}
+                                className="absolute"
+                                style={{
+                                  left,
+                                  width,
+                                  height: `${laneHeight}px`,
+                                  bottom: `${baseBottom + segment.lane * (laneHeight + laneGap)}px`,
+                                  background: ROADMAP_INDICATOR_COLOR,
+                                  borderTopLeftRadius: segment.roundLeft ? 999 : 2,
+                                  borderBottomLeftRadius: segment.roundLeft ? 999 : 2,
+                                  borderTopRightRadius: segment.roundRight ? 999 : 2,
+                                  borderBottomRightRadius: segment.roundRight ? 999 : 2,
+                                  opacity: 0.82,
+                                }}
+                              />
+                            );
+                          })}
+                        </div>
+                      ) : null;
+                    })()}
                     {row.map((cell, cellIndex) => {
                       const isSelected = state.isSelectedCell(cell);
                       const isToday = state.isTodayCell(cell);
                       const isDimmed = cell.kind !== "cur";
-                      const bars = state.getCellBars(cell);
-                      const hasEvent = bars.length > 0;
-                      const eventColor = bars[0]?.color ?? "#1a7aff";
                       const textColor = isSelected ? "#fff" : isToday ? "#00204d" : isDimmed ? "#ccc" : "#222";
 
                       return (
                         <button
                           key={cellIndex}
                           onClick={() => state.selectCell(cell)}
-                          className="relative flex h-12 flex-col items-center border-0 bg-transparent transition-colors hover:bg-black/[0.025] cursor-pointer sm:h-[58px]"
+                          className="relative z-10 flex h-12 flex-col items-center border-0 bg-transparent transition-colors hover:bg-black/[0.025] cursor-pointer sm:h-[58px]"
                           aria-label={`${cell.day}일`}
                           aria-pressed={isSelected}
                         >
+                          {/* Date circle */}
                           <div
-                            className="mt-1.5 flex h-7 w-7 items-center justify-center rounded-full text-[12px] transition-all duration-150 sm:mt-2 sm:h-8 sm:w-8 sm:text-[13px]"
+                            className="relative z-10 mt-1.5 flex h-7 w-7 items-center justify-center rounded-full text-[12px] transition-all duration-150 sm:mt-2 sm:h-8 sm:w-8 sm:text-[13px]"
                             style={{
                               background: isSelected
                                 ? "#00204d"
-                                : hasEvent
-                                ? `${eventColor}${isDimmed ? "22" : "28"}`
                                 : "transparent",
                               outline: isToday && !isSelected ? "2px solid #00204d" : "none",
                               outlineOffset: "-2px",
                               color: textColor,
-                              fontWeight: isSelected || isToday || (hasEvent && !isDimmed) ? 600 : 400,
+                              fontWeight: isSelected || isToday ? 600 : 400,
                             }}
                           >
                             {cell.day}
