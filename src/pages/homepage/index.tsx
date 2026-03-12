@@ -2,6 +2,7 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { navigateByNavId } from "@/lib/navigation";
 import { GameworksLogo, Header } from "@/pages/homepage/components";
+import { TimelineSection } from "@/pages/homepage/components/TimelineSection";
 import { EASE, FadeUp, SectionTitle, SlideIn } from "@/pages/homepage/components/motion";
 import { NAV_ITEMS, TIMELINE } from "@/pages/homepage/content/homepage";
 import {
@@ -165,63 +166,6 @@ const MemberCard = memo(function MemberCard({ role, name, img, style, delay = 0 
     </div>
   );
 });
-
-function TimelineItem({ year, title, desc, index }: { year: string; title: string; desc: string; index: number }) {
-  const { ref, visible } = useInViewOnce(0.08);
-  const isLeft = index % 2 === 0;
-
-  return (
-    <div ref={ref as React.RefObject<HTMLDivElement>}
-      className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-8 w-full"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(24px)",
-        transition: `opacity 0.7s ease ${index * 100}ms, transform 0.7s ${EASE} ${index * 100}ms`,
-      }}>
-      {/* 왼쪽 */}
-      <div className={`flex flex-col items-end ${isLeft ? "" : "opacity-0 pointer-events-none"}`}>
-        {isLeft && (
-          <>
-            <span className="font-bold text-[#1a7aff] text-[14px] tracking-widest">{year}</span>
-            <span className="font-bold text-[#fafafa] text-[clamp(16px,2vw,24px)] tracking-[-0.72px] leading-[1.3] text-right">{title}</span>
-            <span className="font-medium text-[#a2a5a9] text-[15px] leading-normal text-right mt-1">{desc}</span>
-          </>
-        )}
-      </div>
-
-      {/* 중앙 점 */}
-      <div className="flex flex-col items-center">
-        <div className="w-3 h-3 rounded-full bg-[#1a7aff] border-2 border-[#fafafa] shadow-[0_0_12px_rgba(26,122,255,0.6)]" />
-      </div>
-
-      {/* 오른쪽 */}
-      <div className={`flex flex-col items-start ${!isLeft ? "" : "opacity-0 pointer-events-none"}`}>
-        {!isLeft && (
-          <>
-            <span className="font-bold text-[#1a7aff] text-[14px] tracking-widest">{year}</span>
-            <span className="font-bold text-[#fafafa] text-[clamp(16px,2vw,24px)] tracking-[-0.72px] leading-[1.3]">{title}</span>
-            <span className="font-medium text-[#a2a5a9] text-[15px] leading-normal mt-1">{desc}</span>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function HistoryContent() {
-  return (
-    <div className="w-full py-20 px-6 md:px-16 lg:px-40 relative">
-      {/* 중앙 세로선 */}
-      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/20" />
-
-      <div className="flex flex-col gap-16 relative">
-        {TIMELINE.map((item, i) => (
-          <TimelineItem key={item.year} {...item} index={i} />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 /* ─── Footer ─────────────────────────────────────────────────────────── */
 function Footer() {
@@ -473,7 +417,9 @@ export function Homepage() {
         <section id="history" className="flex flex-col items-center w-full"
           style={{ background: "linear-gradient(to bottom, #0c0c0d 0%, #0e1628 30%, #00204d 55%)" }}>
           <SectionTitle text="HISTORY" color="#fafafa" once />
-          <HistoryContent />
+          <div className="w-full px-6 py-20 md:px-16 lg:px-40">
+            <TimelineSection items={TIMELINE} />
+          </div>
         </section>
 
         {/* ── Marquee / Desktop-26 ──────────────────────────────── */}

@@ -4,6 +4,7 @@ import {
 } from "framer-motion";
 import { useEffect, useState } from "react";
 import type { GlobalNavId } from "@/lib/navigation";
+import { useHeaderBrandState } from "@/pages/homepage/components/useHeaderBrandState";
 import { useHeaderMotion } from "@/pages/homepage/components/useHeaderMotion";
 
 type NavItem = {
@@ -49,7 +50,7 @@ export function Header({
   const isMobile = useIsMobile();
   const { wordmarkHidden, chrome, cta, menu } = useHeaderMotion(activeSection, darkHero);
   const isDarkTone = activeSection === "home" || activeSection === "about" || activeSection === "history";
-  const showPageTitle = !!pageTitle && wordmarkHidden;
+  const brandState = useHeaderBrandState({ pageTitle, wordmarkHidden });
 
   return (
     <motion.nav
@@ -72,7 +73,7 @@ export function Header({
         >
           <motion.div
             className="relative shrink-0 size-6.5"
-            animate={{ scale: wordmarkHidden ? 1.06 : 1 }}
+            animate={{ scale: brandState.isCompact ? 1.06 : 1 }}
             transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1] }}
           >
             <motion.img
@@ -85,18 +86,18 @@ export function Header({
           <motion.div
             className="overflow-hidden"
             animate={{
-              width: wordmarkHidden ? 0 : 192,
-              marginLeft: wordmarkHidden ? 0 : 2,
+              width: brandState.wordmarkWidth,
+              marginLeft: brandState.wordmarkMarginLeft,
             }}
-            transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1], delay: wordmarkHidden ? 0.14 : 0 }}
+            transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1], delay: brandState.isCompact ? 0.14 : 0 }}
           >
             <motion.span
               className="block font-bold text-[32px] leading-[1.3] whitespace-nowrap"
               animate={{
-                opacity: wordmarkHidden ? 0 : 1,
-                x: wordmarkHidden ? -20 : 0,
+                opacity: brandState.isCompact ? 0 : 1,
+                x: brandState.isCompact ? -20 : 0,
               }}
-              transition={{ duration: 0.2, ease: wordmarkHidden ? [0.4, 0, 1, 1] : [0, 0, 0.3, 1] }}
+              transition={{ duration: 0.2, ease: brandState.isCompact ? [0.4, 0, 1, 1] : [0, 0, 0.3, 1] }}
               style={{ color: chrome.textColor }}
             >
               AMEWORKS
@@ -106,16 +107,16 @@ export function Header({
             <motion.div
               className="overflow-hidden"
               animate={{
-                width: showPageTitle ? "auto" : 0,
-                marginLeft: showPageTitle ? 10 : 0,
+                width: brandState.titleWidth,
+                marginLeft: brandState.titleMarginLeft,
               }}
-              transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1], delay: showPageTitle ? 0.12 : 0 }}
+              transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1], delay: brandState.showPageTitle ? 0.12 : 0 }}
             >
               <motion.span
                 className="block whitespace-nowrap font-bold text-[20px] leading-[1.3] tracking-[-0.04em] md:text-[22px]"
                 animate={{
-                  opacity: showPageTitle ? 1 : 0,
-                  x: showPageTitle ? 0 : -18,
+                  opacity: brandState.showPageTitle ? 1 : 0,
+                  x: brandState.showPageTitle ? 0 : -18,
                 }}
                 transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                 style={{ color: chrome.textColor }}

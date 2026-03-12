@@ -1,3 +1,5 @@
+import { getAppBasePath, ROUTES } from "@/lib/routes";
+
 export type GlobalNavId = "activity" | "history" | "people";
 
 export const GLOBAL_NAV_ITEMS: Array<{ label: string; id: GlobalNavId }> = [
@@ -6,30 +8,26 @@ export const GLOBAL_NAV_ITEMS: Array<{ label: string; id: GlobalNavId }> = [
   { label: "임원진", id: "people" },
 ];
 
-function getBasePath() {
-  return window.location.hostname.endsWith("github.io") ? "/homepage-frontend" : "";
-}
-
 export function pushPath(path: string) {
-  const nextPath = `${getBasePath()}${path}`;
+  const nextPath = `${getAppBasePath()}${path}`;
   window.history.pushState({}, "", nextPath);
   window.dispatchEvent(new PopStateEvent("popstate"));
 }
 
 export function navigateHome() {
-  pushPath("/");
+  pushPath(ROUTES.home);
 }
 
 export function navigateActivity() {
-  pushPath("/activity");
+  pushPath(ROUTES.activity);
 }
 
 export function navigateHistory() {
-  pushPath("/history");
+  pushPath(ROUTES.history);
 }
 
 export function navigateMembers() {
-  pushPath("/members");
+  pushPath(ROUTES.members);
 }
 
 export function navigateByNavId(id: GlobalNavId) {
