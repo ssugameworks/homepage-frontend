@@ -37,7 +37,7 @@ export function useCursorFollower() {
     let targetGlow = 0;
     let activeNav: HTMLElement | null = null;
     let navRestoreOverflow = "";
-    const darkSurfaceSelector = "#home, #about, #history, .bg-\\[\\#0c0c0d\\]";
+    const darkSurfaceSelector = "#home, #about, #history, .bg-ink, .bg-footer, .bg-canvas";
     const navCaptureScrollY = 60;
 
     const setFollowerHost = (nextNav: HTMLElement | null) => {
@@ -60,14 +60,16 @@ export function useCursorFollower() {
     const onMove = (e: MouseEvent) => {
       const target = e.target as Element;
       const isHoveringInteractive = Boolean(target.closest("button, a, [role=\"button\"]"));
-      const hoveredNav = target.closest("nav") as HTMLElement | null;
-      const nextNav = window.scrollY > navCaptureScrollY ? hoveredNav : null;
+      // Find the outer nav (with data-header-tone) — inner <nav> inside menu doesn't have it
+      const outerNav = target.closest("nav[data-header-tone]") as HTMLElement | null;
+      const isMenuOpen = Boolean(outerNav?.hasAttribute("data-menu-open"));
+      const nextNav = !isMenuOpen && window.scrollY > navCaptureScrollY ? outerNav : null;
       setFollowerHost(nextNav);
-      const isDarkNav = hoveredNav?.dataset.headerTone === "dark";
+      const isDarkNav = outerNav?.dataset.headerTone === "dark";
       const isDarkSurface = isDarkNav || Boolean(target.closest(darkSurfaceSelector));
 
-      if (nextNav) {
-        const rect = nextNav.getBoundingClientRect();
+      if (nextNav && outerNav) {
+        const rect = outerNav.getBoundingClientRect();
         tx = e.clientX - rect.left;
         ty = e.clientY - rect.top;
       } else {

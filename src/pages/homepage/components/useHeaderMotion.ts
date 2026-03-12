@@ -107,6 +107,28 @@ export function useHeaderMotion(activeSection: string, initialDark = true) {
     activePillBackground: useMotionTemplate`rgba(26,122,255,${useTransform(navProgress, [0, 1], [0.08, 0.2])})`,
   };
 
+  // 모바일 패널 — 섹션 톤을 반영하되 항상 불투명
+  const panel = {
+    background: useMotionTemplate`rgba(${bgR},${bgG},${bgB},0.96)`,
+    blur: "blur(24px)" as const,
+    textColor: useTransform(darkProgress, (d) =>
+      d > 0.5 ? "#fafafa" : "#0c0c0d"
+    ),
+    borderColor: useTransform(darkProgress, (d) =>
+      d > 0.5
+        ? "1px solid rgba(255,255,255,0.10)"
+        : "1px solid rgba(12,12,13,0.08)"
+    ),
+    dividerColor: useTransform(darkProgress, (d) =>
+      d > 0.5
+        ? "rgba(255,255,255,0.07)"
+        : "rgba(12,12,13,0.07)"
+    ),
+    chevronColor: useTransform(darkProgress, (d) =>
+      d > 0.5 ? "#ffffff" : "#000000"
+    ),
+  };
+
   // 라이트 페이지(initialDark=false): 초기 테두리·텍스트 다크, 스크롤 후 파란색으로
   const ctaInitR = initialDark ? 250 : 12;
   const ctaInitG = initialDark ? 250 : 12;
@@ -136,5 +158,5 @@ export function useHeaderMotion(activeSection: string, initialDark = true) {
     ),
   };
 
-  return { chrome, wordmarkHidden, cta, menu };
+  return { chrome, wordmarkHidden, cta, menu, panel };
 }

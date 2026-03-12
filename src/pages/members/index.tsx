@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { GLOBAL_NAV_ITEMS, navigateByNavId, navigateHome } from "@/lib/navigation";
-import { Header } from "@/pages/homepage/components";
+import type { PageProps } from "@/lib/header-config";
+import { Footer } from "@/components/Footer";
 
 import imgExec1 from "@/assets/exec-img-1.webp";
 import imgExec2 from "@/assets/exec-img-2.webp";
@@ -11,8 +11,6 @@ import imgExec5 from "@/assets/exec-img-5.webp";
 import imgExec6 from "@/assets/exec-img-6.webp";
 import imgExec7 from "@/assets/exec-img-7.webp";
 
-const logoSrc = "https://www.figma.com/api/mcp/asset/13f7df68-6b6d-4bb0-997a-81e7a90df652";
-const NAV_ITEMS = GLOBAL_NAV_ITEMS;
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 type Member = {
@@ -124,10 +122,15 @@ function MemberStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function MembersPage() {
+export function MembersPage({ onHeaderConfig, onHeroReady }: PageProps) {
   const reducedMotion = !!useReducedMotion();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [direction, setDirection] = useState(1);
+
+  useEffect(() => {
+    onHeaderConfig({ activeSection: "history", pageTitle: "임원진", darkHero: true });
+    onHeroReady();
+  }, []);
   const member = MEMBERS[selectedIndex]!;
 
   function goTo(index: number) {
@@ -153,22 +156,12 @@ export function MembersPage() {
   }, [selectedIndex, direction]);
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#07111f] text-white">
+    <div className="overflow-hidden bg-[#07111f] text-white">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-[-12%] top-[-8%] h-[520px] w-[520px] rounded-full bg-[#1a7aff]/16 blur-[130px]" />
         <div className="absolute right-[-10%] top-[18%] h-[460px] w-[460px] rounded-full bg-[#78b5ff]/10 blur-[150px]" />
         <div className="absolute bottom-[-14%] left-[28%] h-[400px] w-[400px] rounded-full bg-[#0d56c9]/18 blur-[160px]" />
       </div>
-
-      <Header
-        activeSection="history"
-        heroReady={true}
-        logoSrc={logoSrc}
-        navItems={NAV_ITEMS}
-        pageTitle="임원진"
-        onScrollTop={navigateHome}
-        onNavigate={navigateByNavId}
-      />
 
       <main className="relative mx-auto flex min-h-screen w-full max-w-[1440px] flex-col px-6 pb-10 pt-28 md:px-10 lg:px-16">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(420px,0.9fr)] lg:items-end">
@@ -405,6 +398,7 @@ export function MembersPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

@@ -11,6 +11,7 @@ export const GLOBAL_NAV_ITEMS: Array<{ label: string; id: GlobalNavId }> = [
 export function pushPath(path: string) {
   const nextPath = `${getAppBasePath()}${path}`;
   window.history.pushState({}, "", nextPath);
+  window.scrollTo(0, 0);
   window.dispatchEvent(new PopStateEvent("popstate"));
 }
 

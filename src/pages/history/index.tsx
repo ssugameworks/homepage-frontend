@@ -1,28 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { navigateByNavId, navigateHome } from "@/lib/navigation";
-import { Header } from "@/pages/homepage/components";
 import { TimelineSection } from "@/pages/homepage/components/TimelineSection";
-import { logoSrc } from "@/pages/roadmap/constants";
-import { NAV_ITEMS, TIMELINE } from "@/pages/homepage/content/homepage";
+import { TIMELINE } from "@/pages/homepage/content/homepage";
+import type { PageProps } from "@/lib/header-config";
+import { Footer } from "@/components/Footer";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-export function HistoryPage() {
+export function HistoryPage({ onHeaderConfig, onHeroReady }: PageProps) {
   const reducedMotion = !!useReducedMotion();
 
-  return (
-    <div className="min-h-screen bg-[linear-gradient(to_bottom,#0c0c0d_0%,#0e1628_36%,#00204d_100%)] text-white">
-      <Header
-        activeSection="history"
-        heroReady={true}
-        logoSrc={logoSrc}
-        navItems={NAV_ITEMS}
-        pageTitle="연혁"
-        onScrollTop={navigateHome}
-        onNavigate={navigateByNavId}
-      />
+  useEffect(() => {
+    onHeaderConfig({ activeSection: "history", pageTitle: "연혁", darkHero: true });
+    onHeroReady();
+  }, []);
 
+  return (
+    <div className="bg-[linear-gradient(to_bottom,#0c0c0d_0%,#0e1628_36%,#00204d_100%)] text-white">
       <main className="mx-auto flex min-h-screen w-full max-w-[1440px] flex-col px-6 pb-16 pt-28 md:px-10 lg:px-16">
         <motion.div
           className="max-w-[760px]"
@@ -45,6 +39,7 @@ export function HistoryPage() {
 
         <TimelineSection items={TIMELINE} className="mt-14 py-6 md:py-10" />
       </main>
+      <Footer />
     </div>
   );
 }
