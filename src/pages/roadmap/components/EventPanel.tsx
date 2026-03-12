@@ -74,14 +74,13 @@ export function EventPanel({ reducedMotion, state }: EventPanelProps) {
 
   return (
     <div
-      className="shrink-0 self-center min-h-[620px] mt-4 mb-4 flex flex-col rounded-tl-[24px] rounded-bl-[24px] overflow-hidden pt-7 pb-7 px-12"
+      className="mt-2 mb-4 flex w-full min-w-0 flex-col self-stretch overflow-hidden rounded-[28px] px-5 pt-6 pb-6 sm:mt-3 sm:mb-6 sm:min-h-[505px] sm:px-7 sm:pt-5 sm:pb-5 lg:mt-4 lg:mb-4 lg:ml-auto lg:min-h-[600px] lg:w-[clamp(500px,43vw,720px)] lg:min-w-[500px] lg:flex-none lg:self-start lg:rounded-tl-[24px] lg:rounded-bl-[24px] lg:rounded-tr-none lg:rounded-br-none lg:px-10 lg:pt-5 lg:pb-5 xl:px-12"
       style={{
-        width: "clamp(500px, 43vw, 720px)",
         background: "linear-gradient(150deg, #0d1e3a 0%, #00204d 55%, #010f28 100%)",
       }}
     >
-      <div className="mb-7 shrink-0">
-        <div className="text-white/35 text-[11px] font-semibold uppercase tracking-[0.14em] mb-3">
+      <div className="mb-5 shrink-0">
+        <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
           {state.selectedYear} ·{" "}
           <RollingDigit
             digit={selectedDayLabel}
@@ -101,7 +100,7 @@ export function EventPanel({ reducedMotion, state }: EventPanelProps) {
         <div className="overflow-hidden">
           <div
             className="flex text-white font-bold leading-none tracking-[-0.05em] tabular-nums"
-            style={{ fontSize: "clamp(52px, 6.5vw, 84px)" }}
+            style={{ fontSize: "clamp(44px, 12vw, 84px)" }}
           >
             {selectedDayText.split("").map((digit, index) => (
               <RollingDigit
@@ -130,7 +129,7 @@ export function EventPanel({ reducedMotion, state }: EventPanelProps) {
               }}
               transition={{ duration: 0.3, ease: EASE }}
               className="text-white/65 font-semibold leading-none tracking-[-0.03em]"
-              style={{ fontSize: "clamp(18px, 2.2vw, 28px)" }}
+              style={{ fontSize: "clamp(16px, 4vw, 28px)" }}
             >
               {MONTH_NAMES[state.selectedMonth]}
             </motion.div>
@@ -145,37 +144,39 @@ export function EventPanel({ reducedMotion, state }: EventPanelProps) {
         />
       </div>
       <LayoutGroup id="roadmap-event-flow">
-        <div className="flex-1 flex flex-col">
+        <div className="flex min-h-[188px] flex-1 flex-col sm:min-h-[220px] lg:min-h-[248px]">
           {state.selectedEvents.length === 0 ? (
             <div className="flex-1 flex flex-col">
-              <p className="text-white/30 font-medium text-[15px] leading-relaxed">
+              <p className="text-[14px] font-medium leading-relaxed text-white/30 sm:text-[15px]">
                 이 날에는 일정이 없어요
               </p>
 
               {state.nearestEvent && (
-                <div className="mt-5 min-h-[168px]">
-                  <div className="text-white/20 text-[10px] font-semibold uppercase tracking-[0.18em] mb-3">
+                <div className="mt-5 min-h-[148px] sm:min-h-[168px]">
+                  <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/20">
                     다음 일정
                   </div>
                   <motion.div
                     layoutId={`event-card-${state.nearestEvent.id}`}
                     transition={{ duration: 0.34, ease: EASE }}
-                    className="min-h-[120px] rounded-2xl px-5 py-4"
+                    className="min-h-[108px] rounded-2xl px-4 py-4 sm:min-h-[120px] sm:px-5"
                     style={{ background: "#16335c" }}
                   >
-                    {(() => {
-                      const delta = daysUntil(
-                        state.nearestEvent,
-                        toKey(state.selectedYear, state.selectedMonth, state.selectedDay)
-                      );
-                      return delta > 0
-                        ? <div className="text-white/35 text-[12px] font-medium mb-2">D-{delta}</div>
-                        : null;
-                    })()}
-                    <div className="text-white/65 font-semibold text-[17px] tracking-[-0.02em]">
+                    <div className="mb-2">
+                      {(() => {
+                        const delta = daysUntil(
+                          state.nearestEvent,
+                          toKey(state.selectedYear, state.selectedMonth, state.selectedDay)
+                        );
+                        return delta > 0
+                          ? <div className="text-[12px] font-medium text-white/35">D-{delta}</div>
+                          : null;
+                      })()}
+                    </div>
+                    <div className="text-[16px] font-semibold tracking-[-0.02em] text-white/65 sm:text-[17px]">
                       {state.nearestEvent.title}
                     </div>
-                    <div className="text-white/30 text-[12px] mt-1.5 font-medium">
+                    <div className="mt-1.5 text-[12px] font-medium text-white/30">
                       {fmtRange(state.nearestEvent)}
                     </div>
                   </motion.div>
@@ -183,7 +184,7 @@ export function EventPanel({ reducedMotion, state }: EventPanelProps) {
               )}
             </div>
           ) : (
-            <div className="flex flex-col gap-3 flex-1">
+            <div className="flex flex-1 flex-col gap-3">
               {state.selectedEvents.map((event, index) => {
                 const status = getStatus(event, state.todayKey);
                 const duration = durationDays(event);
@@ -195,10 +196,10 @@ export function EventPanel({ reducedMotion, state }: EventPanelProps) {
                     initial={index === 0 ? false : { opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.28, delay: index === 0 ? 0 : index * 0.04, ease: EASE }}
-                    className="min-h-[120px] rounded-2xl px-6 py-5"
+                    className="min-h-[108px] rounded-2xl px-5 py-4 sm:min-h-[120px] sm:px-6 sm:py-5"
                     style={{ background: "#16335c" }}
                   >
-                    <div className="flex items-center gap-1.5 mb-3">
+                    <div className="mb-3 flex items-center gap-1.5">
                       {status === "ongoing" && (
                         <>
                           <LiveDot />
@@ -216,12 +217,12 @@ export function EventPanel({ reducedMotion, state }: EventPanelProps) {
                       )}
                     </div>
 
-                    <div className="text-white font-bold text-[20px] leading-tight tracking-[-0.03em]">
+                    <div className="text-[18px] font-bold leading-tight tracking-[-0.03em] text-white sm:text-[20px]">
                       {event.title}
                     </div>
 
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="text-white/40 text-[13px] font-medium">
+                      <span className="text-[12px] font-medium text-white/40 sm:text-[13px]">
                         {fmtRange(event)}
                       </span>
                       {duration > 1 && (

@@ -27,10 +27,10 @@ export function RoadmapPage() {
         darkHero={false}
       />
 
-      <div className="flex min-h-[calc(100vh-4rem)] mt-16">
+      <main className="flex min-h-[calc(100vh-4rem)] w-full flex-col gap-6 px-4 pb-6 pt-20 md:px-6 md:pb-8 lg:flex-row lg:items-start lg:justify-between lg:gap-0 lg:pl-8 lg:pr-0 lg:pt-24 xl:pl-10">
         <CalendarPane state={state} />
         <EventPanel reducedMotion={!!reducedMotion} state={state} />
-      </div>
+      </main>
     </div>
   );
 }

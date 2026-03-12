@@ -54,6 +54,9 @@ export const CAT_LABEL: Record<Category, string> = {
   trip: "여행",
 };
 
+export const ROADMAP_INDICATOR_COLOR = "#1a7aff";
+export const ROADMAP_INDICATOR_LABEL = "일정";
+
 export const EVENTS: GameEvent[] = [
   { id: "e1", category: "recruitment", title: "신입부원 모집", start: "2026-02-06", end: "2026-03-10" },
   { id: "e2", category: "gathering", title: "개강총회 (OT)", start: "2026-03-18", end: "2026-03-18" },
