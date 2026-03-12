@@ -17,6 +17,7 @@ type HeaderProps = {
   navItems: NavItem[];
   onScrollTop: () => void;
   onNavigate: (id: string) => void;
+  darkHero?: boolean;
 };
 
 function useIsMobile() {
@@ -39,14 +40,17 @@ export function Header({
   navItems,
   onScrollTop,
   onNavigate,
+  darkHero = true,
 }: HeaderProps) {
   const reducedMotion = !!useReducedMotion();
   const isMobile = useIsMobile();
-  const { wordmarkHidden, chrome, cta, menu } = useHeaderMotion(activeSection);
+  const { wordmarkHidden, chrome, cta, menu } = useHeaderMotion(activeSection, darkHero);
+  const isDarkTone = activeSection === "home" || activeSection === "about" || activeSection === "history";
 
   return (
     <motion.nav
       className="fixed top-0 left-0 right-0 z-50 px-4 md:px-10 lg:px-20 py-4"
+      data-header-tone={isDarkTone ? "dark" : "light"}
       initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
       animate={heroReady ? { opacity: 1 } : undefined}
       transition={{ duration: 0.45, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
@@ -54,7 +58,6 @@ export function Header({
         background: chrome.background,
         backdropFilter: chrome.blur,
         borderBottom: chrome.border,
-        boxShadow: chrome.shadow,
       }}
     >
       <div className="flex w-full items-center justify-between">
@@ -101,7 +104,6 @@ export function Header({
           <motion.div className="hidden md:flex items-start rounded-14 p-1.5"
             style={{
               border: chrome.shellBorder,
-              boxShadow: menu.shadow,
             }}
           >
             {navItems.map(({ label, id }) => (
@@ -123,7 +125,7 @@ export function Header({
             className="cursor-pointer whitespace-nowrap rounded-[56px] px-5 py-1.5 font-semibold text-[15px]"
             style={{
               background: cta.background,
-              color: "#fafafa",
+              color: cta.color,
               border: cta.border,
               opacity: isMobile ? cta.opacity : 1,
             }}

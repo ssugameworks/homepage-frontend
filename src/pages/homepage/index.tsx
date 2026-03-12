@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { GameworksLogo, Header } from "@/pages/homepage/components";
 import { EASE, FadeUp, SectionTitle, SlideIn } from "@/pages/homepage/components/motion";
@@ -49,6 +49,16 @@ const glowColors = [
   "#2563EB","#7C3AED","#6D28D9","#4338CA",
   "#3B82F6","#60A5FA","#818CF8","#8B5CF6",
 ];
+
+const MEMBERS = [
+  { role: "회장", name: "장윤아", img: imgFrame7, delay: 0, style: { height: "112.66%", left: "-3.52%", top: "-3.54%", width: "106.8%" } },
+  { role: "회장", name: "조영찬", img: imgFrame8, delay: 80, style: { height: "115.78%", left: "-4.82%", top: "-5.19%", width: "109.76%" } },
+  { role: "총무", name: "박서영", img: imgFrame9, delay: 160, style: { height: "121.45%", left: "-10.96%", top: "-7.3%", width: "115.94%" } },
+  { role: "부회장", name: "유다은", img: imgFrame10, delay: 0, style: { height: "111.61%", left: "-3.17%", top: "-5.98%", width: "105.81%" } },
+  { role: "부회장", name: "최서정", img: imgFrame11, delay: 80, style: { height: "111.78%", left: "-3.15%", top: "-5.74%", width: "105.97%" } },
+  { role: "부회장", name: "최지원", img: imgFrame12, delay: 160, style: { height: "110.35%", left: "-2.37%", top: "-5.22%", width: "104.61%" } },
+  { role: "부회장", name: "홍준우", img: imgFrame13, delay: 240, style: { height: "102.78%", left: "-12.76%", top: "-2.86%", width: "124.99%" } },
+] as const;
 
 
 /* ─── MacBook display frame ─────────────────────────────────────────── */
@@ -125,21 +135,24 @@ function EventCard({
 }
 
 /* ─── Member card ────────────────────────────────────────────────────── */
-function MemberCard({ role, name, img, style, delay = 0 }: {
+const MemberCard = memo(function MemberCard({ role, name, img, style, delay = 0 }: {
   role: string; name: string; img: string; style: React.CSSProperties; delay?: number;
 }) {
   const { ref, visible } = useInView(0.03);
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>}
-      className="group bg-[#0c0c0d] flex flex-col gap-2.5 items-start overflow-hidden p-2.5 rounded-4 shadow-[10px_10px_8px_0px_rgba(0,0,0,0.1)] cursor-default transition-[transform,box-shadow] duration-300 hover:-translate-y-2 hover:shadow-[10px_18px_24px_0px_rgba(0,0,0,0.2)]"
+      className="group bg-[#0c0c0d] flex flex-col gap-2.5 items-start overflow-hidden p-2.5 rounded-4 shadow-[0_10px_24px_rgba(12,12,13,0.12)] cursor-default transition-transform duration-300 hover:-translate-y-1.5"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0) scale(1)" : "translateY(32px) scale(0.94)",
         transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ${EASE} ${delay}ms`,
-        willChange: "transform",
+        willChange: "transform, opacity",
+        contain: "layout paint",
       }}>
       <div className="relative h-62.5 w-50 md:h-75 md:w-60 overflow-hidden rounded-lg">
-        <img alt={name} className="absolute max-w-none transition-transform duration-500 group-hover:scale-105"
+        <img alt={name} className="absolute max-w-none transition-transform duration-300 group-hover:scale-[1.03]"
+          decoding="async"
+          loading="lazy"
           src={img} style={style} />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-[#1a7aff]/80 to-transparent
                         translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
@@ -150,7 +163,7 @@ function MemberCard({ role, name, img, style, delay = 0 }: {
       </div>
     </div>
   );
-}
+});
 
 function TimelineItem({ year, title, desc, index }: { year: string; title: string; desc: string; index: number }) {
   const { ref, visible } = useInViewOnce(0.08);
@@ -546,16 +559,18 @@ export function Homepage() {
             </FadeUp>
 
             <div className="flex flex-wrap justify-center gap-4 md:gap-6 lg:gap-10 w-full">
-              <MemberCard role="회장"  name="장윤아" img={imgFrame7}  delay={0}   style={{ height: "112.66%", left: "-3.52%",  top: "-3.54%", width: "106.8%"  }} />
-              <MemberCard role="회장"  name="조영찬" img={imgFrame8}  delay={80}  style={{ height: "115.78%", left: "-4.82%",  top: "-5.19%", width: "109.76%" }} />
-              <MemberCard role="총무"  name="박서영" img={imgFrame9}  delay={160} style={{ height: "121.45%", left: "-10.96%", top: "-7.3%",  width: "115.94%" }} />
-              <MemberCard role="부회장" name="유다은" img={imgFrame10} delay={0}   style={{ height: "111.61%", left: "-3.17%",  top: "-5.98%", width: "105.81%" }} />
-              <MemberCard role="부회장" name="최서정" img={imgFrame11} delay={80}  style={{ height: "111.78%", left: "-3.15%",  top: "-5.74%", width: "105.97%" }} />
-              <MemberCard role="부회장" name="최지원" img={imgFrame12} delay={160} style={{ height: "110.35%", left: "-2.37%",  top: "-5.22%", width: "104.61%" }} />
-              <MemberCard role="부회장" name="홍준우" img={imgFrame13} delay={240} style={{ height: "102.78%", left: "-12.76%", top: "-2.86%", width: "124.99%" }} />
+              {MEMBERS.map((member) => (
+                <MemberCard key={`${member.role}-${member.name}`} {...member} />
+              ))}
             </div>
 
-            <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
+            <button
+              className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group"
+              onClick={() => {
+                window.history.pushState({}, "", "/members");
+                window.dispatchEvent(new PopStateEvent("popstate"));
+              }}
+            >
               <span className="font-medium text-[#0c0c0d] text-[20px] leading-none group-hover:opacity-50 transition-opacity duration-200">
                 이전 임원진도 보기 →
               </span>

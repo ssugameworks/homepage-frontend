@@ -114,8 +114,11 @@ export function useCursorFollower() {
     let targetScale = 1;
     let currentOpacity = 0.45;
     let targetOpacity = 0.45;
+    let currentGlow = 0;
+    let targetGlow = 0;
     let activeNav: HTMLElement | null = null;
     let navRestoreOverflow = "";
+    const darkSurfaceSelector = "#home, #about, #history, .bg-\\[\\#0c0c0d\\]";
 
     const setFollowerHost = (nextNav: HTMLElement | null) => {
       if (activeNav === nextNav) return;
@@ -139,6 +142,8 @@ export function useCursorFollower() {
       const isHoveringInteractive = Boolean(target.closest("button, a, [role=\"button\"]"));
       const nextNav = target.closest("nav") as HTMLElement | null;
       setFollowerHost(nextNav);
+      const isDarkNav = nextNav?.dataset.headerTone === "dark";
+      const isDarkSurface = isDarkNav || Boolean(target.closest(darkSurfaceSelector));
 
       if (nextNav) {
         const rect = nextNav.getBoundingClientRect();
@@ -150,7 +155,8 @@ export function useCursorFollower() {
       }
 
       targetScale = isHoveringInteractive ? 1.9 : 1;
-      targetOpacity = isHoveringInteractive ? 0.56 : 0.45;
+      targetOpacity = isHoveringInteractive ? (isDarkSurface ? 0.62 : 0.56) : (isDarkSurface ? 0.5 : 0.45);
+      targetGlow = isDarkSurface ? 1 : 0;
     };
 
     const tick = () => {
@@ -158,8 +164,14 @@ export function useCursorFollower() {
       cy += (ty - cy) * 0.32;
       currentScale += (targetScale - currentScale) * 0.14;
       currentOpacity += (targetOpacity - currentOpacity) * 0.12;
+      currentGlow += (targetGlow - currentGlow) * 0.16;
       el.style.transform = `translate(${cx - 28}px, ${cy - 28}px) scale(${currentScale})`;
       el.style.opacity = String(currentOpacity);
+      el.style.background = currentGlow > 0.5
+        ? "rgba(58, 148, 255, 0.58)"
+        : "rgba(26, 122, 255, 0.45)";
+      el.style.filter = currentGlow > 0.5 ? "blur(19px)" : "blur(18px)";
+      el.style.mixBlendMode = currentGlow > 0.5 ? "lighten" : "multiply";
       raf = requestAnimationFrame(tick);
     };
 

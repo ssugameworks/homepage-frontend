@@ -7,11 +7,10 @@ import {
   useTransform,
 } from "framer-motion";
 
-const CHROME_RANGE      = [0, 60];
-const MENU_SHADOW_RANGE = [0, 18];
-const DARK_SECTIONS     = new Set(["home", "about", "history"]);
+const CHROME_RANGE  = [0, 60];
+const DARK_SECTIONS = new Set(["home", "about", "history"]);
 
-export function useHeaderMotion(activeSection: string) {
+export function useHeaderMotion(activeSection: string, initialDark = true) {
   const { scrollY } = useScroll();
   const navProgress = useTransform(scrollY, CHROME_RANGE, [0, 1], { clamp: true });
 
@@ -43,17 +42,19 @@ export function useHeaderMotion(activeSection: string) {
   const bgA = useTransform(navProgress,  [0, 1], [0,   0.88]);
 
   // 스크롤됐을 때 텍스트색 (dark=흰색, light=검정)
+  // initialDark=true(홈 히어로): 최상단 흰색 → 스크롤 후 섹션 따라 결정
+  // initialDark=false(밝은 페이지): 최상단부터 검정
+  const initText = initialDark ? 250 : 12;
   const scrolledTextColor = useTransform(
     [navProgress, darkProgress],
     ([nav, dark]) => {
       const n = nav as number;
       const d = dark as number;
-      // 최상단은 항상 흰색(250), 스크롤 후 섹션에 따라
       const scrolledR = 250 * d + 12 * (1 - d);
       const scrolledB = 250 * d + 13 * (1 - d);
-      const r = Math.round(250 + (scrolledR - 250) * n);
-      const gb = Math.round(250 + (scrolledR - 250) * n);
-      const b = Math.round(250 + (scrolledB - 250) * n);
+      const r  = Math.round(initText + (scrolledR - initText) * n);
+      const gb = Math.round(initText + (scrolledR - initText) * n);
+      const b  = Math.round(initText + (scrolledB - initText) * n);
       return `rgb(${r} ${gb} ${b})`;
     }
   );
@@ -72,13 +73,14 @@ export function useHeaderMotion(activeSection: string) {
   );
 
   // 로고 invert: dark=0(흰색), light=1(검정)
+  const initInvert = initialDark ? 0 : 1;
   const logoInvert = useTransform(
     [navProgress, darkProgress],
     ([nav, dark]) => {
       const n = nav as number;
       const d = dark as number;
-      const scrolledInvert = 1 - d; // dark=0, light=1
-      return `invert(${n * scrolledInvert})`;
+      const scrolledInvert = 1 - d;
+      return `invert(${initInvert + (scrolledInvert - initInvert) * n})`;
     }
   );
 
@@ -97,15 +99,18 @@ export function useHeaderMotion(activeSection: string) {
           : `rgba(12,12,13,${a})`;
       }
     ),
-    shadow: useMotionTemplate`0 10px 30px rgba(0,0,0,${useTransform(navProgress, [0, 1], [0, 0.15])})`,
     blur: useMotionTemplate`blur(${useTransform(navProgress, [0, 1], [0, 12])}px)`,
     logoInvert,
   };
 
   const menu = {
-    shadow: useMotionTemplate`0 12px 28px rgba(0,0,0,${useTransform(scrollY, MENU_SHADOW_RANGE, [0.14, 0], { clamp: true })})`,
     activePillBackground: useMotionTemplate`rgba(26,122,255,${useTransform(navProgress, [0, 1], [0.08, 0.2])})`,
   };
+
+  // 라이트 페이지(initialDark=false): 초기 테두리·텍스트 다크, 스크롤 후 파란색으로
+  const ctaInitR = initialDark ? 250 : 12;
+  const ctaInitG = initialDark ? 250 : 12;
+  const ctaInitB = initialDark ? 250 : 13;
 
   const cta = {
     opacity: useTransform(navProgress, [0, 0.5, 1], [0, 0, 1]),
@@ -115,11 +120,19 @@ export function useHeaderMotion(activeSection: string) {
       ([nav, dark]) => {
         const n = nav as number;
         const d = dark as number;
-        const r = Math.round(250 + (26  - 250) * n);
-        const g = Math.round(250 + (122 - 250) * n);
-        const b = Math.round(250 + (255 - 250) * n);
+        const r = Math.round(ctaInitR + (26  - ctaInitR) * n);
+        const g = Math.round(ctaInitG + (122 - ctaInitG) * n);
+        const b = Math.round(ctaInitB + (255 - ctaInitB) * n);
         return `1px solid rgba(${r},${g},${b},${d > 0.5 ? 0.6 : 1})`;
       }
+    ),
+    // 라이트: 초기 검정, 스크롤해서 파란 배경 생기면 흰색
+    color: useTransform(
+      navProgress,
+      [0, 0.16, 1],
+      initialDark
+        ? ["#fafafa", "#fafafa", "#fafafa"]
+        : ["#0c0c0d", "#0c0c0d", "#fafafa"]
     ),
   };
 
