@@ -3,10 +3,14 @@ import { Homepage } from "@/pages/homepage";
 import { MembersPage } from "@/pages/members";
 import { RoadmapPage } from "@/pages/roadmap";
 
+function normalizePath(pathname: string) {
+  return pathname.replace(/^\/homepage-frontend/, "") || "/";
+}
+
 function useRoute() {
-  const [path, setPath] = useState(window.location.pathname);
+  const [path, setPath] = useState(normalizePath(window.location.pathname));
   useEffect(() => {
-    const handler = () => setPath(window.location.pathname);
+    const handler = () => setPath(normalizePath(window.location.pathname));
     window.addEventListener("popstate", handler);
     return () => window.removeEventListener("popstate", handler);
   }, []);

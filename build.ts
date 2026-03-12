@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import plugin from "bun-plugin-tailwind";
 import { existsSync } from "fs";
-import { rm } from "fs/promises";
+import { copyFile, rm } from "fs/promises";
 import path from "path";
 
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
@@ -167,5 +167,16 @@ const outputTable = result.outputs.map((output) => ({
 
 console.table(outputTable);
 const buildTime = (end - start).toFixed(2);
+
+const indexHtmlPath = path.join(outdir, "index.html");
+const fallbackHtmlPath = path.join(outdir, "404.html");
+if (existsSync(indexHtmlPath)) {
+  try {
+    await copyFile(indexHtmlPath, fallbackHtmlPath);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`Warning: Failed to create SPA fallback 404.html: ${message}`);
+  }
+}
 
 console.log(`\n✅ Build completed in ${buildTime}ms\n`);
