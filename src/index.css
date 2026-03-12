@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+@theme {
+  /* ── Brand palette ──────────────────────────────────────── */
+  --color-ink:        #0c0c0d;   /* primary dark — body text, dark sections */
+  --color-snow:       #fafafa;   /* off-white — light text on dark bg       */
+  --color-brand:      #1a7aff;   /* brand blue — CTA, focus ring, accents   */
+  --color-navy:       #00204d;   /* deep navy — gradients, selected states  */
+  --color-muted:      #a2a5a9;   /* secondary / footer text                 */
+  --color-dim:        #6e7177;   /* tertiary / description text             */
+
+  /* ── Surface backgrounds ────────────────────────────────── */
+  --color-canvas:     #07111f;   /* members dark bg                         */
+  --color-footer:     #000b1a;   /* footer bg                               */
+  --color-surface:    #f7f8fa;   /* roadmap / light page bg                 */
+
+  /* ── Border radius ──────────────────────────────────────── */
+  --radius-card:      22px;      /* rounded-card   — cards, panels          */
+  --radius-card-lg:   32px;      /* rounded-card-lg — large hero cards      */
+  --radius-cta:       56px;      /* rounded-cta    — pill buttons           */
+
+  /* ── Letter spacing ─────────────────────────────────────── */
+  --tracking-tight-xl:  -0.04em; /* heading tight — section titles          */
+  --tracking-tight-2xl: -0.05em; /* hero / display heading                  */
+}
+
 @layer base {
   :root {
     font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
@@ -11,14 +35,14 @@
   }
 
   body {
-    @apply m-0 min-h-screen bg-white text-[#0c0c0d];
+    @apply m-0 min-h-screen bg-white text-ink;
     overflow-x: clip;
     transition: background-color 0.6s ease;
   }
 
   /* 키보드 포커스 스타일 */
   :focus-visible {
-    outline: 2px solid #1a7aff;
+    outline: 2px solid var(--color-brand);
     outline-offset: 3px;
     border-radius: 4px;
   }

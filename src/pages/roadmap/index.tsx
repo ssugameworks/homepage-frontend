@@ -21,7 +21,7 @@ export function RoadmapPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa] relative overflow-x-hidden">
+    <div className="min-h-screen bg-surface relative overflow-x-hidden">
       <Header
         activeSection="people"
         heroReady={true}

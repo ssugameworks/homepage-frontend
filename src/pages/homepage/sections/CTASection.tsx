@@ -2,7 +2,7 @@ export function CTASection() {
   return (
     <section className="flex min-h-100 w-full items-center justify-center px-10 py-20 lg:h-150 lg:py-0">
       <div className="flex w-full max-w-184 flex-col items-center gap-10">
-        <div className="flex w-full flex-col items-center gap-8 text-center text-[#0c0c0d]">
+        <div className="flex w-full flex-col items-center gap-8 text-center text-ink">
           <span
             className="w-full font-semibold tracking-[-3.2px] leading-[1.3]"
             style={{ fontSize: "clamp(36px,6vw,80px)" }}

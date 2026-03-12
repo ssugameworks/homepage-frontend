@@ -67,7 +67,7 @@ const MEMBERS = [
 function MacFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative w-full" style={{ aspectRatio: '195.75 / 115' }}>
-       <div className="absolute inset-0 bg-[#0c0c0d] rounded-5" />
+       <div className="absolute inset-0 bg-ink rounded-5" />
       <div className="absolute overflow-hidden rounded-3" style={{ top: '3.7%', left: '2.17%', right: '2.17%', bottom: '3.7%' }}>
         {children}
       </div>
@@ -109,10 +109,10 @@ function EventCard({
   const text = (
     <div className="flex w-full xl:flex-[1_0_0] flex-col gap-6 items-start min-w-0">
 <div className="flex flex-col items-start font-bold tracking-[-1.5px]" style={{ fontSize: "clamp(32px,4vw,50px)" }}>
-        <span className="leading-[1.3] text-[#0c0c0d]">{title}</span>
-        <span className="leading-[1.3] text-[#1a7aff]">{titleHighlight}</span>
+        <span className="leading-[1.3] text-ink">{title}</span>
+        <span className="leading-[1.3] text-brand">{titleHighlight}</span>
       </div>
-      <div className="font-medium text-[#6e7177] tracking-[-0.84px] leading-[1.3]" style={{ fontSize: "clamp(18px,2.5vw,28px)" }}>{description}</div>
+      <div className="font-medium text-dim tracking-[-0.84px] leading-[1.3]" style={{ fontSize: "clamp(18px,2.5vw,28px)" }}>{description}</div>
     </div>
   );
   const frame = (
@@ -143,7 +143,7 @@ const MemberCard = memo(function MemberCard({ role, name, img, style, delay = 0 
   const { ref, visible } = useInView(0.03);
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>}
-      className="group bg-[#0c0c0d] flex flex-col gap-2.5 items-start overflow-hidden p-2.5 rounded-4 shadow-[0_10px_24px_rgba(12,12,13,0.12)] cursor-default transition-transform duration-300 hover:-translate-y-1.5"
+      className="group bg-ink flex flex-col gap-2.5 items-start overflow-hidden p-2.5 rounded-4 shadow-[0_10px_24px_rgba(12,12,13,0.12)] cursor-default transition-transform duration-300 hover:-translate-y-1.5"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0) scale(1)" : "translateY(32px) scale(0.94)",
@@ -159,7 +159,7 @@ const MemberCard = memo(function MemberCard({ role, name, img, style, delay = 0 
         <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-[#1a7aff]/80 to-transparent
                         translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
       </div>
-      <div className="flex flex-col items-start px-1 text-[#fafafa] w-full">
+      <div className="flex flex-col items-start px-1 text-snow w-full">
         <span className="font-bold text-[16px] tracking-[-0.48px] leading-[1.4]">{role}</span>
         <span className="font-medium text-[22px] tracking-[-0.66px] leading-[1.3]">{name}</span>
       </div>
@@ -176,17 +176,17 @@ function Footer() {
     transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ${EASE} ${delay}ms`,
   });
   return (
-    <footer ref={ref as React.RefObject<HTMLElement>} className="w-full bg-[#000b1a] px-6 md:px-16 lg:px-28 pt-16 pb-10">
+    <footer ref={ref as React.RefObject<HTMLElement>} className="w-full bg-footer px-6 md:px-16 lg:px-28 pt-16 pb-10">
       <div className="flex flex-col lg:flex-row items-start justify-between gap-12 lg:gap-0 max-w-300 mx-auto">
         <div style={fadeStyle(0)} className="flex flex-col gap-6 items-start max-w-75">
-          <span className="font-semibold text-[#fafafa] text-[24px] md:text-[32px] tracking-[-1.28px] leading-[1.3]">GAMEWORKS</span>
-          <p className="font-medium text-[#a2a5a9] text-[16px] md:text-[20px] tracking-[-0.5px] leading-[1.5]">
+          <span className="font-semibold text-snow text-[24px] md:text-[32px] tracking-[-1.28px] leading-[1.3]">GAMEWORKS</span>
+          <p className="font-medium text-muted text-[16px] md:text-[20px] tracking-[-0.5px] leading-[1.5]">
             2000년부터 이어진<br />글로벌미디어학부 대표 학술 소모임입니다.
           </p>
         </div>
         <div className="flex gap-12 md:gap-20 lg:gap-25">
           <div style={fadeStyle(100)} className="flex flex-col gap-4 items-start">
-            <span className="font-semibold text-[#fafafa] text-[18px] md:text-[24px] tracking-[-0.5px] leading-[1.3]">바로가기</span>
+            <span className="font-semibold text-snow text-[18px] md:text-[24px] tracking-[-0.5px] leading-[1.3]">바로가기</span>
             <div className="flex flex-col gap-2 items-start">
               {[
                 { label: "홈", id: "home" },
@@ -196,14 +196,14 @@ function Footer() {
               ].map(({ label, id }) => (
                 <button key={label}
                   onClick={() => id === "home" ? window.scrollTo({ top: 0, behavior: "smooth" }) : scrollTo(id)}
-                  className="font-medium text-[#a2a5a9] text-[16px] md:text-[20px] tracking-[-0.5px] leading-[1.3] hover:text-[#fafafa] transition-colors duration-200 bg-transparent cursor-pointer">
+                  className="font-medium text-muted text-[16px] md:text-[20px] tracking-[-0.5px] leading-[1.3] hover:text-snow transition-colors duration-200 bg-transparent cursor-pointer">
                   {label}
                 </button>
               ))}
             </div>
           </div>
           <div style={fadeStyle(200)} className="flex flex-col gap-4 items-start">
-            <span className="font-semibold text-[#fafafa] text-[18px] md:text-[24px] tracking-[-0.5px] leading-[1.3] whitespace-nowrap">연락하기</span>
+            <span className="font-semibold text-snow text-[18px] md:text-[24px] tracking-[-0.5px] leading-[1.3] whitespace-nowrap">연락하기</span>
             <div className="flex flex-col gap-2 items-start">
               {["Instagram", "Discord", "~~~@gmail.com", "000 : 010-0000-0000"].map((item) => (
                 <div key={item} className="flex gap-2.5 items-center group cursor-pointer">
@@ -212,7 +212,7 @@ function Footer() {
                       <img alt="" className="block max-w-none size-full" src={imgFrame14} />
                     </div>
                   </div>
-                  <span className="font-medium text-[#a2a5a9] text-[16px] md:text-[20px] tracking-[-0.5px] leading-[1.3] whitespace-nowrap group-hover:text-[#fafafa] transition-colors duration-200">
+                  <span className="font-medium text-muted text-[16px] md:text-[20px] tracking-[-0.5px] leading-[1.3] whitespace-nowrap group-hover:text-snow transition-colors duration-200">
                     {item}
                   </span>
                 </div>
@@ -221,7 +221,7 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div style={fadeStyle(300)} className="mt-12 pt-8 border-t border-white/10 font-medium text-[#a2a5a9] text-[13px] md:text-[14px] text-center tracking-[-0.3px] leading-[1.5] max-w-300 mx-auto">
+      <div style={fadeStyle(300)} className="mt-12 pt-8 border-t border-white/10 font-medium text-muted text-[13px] md:text-[14px] text-center tracking-[-0.3px] leading-[1.5] max-w-300 mx-auto">
         <p>© 2026 GAMEWORKS, All rights reserved.</p>
         <p>25년째 같이 만들고 있는 학부 대표 소모임, GAMEWORKS</p>
       </div>
@@ -275,7 +275,7 @@ export function Homepage() {
         @keyframes scroll-bounce { 0%,100%{transform:translateY(0)}  50%{transform:translateY(8px)} }
       `}</style>
 
-      <div className="flex flex-col items-start w-full bg-[#fafafa]">
+      <div className="flex flex-col items-start w-full bg-snow">
 
         <Header
           activeSection={activeSection}
@@ -287,7 +287,7 @@ export function Homepage() {
         />
 
         {/* ── Hero ──────────────────────────────────────────────── */}
-        <div id="home" className="relative h-screen min-h-225 w-full shrink-0 overflow-hidden bg-[#0c0c0d]">
+        <div id="home" className="relative h-screen min-h-225 w-full shrink-0 overflow-hidden bg-ink">
           {/* 배경 레이어 — overflow-hidden 없이 mask가 직접 이미지를 fade */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
@@ -322,7 +322,7 @@ export function Homepage() {
             {["전공을 넘어서는 경험이,", "여기서 시작됩니다"].map((line, i) => (
               <motion.div
                 key={i}
-                className="font-bold text-[#fafafa] text-center leading-[1.2] pointer-events-none"
+                className="font-bold text-snow text-center leading-[1.2] pointer-events-none"
                 style={{ fontSize: "clamp(36px, 6vw, 88px)", letterSpacing: "-0.03em" }}
                 initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 36 }}
                 animate={heroReady ? { opacity: 1, y: 0 } : undefined}
@@ -353,7 +353,7 @@ export function Homepage() {
           {/* Scroll hint */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
             style={{ animation: "scroll-bounce 1.8s ease-in-out 2s infinite" }}>
-            <span className="font-medium text-[#fafafa] text-[13px] tracking-[-0.42px] opacity-40">scroll</span>
+            <span className="font-medium text-snow text-[13px] tracking-[-0.42px] opacity-40">scroll</span>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M10 4v12M4 10l6 6 6-6" stroke="#fafafa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
             </svg>
@@ -361,10 +361,10 @@ export function Homepage() {
         </div>
 
         {/* ── About ─────────────────────────────────────────────── */}
-        <section id="about" className="flex flex-col gap-25 items-center pt-0 pb-30 w-full bg-[#0c0c0d] -mt-px">
+        <section id="about" className="flex flex-col gap-25 items-center pt-0 pb-30 w-full bg-ink -mt-px">
           <FadeUp threshold={0.3} className="flex flex-col items-center font-bold tracking-[-1.5px] text-center px-4">
-            <span className="leading-[1.3] text-[#fafafa]" style={{ fontSize: "clamp(28px,4vw,50px)" }}>기획, 개발, 디자인 —</span>
-            <span className="leading-[1.3] text-[#fafafa]" style={{ fontSize: "clamp(28px,4vw,50px)" }}>분야를 넘어 함께 성장하는 소모임</span>
+            <span className="leading-[1.3] text-snow" style={{ fontSize: "clamp(28px,4vw,50px)" }}>기획, 개발, 디자인 —</span>
+            <span className="leading-[1.3] text-snow" style={{ fontSize: "clamp(28px,4vw,50px)" }}>분야를 넘어 함께 성장하는 소모임</span>
           </FadeUp>
 
           <div className="mx-auto flex w-full max-w-290 flex-col items-center gap-10 px-4 md:px-10 lg:flex-row lg:justify-center lg:gap-12">
@@ -390,17 +390,17 @@ export function Homepage() {
                   style={{ animation: "float 5s ease-in-out 1s infinite" }}>
                   <GameworksLogo
                     aria-label="GAMEWORKS 로고"
-                    className="absolute block size-full text-[#fafafa]"
+                    className="absolute block size-full text-snow"
                   />
                 </div>
-                <span className="font-bold text-[#fafafa] tracking-[-3.2px] leading-[1.1] whitespace-nowrap" style={{ fontSize: "clamp(40px,6vw,80px)" }}>
+                <span className="font-bold text-snow tracking-[-3.2px] leading-[1.1] whitespace-nowrap" style={{ fontSize: "clamp(40px,6vw,80px)" }}>
                   GAMEWORKS
                 </span>
               </div>
               <div className="hidden lg:block h-px w-20 bg-white/20" />
 
               {/* 본문 — 모바일 핵심 콘텐츠 */}
-              <p className="font-bold text-[#fafafa] leading-[1.4] text-center lg:text-left"
+              <p className="font-bold text-snow leading-[1.4] text-center lg:text-left"
                 style={{ fontSize: "clamp(26px,3.5vw,42px)", letterSpacing: "-0.03em" }}>
                 게임웍스는 2000년대 초<br />
                 글로벌미디어학부의 시작을<br />
@@ -488,7 +488,7 @@ export function Homepage() {
               tags={["MT", "SUMMER"]} />
 
             <button className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
-              <span className="font-medium text-[#0c0c0d] text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
+              <span className="font-medium text-ink text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
                 활동 더 보기 →
               </span>
             </button>
@@ -500,7 +500,7 @@ export function Homepage() {
           <SectionTitle text="PEOPLE" />
 
           <div className="flex flex-col gap-10 items-center px-10 pb-12 md:pb-20 w-full">
-            <FadeUp threshold={0.2} className="flex flex-col items-center text-[#0c0c0d] text-center">
+            <FadeUp threshold={0.2} className="flex flex-col items-center text-ink text-center">
               <span className="font-medium tracking-[-2.4px] leading-[1.3]" style={{ fontSize: "clamp(36px,6vw,80px)" }}>2026 GAMEWORKS</span>
               <span className="font-bold tracking-[-1.14px] leading-[1.3]" style={{ fontSize: "clamp(22px,3vw,38px)" }}>임원진을 소개합니다</span>
             </FadeUp>
@@ -518,7 +518,7 @@ export function Homepage() {
                 window.dispatchEvent(new PopStateEvent("popstate"));
               }}
             >
-              <span className="font-medium text-[#0c0c0d] text-[20px] leading-none group-hover:opacity-50 transition-opacity duration-200">
+              <span className="font-medium text-ink text-[20px] leading-none group-hover:opacity-50 transition-opacity duration-200">
                 이전 임원진도 보기 →
               </span>
             </button>

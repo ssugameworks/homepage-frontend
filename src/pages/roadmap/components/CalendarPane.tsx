@@ -44,11 +44,11 @@ export function CalendarPane({ state }: CalendarPaneProps) {
                 transition={{ duration: 0.16, ease: EASE }}
                 className="ml-2 sm:ml-3"
               >
-                <div className="text-[13px] font-medium leading-none tracking-[-0.02em] text-[#aaa] sm:text-[16px]">
+                <div className="text-[13px] font-medium leading-none tracking-[-0.02em] text-muted sm:text-[16px]">
                   {state.viewYear}
                 </div>
                 <div
-                  className="mt-0.5 text-[#111] font-bold leading-none tracking-[-0.04em]"
+                  className="mt-0.5 text-ink font-bold leading-none tracking-[-0.04em]"
                   style={{ fontSize: "clamp(22px, 5vw, 42px)" }}
                 >
                   {MONTH_NAMES[state.viewMonth]}
@@ -65,7 +65,7 @@ export function CalendarPane({ state }: CalendarPaneProps) {
                     exit={{ opacity: 0, scale: 0.85 }}
                     transition={{ duration: 0.14 }}
                     onClick={state.goToday}
-                    className="rounded-full border border-[#00204d]/30 bg-transparent px-2.5 py-1 text-[10px] font-semibold text-[#00204d] transition-all hover:bg-[#00204d] hover:text-white cursor-pointer sm:px-3 sm:text-[11px]"
+                    className="rounded-full border border-[#00204d]/30 bg-transparent px-2.5 py-1 text-[10px] font-semibold text-navy transition-all hover:bg-navy hover:text-white cursor-pointer sm:px-3 sm:text-[11px]"
                   >
                     오늘
                   </motion.button>
@@ -117,6 +117,8 @@ export function CalendarPane({ state }: CalendarPaneProps) {
                       const isToday = state.isTodayCell(cell);
                       const isDimmed = cell.kind !== "cur";
                       const bars = state.getCellBars(cell);
+                      const hasEvent = bars.length > 0;
+                      const eventColor = bars[0]?.color ?? "#1a7aff";
                       const textColor = isSelected ? "#fff" : isToday ? "#00204d" : isDimmed ? "#ccc" : "#222";
 
                       return (
@@ -130,42 +132,18 @@ export function CalendarPane({ state }: CalendarPaneProps) {
                           <div
                             className="mt-1.5 flex h-7 w-7 items-center justify-center rounded-full text-[12px] transition-all duration-150 sm:mt-2 sm:h-8 sm:w-8 sm:text-[13px]"
                             style={{
-                              background: isSelected ? "#00204d" : "transparent",
+                              background: isSelected
+                                ? "#00204d"
+                                : hasEvent
+                                ? `${eventColor}${isDimmed ? "22" : "28"}`
+                                : "transparent",
                               outline: isToday && !isSelected ? "2px solid #00204d" : "none",
                               outlineOffset: "-2px",
                               color: textColor,
-                              fontWeight: isSelected || isToday ? 700 : 400,
+                              fontWeight: isSelected || isToday || (hasEvent && !isDimmed) ? 600 : 400,
                             }}
                           >
                             {cell.day}
-                          </div>
-
-                          <div className="absolute bottom-1 left-0 right-0 flex flex-col-reverse gap-[2px] px-0 sm:bottom-1.5">
-                            {bars.slice(0, 2).map((bar, barIndex) =>
-                              bar.role === "solo" ? (
-                                <div key={barIndex} className="flex justify-center">
-                                  <div
-                                    className="h-1 w-1 rounded-full sm:h-[5px] sm:w-[5px]"
-                                    style={{ background: bar.color, opacity: isDimmed ? 0.35 : 1 }}
-                                  />
-                                </div>
-                              ) : (
-                                <div
-                                  key={barIndex}
-                                  className="h-[3px] sm:h-[4px]"
-                                  style={{
-                                    background: bar.color,
-                                    opacity: isDimmed ? 0.25 : isSelected ? 0.55 : 0.85,
-                                    marginLeft: bar.role === "start" ? "50%" : "0",
-                                    marginRight: bar.role === "end" ? "50%" : "0",
-                                    borderRadius:
-                                      bar.role === "start" ? "3px 0 0 3px" :
-                                      bar.role === "end" ? "0 3px 3px 0" :
-                                      "0",
-                                  }}
-                                />
-                              )
-                            )}
                           </div>
                         </button>
                       );

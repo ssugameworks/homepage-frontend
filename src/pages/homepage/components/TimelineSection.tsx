@@ -26,11 +26,11 @@ function TimelineItem({ year, title, desc, index }: TimelineEntry & { index: num
       <div className={`flex flex-col items-end ${isLeft ? "" : "pointer-events-none opacity-0"}`}>
         {isLeft && (
           <>
-            <span className="text-[14px] font-bold tracking-widest text-[#1a7aff]">{year}</span>
-            <span className="text-right text-[clamp(16px,2vw,24px)] font-bold leading-[1.3] tracking-[-0.72px] text-[#fafafa]">
+            <span className="text-[14px] font-bold tracking-widest text-brand">{year}</span>
+            <span className="text-right text-[clamp(16px,2vw,24px)] font-bold leading-[1.3] tracking-[-0.72px] text-snow">
               {title}
             </span>
-            <span className="mt-1 text-right text-[15px] font-medium leading-normal text-[#a2a5a9]">{desc}</span>
+            <span className="mt-1 text-right text-[15px] font-medium leading-normal text-muted">{desc}</span>
           </>
         )}
       </div>
@@ -42,11 +42,11 @@ function TimelineItem({ year, title, desc, index }: TimelineEntry & { index: num
       <div className={`flex flex-col items-start ${!isLeft ? "" : "pointer-events-none opacity-0"}`}>
         {!isLeft && (
           <>
-            <span className="text-[14px] font-bold tracking-widest text-[#1a7aff]">{year}</span>
-            <span className="text-[clamp(16px,2vw,24px)] font-bold leading-[1.3] tracking-[-0.72px] text-[#fafafa]">
+            <span className="text-[14px] font-bold tracking-widest text-brand">{year}</span>
+            <span className="text-[clamp(16px,2vw,24px)] font-bold leading-[1.3] tracking-[-0.72px] text-snow">
               {title}
             </span>
-            <span className="mt-1 text-[15px] font-medium leading-normal text-[#a2a5a9]">{desc}</span>
+            <span className="mt-1 text-[15px] font-medium leading-normal text-muted">{desc}</span>
           </>
         )}
       </div>
