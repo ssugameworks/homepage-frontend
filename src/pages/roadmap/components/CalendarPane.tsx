@@ -31,14 +31,6 @@ const calendarGridVariants = {
 export function CalendarPane({ state }: CalendarPaneProps) {
   return (
     <section className="min-w-0 flex-1">
-      <div className="mb-3 px-1 sm:mb-4 lg:hidden">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8a8d94]">
-          Calendar
-        </div>
-        <p className="mt-1 text-[13px] leading-relaxed text-[#6e7177]">
-          날짜를 탭해서 해당 일정을 바로 확인하세요.
-        </p>
-      </div>
       <div className="mx-auto w-full max-w-[620px] lg:max-w-[540px] xl:max-w-[580px]">
         <div className="min-w-0">
           <div className="mb-3 flex items-end justify-between sm:mb-4">
@@ -50,6 +42,7 @@ export function CalendarPane({ state }: CalendarPaneProps) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -state.navDir * 14 }}
                 transition={{ duration: 0.16, ease: EASE }}
+                className="ml-2 sm:ml-3"
               >
                 <div className="text-[13px] font-medium leading-none tracking-[-0.02em] text-[#aaa] sm:text-[16px]">
                   {state.viewYear}
