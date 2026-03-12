@@ -338,7 +338,9 @@ export function MembersPage() {
                       className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/70 transition-colors duration-200 hover:bg-white/[0.08] hover:text-white"
                       aria-label="이전 임원"
                     >
-                      <span className="text-lg leading-none">{"<"}</span>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </button>
 
                     <div className="min-w-0 flex-1 overflow-hidden">
@@ -395,7 +397,9 @@ export function MembersPage() {
                       className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/70 transition-colors duration-200 hover:bg-white/[0.08] hover:text-white"
                       aria-label="다음 임원"
                     >
-                      <span className="text-lg leading-none">{">"}</span>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </button>
                   </div>
                 </div>
