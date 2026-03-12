@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { GLOBAL_NAV_ITEMS, navigateByNavId, navigateHome } from "@/lib/navigation";
 import { Header } from "@/pages/homepage/components";
 
 import imgExec1 from "@/assets/exec-img-1.webp";
@@ -11,7 +12,7 @@ import imgExec6 from "@/assets/exec-img-6.webp";
 import imgExec7 from "@/assets/exec-img-7.webp";
 
 const logoSrc = "https://www.figma.com/api/mcp/asset/13f7df68-6b6d-4bb0-997a-81e7a90df652";
-const NAV_ITEMS = [{ label: "홈으로", id: "back" }];
+const NAV_ITEMS = GLOBAL_NAV_ITEMS;
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 type Member = {
@@ -106,11 +107,6 @@ const MEMBERS: Member[] = [
   },
 ];
 
-function goHome() {
-  window.history.pushState({}, "", "/");
-  window.dispatchEvent(new PopStateEvent("popstate"));
-}
-
 function clampIndex(index: number) {
   return (index + MEMBERS.length) % MEMBERS.length;
 }
@@ -169,8 +165,9 @@ export function MembersPage() {
         heroReady={true}
         logoSrc={logoSrc}
         navItems={NAV_ITEMS}
-        onScrollTop={goHome}
-        onNavigate={() => goHome()}
+        pageTitle="임원진"
+        onScrollTop={navigateHome}
+        onNavigate={navigateByNavId}
       />
 
       <main className="relative mx-auto flex min-h-screen w-full max-w-[1440px] flex-col px-6 pb-10 pt-28 md:px-10 lg:px-16">

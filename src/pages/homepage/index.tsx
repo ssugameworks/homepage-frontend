@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { navigateByNavId } from "@/lib/navigation";
 import { GameworksLogo, Header } from "@/pages/homepage/components";
 import { EASE, FadeUp, SectionTitle, SlideIn } from "@/pages/homepage/components/motion";
 import { NAV_ITEMS, TIMELINE } from "@/pages/homepage/content/homepage";
@@ -338,7 +339,7 @@ export function Homepage() {
           logoSrc={imgVector1}
           navItems={NAV_ITEMS}
           onScrollTop={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          onNavigate={scrollTo}
+          onNavigate={navigateByNavId}
         />
 
         {/* ── Hero ──────────────────────────────────────────────── */}

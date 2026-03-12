@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { HistoryPage } from "@/pages/history";
 import { Homepage } from "@/pages/homepage";
 import { MembersPage } from "@/pages/members";
 import { RoadmapPage } from "@/pages/roadmap";
@@ -19,7 +20,9 @@ function useRoute() {
 
 export function App() {
   const path = useRoute();
+  if (path === "/history")  return <HistoryPage />;
   if (path === "/members")  return <MembersPage />;
+  if (path === "/activity") return <RoadmapPage />;
   if (path === "/roadmap")  return <RoadmapPage />;
   return <Homepage />;
 }

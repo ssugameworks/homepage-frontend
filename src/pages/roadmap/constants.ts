@@ -1,7 +1,8 @@
 import type { Category, DateMotion, GameEvent } from "@/pages/roadmap/types";
+import { GLOBAL_NAV_ITEMS } from "@/lib/navigation";
 
 export const logoSrc = "https://www.figma.com/api/mcp/asset/13f7df68-6b6d-4bb0-997a-81e7a90df652";
-export const NAV_ITEMS = [{ label: "홈으로", id: "back" }];
+export const NAV_ITEMS = GLOBAL_NAV_ITEMS;
 export const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 export const MONTH_NAMES = [

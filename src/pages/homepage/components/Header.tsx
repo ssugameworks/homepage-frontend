@@ -3,11 +3,12 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import { useEffect, useState } from "react";
+import type { GlobalNavId } from "@/lib/navigation";
 import { useHeaderMotion } from "@/pages/homepage/components/useHeaderMotion";
 
 type NavItem = {
   label: string;
-  id: string;
+  id: GlobalNavId;
 };
 
 type HeaderProps = {
@@ -15,8 +16,9 @@ type HeaderProps = {
   heroReady: boolean;
   logoSrc: string;
   navItems: NavItem[];
+  pageTitle?: string;
   onScrollTop: () => void;
-  onNavigate: (id: string) => void;
+  onNavigate: (id: GlobalNavId) => void;
   darkHero?: boolean;
 };
 
@@ -38,6 +40,7 @@ export function Header({
   heroReady,
   logoSrc,
   navItems,
+  pageTitle,
   onScrollTop,
   onNavigate,
   darkHero = true,
@@ -46,6 +49,7 @@ export function Header({
   const isMobile = useIsMobile();
   const { wordmarkHidden, chrome, cta, menu } = useHeaderMotion(activeSection, darkHero);
   const isDarkTone = activeSection === "home" || activeSection === "about" || activeSection === "history";
+  const showPageTitle = !!pageTitle && wordmarkHidden;
 
   return (
     <motion.nav
@@ -98,6 +102,28 @@ export function Header({
               AMEWORKS
             </motion.span>
           </motion.div>
+          {pageTitle && (
+            <motion.div
+              className="overflow-hidden"
+              animate={{
+                width: showPageTitle ? "auto" : 0,
+                marginLeft: showPageTitle ? 10 : 0,
+              }}
+              transition={{ duration: 0.32, ease: [0.4, 0, 0.6, 1], delay: showPageTitle ? 0.12 : 0 }}
+            >
+              <motion.span
+                className="block whitespace-nowrap font-bold text-[20px] leading-[1.3] tracking-[-0.04em] md:text-[22px]"
+                animate={{
+                  opacity: showPageTitle ? 1 : 0,
+                  x: showPageTitle ? 0 : -18,
+                }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                style={{ color: chrome.textColor }}
+              >
+                {pageTitle}
+              </motion.span>
+            </motion.div>
+          )}
         </button>
 
         <div className="flex items-center gap-3">

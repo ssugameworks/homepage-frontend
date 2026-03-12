@@ -1,14 +1,10 @@
 import { useReducedMotion } from "framer-motion";
+import { navigateByNavId, navigateHome } from "@/lib/navigation";
 import { Header } from "@/pages/homepage/components";
 import { NAV_ITEMS, logoSrc } from "@/pages/roadmap/constants";
 import { CalendarPane } from "@/pages/roadmap/components/CalendarPane";
 import { EventPanel } from "@/pages/roadmap/components/EventPanel";
 import { useRoadmapCalendar } from "@/pages/roadmap/hooks/useRoadmapCalendar";
-
-function goHome() {
-  window.history.pushState({}, "", "/");
-  window.dispatchEvent(new PopStateEvent("popstate"));
-}
 
 /* ── Page ────────────────────────────────────────────────────────────────────── */
 export function RoadmapPage() {
@@ -22,8 +18,9 @@ export function RoadmapPage() {
         heroReady={true}
         logoSrc={logoSrc}
         navItems={NAV_ITEMS}
-        onScrollTop={goHome}
-        onNavigate={() => goHome()}
+        pageTitle="다가오는 일정"
+        onScrollTop={navigateHome}
+        onNavigate={navigateByNavId}
         darkHero={false}
       />
 

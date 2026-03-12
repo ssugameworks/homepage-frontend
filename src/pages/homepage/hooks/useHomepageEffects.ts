@@ -119,6 +119,7 @@ export function useCursorFollower() {
     let activeNav: HTMLElement | null = null;
     let navRestoreOverflow = "";
     const darkSurfaceSelector = "#home, #about, #history, .bg-\\[\\#0c0c0d\\]";
+    const NAV_CAPTURE_SCROLL_Y = 60;
 
     const setFollowerHost = (nextNav: HTMLElement | null) => {
       if (activeNav === nextNav) return;
@@ -140,9 +141,10 @@ export function useCursorFollower() {
     const onMove = (e: MouseEvent) => {
       const target = e.target as Element;
       const isHoveringInteractive = Boolean(target.closest("button, a, [role=\"button\"]"));
-      const nextNav = target.closest("nav") as HTMLElement | null;
+      const hoveredNav = target.closest("nav") as HTMLElement | null;
+      const nextNav = window.scrollY > NAV_CAPTURE_SCROLL_Y ? hoveredNav : null;
       setFollowerHost(nextNav);
-      const isDarkNav = nextNav?.dataset.headerTone === "dark";
+      const isDarkNav = hoveredNav?.dataset.headerTone === "dark";
       const isDarkSurface = isDarkNav || Boolean(target.closest(darkSurfaceSelector));
 
       if (nextNav) {
