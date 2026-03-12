@@ -74,7 +74,7 @@ export function EventPanel({ reducedMotion, state }: EventPanelProps) {
 
   return (
     <div
-      className="mt-2 mb-4 mx-auto flex w-full min-w-0 max-w-[620px] flex-col self-stretch overflow-hidden rounded-[28px] px-5 pt-6 pb-5 lg:mt-4 lg:mb-4 lg:ml-auto lg:min-h-[600px] lg:w-[clamp(500px,43vw,720px)] lg:min-w-[500px] lg:max-w-none lg:flex-none lg:self-start lg:rounded-tl-[24px] lg:rounded-bl-[24px] lg:rounded-tr-none lg:rounded-br-none lg:px-10 lg:pt-5 lg:pb-10 xl:px-12 xl:pb-12"
+      className="mt-2 mb-4 mx-auto flex w-full min-w-0 max-w-[620px] flex-col self-stretch overflow-hidden rounded-[28px] px-5 pt-6 pb-5 lg:mt-4 lg:mb-4 lg:mx-0 lg:ml-auto lg:min-h-[600px] lg:w-[clamp(500px,43vw,720px)] lg:min-w-[500px] lg:max-w-none lg:flex-none lg:self-start lg:rounded-tl-[24px] lg:rounded-bl-[24px] lg:rounded-tr-none lg:rounded-br-none lg:px-10 lg:pt-5 lg:pb-10 xl:px-12 xl:pb-12"
       style={{
         background: "linear-gradient(150deg, #0d1e3a 0%, #00204d 55%, #010f28 100%)",
       }}

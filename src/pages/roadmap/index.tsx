@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useReducedMotion } from "framer-motion";
 import { navigateByNavId, navigateHome } from "@/lib/navigation";
 import { Header } from "@/pages/homepage/components";
@@ -10,6 +11,14 @@ import { useRoadmapCalendar } from "@/pages/roadmap/hooks/useRoadmapCalendar";
 export function RoadmapPage() {
   const reducedMotion = useReducedMotion();
   const state = useRoadmapCalendar();
+
+  useEffect(() => {
+    const prev = document.documentElement.style.scrollbarGutter;
+    document.documentElement.style.scrollbarGutter = "auto";
+    return () => {
+      document.documentElement.style.scrollbarGutter = prev;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f7f8fa] relative overflow-x-hidden">
