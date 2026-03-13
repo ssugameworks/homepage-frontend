@@ -22,7 +22,7 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
       
       {/* Main Panel Content: Responsive rounding and height */}
       <div 
-        className="relative z-20 flex flex-col w-full pl-8 pr-8 pt-12 pb-10 lg:pl-[56px] lg:pr-0 lg:pt-[47px] lg:pb-[47px] rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-0 shadow-[0_20px_50px_rgba(0,0,0,0.15)] lg:shadow-[-30px_0_80px_rgba(0,0,0,0.3)] min-h-[500px] h-[640px] lg:h-[867px]"
+        className="relative z-20 flex flex-col w-full pl-8 pr-8 pt-12 pb-10 lg:pl-[56px] lg:pr-0 lg:pt-[47px] lg:pb-[47px] rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-none shadow-[0_20px_50px_rgba(0,0,0,0.15)] lg:shadow-[-30px_0_80px_rgba(0,0,0,0.3)] min-h-[500px] h-[640px] lg:h-[867px]"
         style={{ background: "linear-gradient(73deg, rgba(255, 255, 255, 0.50) -26.79%, rgba(102, 102, 102, 0.00) 74.1%), linear-gradient(207deg, rgba(255, 255, 255, 0.50) -10.35%, rgba(102, 102, 102, 0.00) 52.35%), #00204D" }}
       >
         {/* Date Header */}
@@ -62,7 +62,7 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
                   return (
                     <div
                       key={event.id}
-                      className="flex flex-col justify-center p-6 lg:p-8 transition-all duration-300 shrink-0 rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-0"
+                      className="flex flex-col justify-center p-6 lg:p-8 transition-all duration-300 shrink-0 rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-none"
                       style={{
                         background: "rgba(255, 255, 255, 0.30)",
                         boxShadow: "0 4px 4px 0 rgba(0, 0, 0, 0.25)"
