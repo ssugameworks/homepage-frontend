@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useShallow } from "zustand/react/shallow";
+import dayjs from "dayjs";
 import { MONTH_NAMES, EASE, EVENT_COLORS, CAT_COLOR, ROADMAP_INDICATOR_COLOR } from "@/pages/roadmap/constants";
 import { useRoadmapStore } from "@/pages/roadmap/store/roadmap-store";
 import { fmtRange, getEventsOn } from "@/pages/roadmap/utils";
@@ -26,6 +27,7 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
   });
 
   const monthName = MONTH_NAMES[month];
+  const todayKey = dayjs().format("YYYY-MM-DD");
 
   return (
     <div className="relative h-full w-full flex flex-col items-stretch pr-0">
@@ -80,6 +82,7 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
               ) : (
                 selectedEvents.map((event) => {
                   const applyLink = event.link || event["링크"] || event.url || event.URL;
+                  const isPast = todayKey > event.end;
 
                   return (
                     <div
@@ -101,24 +104,30 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
                         </div>
                         
                         {applyLink ? (
-                          <motion.a 
-                            href={applyLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 lg:px-6 lg:py-3 rounded-full text-white shadow-[0_4px_15px_rgba(0,75,178,0.4)] transition-all text-[14px] lg:text-[16px] font-bold shrink-0"
-                            style={{ backgroundColor: "#004BB2" }}
-                            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#0059D6")}
-                            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#004BB2")}
-                            onMouseDown={(e) => (e.currentTarget.style.backgroundColor = "#003D8F")}
-                            onMouseUp={(e) => (e.currentTarget.style.backgroundColor = "#0059D6")}
-                          >
-                            <span>신청하기</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="lg:w-[20px] lg:h-[20px]">
-                              <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </motion.a>
+                          isPast ? (
+                            <div className="inline-flex items-center justify-center gap-2 px-5 py-2.5 lg:px-6 lg:py-3 rounded-full bg-white/[0.1] text-white/40 border border-white/10 text-[14px] lg:text-[16px] font-bold shrink-0 cursor-not-allowed">
+                              <span>신청 마감</span>
+                            </div>
+                          ) : (
+                            <motion.a 
+                              href={applyLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 lg:px-6 lg:py-3 rounded-full text-white shadow-[0_4px_15px_rgba(0,75,178,0.4)] transition-all text-[14px] lg:text-[16px] font-bold shrink-0"
+                              style={{ backgroundColor: "#004BB2" }}
+                              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#0059D6")}
+                              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#004BB2")}
+                              onMouseDown={(e) => (e.currentTarget.style.backgroundColor = "#003D8F")}
+                              onMouseUp={(e) => (e.currentTarget.style.backgroundColor = "#0059D6")}
+                            >
+                              <span>신청하기</span>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="lg:w-[20px] lg:h-[20px]">
+                                <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </motion.a>
+                          )
                         ) : (
                           <div className="inline-flex items-center justify-center gap-2 px-4 py-2 lg:px-6 lg:py-3 rounded-full bg-white/[0.05] text-white/20 border border-white/5 text-[14px] lg:text-[16px] font-bold shrink-0 cursor-not-allowed">
                             <span>준비 중</span>
