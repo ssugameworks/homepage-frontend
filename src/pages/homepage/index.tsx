@@ -10,7 +10,6 @@ import {
   scrollTo,
   useCursorFollower,
   useInView,
-  useInViewOnce,
   useParallaxEffect,
   useScrollProgress,
   useSectionBackground,
@@ -40,11 +39,6 @@ import eventImg6    from "@/assets/event-img-6.webp";
 
 /* ─── Figma assets (no local equivalent yet) ─────────────────────────── */
 const imgRectangle = "https://www.figma.com/api/mcp/asset/f844113f-1290-4f7b-b756-c9535804cb22";
-const imgVector    = "https://www.figma.com/api/mcp/asset/45dfd35e-c297-4d61-ade7-f9638d7c3a99";
-const imgFrame     = "https://www.figma.com/api/mcp/asset/23405a3e-0c8d-4d7e-8407-204e16b3f18e";
-const imgVector2   = "https://www.figma.com/api/mcp/asset/37dd5450-d8ed-4876-8bba-798ffa39318d";
-const imgFrame14   = "https://www.figma.com/api/mcp/asset/bbcfd9b9-ad14-4adb-9f2a-3a7f383b5089";
-const imgVector5   = "https://www.figma.com/api/mcp/asset/e40cc6a4-0c2b-4b0c-a6f0-bb5beeab8d3a";
 
 const glowColors = [
   "#3B82F6","#6366F1","#8B5CF6","#A78BFA",
@@ -185,12 +179,10 @@ function EventCard({
 }
 
 function EventSpotlightCard({
-  index,
   title,
   titleHighlight,
   description,
   imgSrc,
-  imgStyle,
 }: {
   index: number;
   title: string;
@@ -585,7 +577,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
   const heroBgRef    = useRef<HTMLImageElement>(null);
   const marqueeBgRef = useRef<HTMLImageElement>(null);
   useParallaxEffect([
-    { ref: marqueeBgRef, fn: (y) => `translateY(${(y - 2000) * -0.08}px)` },
+    { ref: marqueeBgRef, fn: (y) => `translateY(${(y - 2000) * -0.045}px)` },
   ]);
   useCursorFollower();
   useScrollProgress();
@@ -669,9 +661,11 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
       `}</style>
 
       <div className="flex flex-col items-start w-full bg-snow">
-
         {/* ── Hero ──────────────────────────────────────────────── */}
-        <div id="home" className="relative h-screen min-h-225 w-full shrink-0 overflow-hidden bg-ink">
+        <div
+          id="home"
+          className="relative h-screen min-h-225 w-full shrink-0 overflow-hidden bg-ink"
+        >
           {/* 배경 레이어 — overflow-hidden 없이 mask가 직접 이미지를 fade */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
@@ -679,117 +673,223 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             animate={bgLoaded ? { opacity: 1 } : undefined}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <img ref={heroBgRef} alt="" src={imgRectangle}
+            <img
+              ref={heroBgRef}
+              alt=""
+              src={imgRectangle}
               className="absolute inset-0 w-full h-full object-cover object-center"
-              onLoad={() => setBgLoaded(true)} />
+              onLoad={() => setBgLoaded(true)}
+            />
 
             {glowColors.slice(0, 6).map((color, i) => (
-              <div key={i} className="absolute rounded-full blur-[80px] opacity-40"
+              <div
+                key={i}
+                className="absolute rounded-full blur-[80px] opacity-40"
                 style={{
                   backgroundColor: color,
-                  width: "320px", height: "320px",
+                  width: "320px",
+                  height: "320px",
                   left: `${15 + (i % 3) * 30}%`,
                   top: `${20 + Math.floor(i / 3) * 35}%`,
                   animation: `pulse-glow ${3 + (i % 3) * 0.6}s ease-in-out ${-(i * 0.5)}s infinite`,
-                }} />
+                }}
+              />
             ))}
 
             {/* 하단 fade — About 배경색(#0c0c0d)으로 자연스럽게 연결 */}
-            <div className="absolute inset-x-0 bottom-0 pointer-events-none" style={{
-              height: "50%",
-              background: "linear-gradient(to bottom, transparent 0%, rgba(12,12,13,0.6) 60%, #0c0c0d 100%)",
-            }} />
+            <div
+              className="absolute inset-x-0 bottom-0 pointer-events-none"
+              style={{
+                height: "50%",
+                background:
+                  "linear-gradient(to bottom, transparent 0%, rgba(12,12,13,0.6) 60%, #0c0c0d 100%)",
+              }}
+            />
           </motion.div>
 
           {/* Hero tagline */}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 select-none pb-20">
-            {["만들고 싶은 게 있다면,", "여기서 시작해도 돼요"].map((line, i) => (
-              <motion.div
-                key={i}
-                className="font-bold text-snow text-center leading-[1.2] pointer-events-none"
-                style={{ fontSize: "clamp(36px, 6vw, 88px)", letterSpacing: "-0.03em" }}
-                initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 36 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.3 + i * 0.14, ease: [0.16, 1, 0.3, 1] }}
-              >
-                {line}
-              </motion.div>
-            ))}
+            {["배우고 도전하며", "가치를 만드는 사람으로 성장해요"].map(
+              (line, i) => (
+                <motion.div
+                  key={i}
+                  className="font-bold text-snow text-center leading-[1.2] pointer-events-none"
+                  style={{
+                    fontSize: "clamp(36px, 6vw, 88px)",
+                    letterSpacing: "-0.03em",
+                  }}
+                  initial={
+                    reducedMotion ? { opacity: 1 } : { opacity: 0, y: 36 }
+                  }
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.9,
+                    delay: 0.3 + i * 0.14,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                >
+                  {line}
+                </motion.div>
+              ),
+            )}
             <motion.button
               onClick={() => scrollTo("apply")}
               className="mt-8 px-8 py-3.5 rounded-full font-semibold text-[18px] tracking-[-0.54px] leading-none cursor-pointer whitespace-nowrap"
-              style={{ color: "#fafafa", border: "1px solid rgba(255,255,255,0.4)", backdropFilter: "blur(8px)" }}
-              initial={reducedMotion ? { opacity: 1, background: "rgba(255,255,255,0.15)" } : { opacity: 0, background: "rgba(255,255,255,0.15)" }}
+              style={{
+                color: "#fafafa",
+                border: "1px solid rgba(255,255,255,0.4)",
+                backdropFilter: "blur(8px)",
+              }}
+              initial={
+                reducedMotion
+                  ? { opacity: 1, background: "rgba(255,255,255,0.15)" }
+                  : { opacity: 0, background: "rgba(255,255,255,0.15)" }
+              }
               animate={{ opacity: 1, background: "rgba(255,255,255,0.15)" }}
               transition={{ duration: 0.35, delay: 0.9, ease: "easeOut" }}
-              whileHover={reducedMotion ? undefined : {
-                y: -4,
-                scale: 1.04,
-                background: "rgba(255,255,255,0.34)",
-              }}
+              whileHover={
+                reducedMotion
+                  ? undefined
+                  : {
+                      y: -4,
+                      scale: 1.04,
+                      background: "rgba(255,255,255,0.34)",
+                    }
+              }
               whileTap={reducedMotion ? undefined : { scale: 0.98 }}
             >
               지원하러 가기 →
             </motion.button>
           </div>
 
-
           {/* Scroll hint */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-            style={{ animation: "scroll-bounce 1.8s ease-in-out 2s infinite" }}>
-            <span className="font-medium text-snow text-[13px] tracking-[-0.42px] opacity-40">scroll</span>
+          <div
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+            style={{ animation: "scroll-bounce 1.8s ease-in-out 2s infinite" }}
+          >
+            <span className="font-medium text-snow text-[13px] tracking-[-0.42px] opacity-40">
+              scroll
+            </span>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 4v12M4 10l6 6 6-6" stroke="#fafafa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
+              <path
+                d="M10 4v12M4 10l6 6 6-6"
+                stroke="#fafafa"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity="0.4"
+              />
             </svg>
           </div>
         </div>
 
         {/* ── About ─────────────────────────────────────────────── */}
-        <section id="about" className="flex flex-col gap-25 items-center pt-0 pb-30 w-full bg-ink -mt-px">
-          <FadeUp threshold={0.3} className="flex flex-col items-center font-bold tracking-[-1.5px] text-center px-4">
-            <span className="leading-[1.3] text-snow" style={{ fontSize: "clamp(28px,4vw,50px)" }}>기획도 개발도 처음이어도,</span>
-            <span className="leading-[1.3] text-snow" style={{ fontSize: "clamp(28px,4vw,50px)" }}>여기선 괜찮아요</span>
+        <section
+          id="about"
+          className="flex flex-col gap-25 items-center pt-0 pb-30 w-full bg-ink -mt-px"
+        >
+          <FadeUp
+            threshold={0.3}
+            className="flex flex-col items-center font-bold tracking-[-1.5px] text-center px-4"
+          >
+            <span
+              className="leading-[1.3] text-snow"
+              style={{ fontSize: "clamp(28px,4vw,50px)" }}
+            >
+              기획, 개발, 디자인을 함께 익히고
+            </span>
+            <span
+              className="leading-[1.3] text-snow"
+              style={{ fontSize: "clamp(28px,4vw,50px)" }}
+            >
+              배운 걸 실제 결과로 이어가요
+            </span>
+            <span
+              className="mt-5 max-w-[760px] text-center font-medium leading-[1.5] tracking-[-0.03em] text-white/62"
+              style={{ fontSize: "clamp(16px,2vw,24px)" }}
+            >
+              스터디와 멘토링으로 배우고, 아이디어톤과 해커톤으로 직접
+              부딪혀봐요
+            </span>
           </FadeUp>
 
           <div className="mx-auto flex w-full max-w-290 flex-col items-center gap-10 px-4 md:px-10 lg:flex-row lg:justify-center lg:gap-12">
             {/* Photos — 데스크탑에서만 표시 */}
-            <SlideIn from="left" className="hidden lg:block relative w-85 shrink-0 aspect-[124/244.75]">
-              <div className="absolute overflow-hidden border border-white/20"
-                style={{ left: "0%", top: "0%", width: "80.65%", height: "61.29%" }}>
-                <img alt="" className="absolute max-w-none" src={imgFrame1}
-                  style={{ height: "112.33%", left: "-58.15%", top: "-6.24%", width: "252.85%" }} />
+            <SlideIn
+              from="left"
+              className="hidden lg:block relative w-85 shrink-0 aspect-[124/244.75]"
+            >
+              <div
+                className="absolute overflow-hidden border border-white/20"
+                style={{
+                  left: "0%",
+                  top: "0%",
+                  width: "80.65%",
+                  height: "61.29%",
+                }}
+              >
+                <img
+                  alt=""
+                  className="absolute max-w-none"
+                  src={imgFrame1}
+                  style={{
+                    height: "112.33%",
+                    left: "-58.15%",
+                    top: "-6.24%",
+                    width: "252.85%",
+                  }}
+                />
               </div>
-              <div className="absolute overflow-hidden border border-white/20"
-                style={{ left: "19.35%", top: "38.71%", width: "80.65%", height: "61.29%" }}>
-                <img alt="" className="absolute max-w-none" src={imgFrame2}
-                  style={{ height: "124.5%", left: "-108.26%", top: "-0.04%", width: "279.91%" }} />
+              <div
+                className="absolute overflow-hidden border border-white/20"
+                style={{
+                  left: "19.35%",
+                  top: "38.71%",
+                  width: "80.65%",
+                  height: "61.29%",
+                }}
+              >
+                <img
+                  alt=""
+                  className="absolute max-w-none"
+                  src={imgFrame2}
+                  style={{
+                    height: "124.5%",
+                    left: "-108.26%",
+                    top: "-0.04%",
+                    width: "279.91%",
+                  }}
+                />
               </div>
             </SlideIn>
 
             {/* 텍스트 — 모바일에서 전면에 */}
-            <SlideIn from="right" delay={150} className="flex min-w-0 w-full max-w-130 flex-col items-center justify-center gap-8 lg:items-start lg:text-left">
+            <SlideIn
+              from="right"
+              delay={150}
+              className="flex min-w-0 w-full max-w-130 flex-col items-center justify-center gap-8 lg:items-start lg:text-left"
+            >
               {/* 로고 — 데스크탑에서만 */}
               <div className="hidden lg:flex flex-col gap-4 items-start shrink-0">
-                <div className="relative h-73.25 w-75"
-                  style={{ animation: "float 5s ease-in-out 1s infinite" }}>
+                <div
+                  className="relative h-73.25 w-75"
+                  style={{ animation: "float 5s ease-in-out 1s infinite" }}
+                >
                   <GameworksLogo
                     aria-label="GAMEWORKS 로고"
                     className="absolute block size-full text-snow"
                   />
                 </div>
-                <span className="font-bold text-snow tracking-[-3.2px] leading-[1.1] whitespace-nowrap" style={{ fontSize: "clamp(40px,6vw,80px)" }}>
+                <span
+                  className="font-bold text-snow tracking-[-3.2px] leading-[1.1] whitespace-nowrap"
+                  style={{ fontSize: "clamp(40px,6vw,80px)" }}
+                >
                   GAMEWORKS
                 </span>
               </div>
               <div className="hidden lg:block h-px w-20 bg-white/20" />
 
               {/* 본문 — 모바일 핵심 콘텐츠 */}
-              <p className="font-bold text-snow leading-[1.4] text-center lg:text-left"
-                style={{ fontSize: "clamp(26px,3.5vw,42px)", letterSpacing: "-0.03em" }}>
-                스터디, 멘토링, 아이디어톤 —<br />
-                배운 걸 직접 서비스로 만들어가는<br />
-                소모임이에요.
-              </p>
             </SlideIn>
           </div>
         </section>
@@ -798,78 +898,80 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
         <StatsSection />
 
         {/* ── History ───────────────────────────────────────────── */}
-        <section id="history" className="flex flex-col items-center w-full"
-          style={{ background: "linear-gradient(to bottom, #0c0c0d 0%, #0e1628 30%, #00204d 55%)" }}>
-          <SectionTitle text="HISTORY" color="#fafafa" once />
+        <section
+          id="history"
+          className="flex flex-col items-center w-full"
+          style={{
+            background:
+              "linear-gradient(to bottom, #0c0c0d 0%, #0e1628 30%, #00204d 55%)",
+          }}
+        >
+          <div className="w-full px-6 pt-16 text-center md:px-16 lg:px-40">
+            <div className="text-[clamp(28px,4vw,52px)] font-bold leading-[1.22] tracking-[-0.04em] text-snow">
+              지금의 게임웍스는
+              <br />
+              25년의 시간 위에 있어요
+            </div>
+          </div>
           <div className="w-full px-6 py-20 md:px-16 lg:px-40">
             <TimelineSection items={TIMELINE} />
           </div>
         </section>
 
         {/* ── History Bridge ────────────────────────────────────── */}
-        <section id="history-bridge" className="relative isolate w-full overflow-hidden">
+        <section
+          id="history-bridge"
+          className="relative isolate w-full overflow-hidden"
+        >
           <div className="absolute inset-0">
             <img
               ref={marqueeBgRef}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover object-center"
+              className="absolute inset-x-0 -top-[18%] h-[136%] w-full max-w-none object-cover object-center"
               src={imgDesktop26}
               style={{ willChange: "transform" }}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(1,10,26,0.82)_0%,rgba(5,20,48,0.72)_36%,rgba(12,44,92,0.54)_72%,rgba(178,211,255,0.88)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(1,10,26,0.82)_0%,rgba(5,20,48,0.72)_30%,rgba(12,44,92,0.46)_58%,rgba(178,211,255,0.54)_78%,rgba(199,224,255,0.94)_100%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.16),transparent_36%),radial-gradient(circle_at_78%_28%,rgba(26,122,255,0.22),transparent_30%)]" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(180deg,rgba(199,224,255,0)_0%,rgba(199,224,255,0.82)_68%,#c7e0ff_100%)]" />
           </div>
 
-          <div className="relative mx-auto flex min-h-[520px] w-full max-w-[1320px] flex-col justify-center gap-10 px-6 py-20 md:px-10 lg:min-h-[620px] lg:px-16">
-            <div className="max-w-[860px]">
-              <div className="inline-flex items-center rounded-full border border-white/15 bg-white/8 px-4 py-2 text-[12px] font-semibold tracking-[0.2em] text-white/72">
-                FROM HISTORY TO NEXT
-              </div>
-              <h2 className="mt-6 text-[clamp(34px,5.2vw,76px)] font-bold leading-[1.08] tracking-[-0.05em] text-white">
-                25년의 시간 위에서,
+          <div className="relative mx-auto flex min-h-[520px] w-full max-w-[1320px] flex-col justify-center px-6 py-20 md:px-10 lg:min-h-[620px] lg:px-16">
+            <div className="max-w-[920px]">
+              <h2 className="text-[clamp(34px,5.2vw,76px)] font-bold leading-[1.06] tracking-[-0.05em] text-white">
+                그 흐름을 이어받아
                 <br />
-                지금의 우리가 다음 장을 써가고 있어요
+                지금의 우리가 움직이고 있어요
               </h2>
-              <p className="mt-5 max-w-[760px] text-[clamp(18px,2.1vw,28px)] font-medium leading-[1.55] tracking-[-0.03em] text-white/76">
-                게임웍스의 역사는 기록에서 끝나지 않아요.
-                선배들이 만들어온 흐름을 지금의 우리가 이어받고, 다음 사람에게 넘겨주는 소모임이에요.
+              <p className="mt-5 max-w-[780px] text-[clamp(18px,2.1vw,28px)] font-medium leading-[1.55] tracking-[-0.03em] text-white/76">
+                선배들이 만든 친목과 성장의 흐름을, 지금의 우리가 올해의 방식으로 다시 이어가고 있어요.
               </p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3 md:gap-5">
-              <div className="rounded-[26px] border border-white/12 bg-white/[0.08] p-5 backdrop-blur-md">
-                <div className="text-[12px] font-semibold tracking-[0.18em] text-white/55">STARTED</div>
-                <div className="mt-2 text-[30px] font-bold tracking-[-0.04em] text-white">2000</div>
-                <div className="mt-2 text-[15px] font-medium leading-[1.5] text-white/70">
-                  글로미 출범과 함께 문을 열었고, 매해 새로운 방식으로 이어져 왔어요.
-                </div>
-              </div>
-              <div className="rounded-[26px] border border-white/12 bg-white/[0.08] p-5 backdrop-blur-md">
-                <div className="text-[12px] font-semibold tracking-[0.18em] text-white/55">ACCUMULATED</div>
-                <div className="mt-2 text-[30px] font-bold tracking-[-0.04em] text-white">25년의 시간</div>
-                <div className="mt-2 text-[15px] font-medium leading-[1.5] text-white/70">
-                  방식은 해마다 달라져도, 사람을 잇는 본질은 그대로예요.
-                </div>
-              </div>
-              <div className="rounded-[26px] border border-[#1a7aff]/25 bg-[#0f2f62]/55 p-5 backdrop-blur-md">
-                <div className="text-[12px] font-semibold tracking-[0.18em] text-white/55">NEXT WE MAKE</div>
-                <div className="mt-2 text-[30px] font-bold tracking-[-0.04em] text-white">2026 활동</div>
-                <div className="mt-2 text-[15px] font-medium leading-[1.5] text-white/72">
-                  아래 소개하는 활동들이 그 흐름을 지금도 이어가고 있어요.
-                </div>
-              </div>
+            <div className="mt-12 flex flex-wrap items-center gap-3 md:gap-4">
+              {["친해지고", "배우고", "직접 만들고"].map((label, index) => (
+                <React.Fragment key={label}>
+                  <div className="rounded-full border border-white/14 bg-white/[0.08] px-5 py-3 text-[clamp(18px,2vw,28px)] font-bold tracking-[-0.03em] text-white backdrop-blur-md">
+                    {label}
+                  </div>
+                  {index < 2 && (
+                    <div className="hidden h-px w-10 bg-white/25 md:block" />
+                  )}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         </section>
 
         {/* ── Event ─────────────────────────────────────────────── */}
         <section id="event" className="flex flex-col items-center w-full">
-          <div className="w-full" style={{ background: "#c7e0ff" }}>
-            <SectionTitle text="EVENT" />
-          </div>
-
-          <div className="flex flex-col gap-16 items-center px-10 py-12 md:py-20 w-full"
-            style={{ background: "linear-gradient(to bottom,#c7e0ff 0%,#c7e0ff 74%,#fafafa 100%)" }}>
+          <div
+            className="flex flex-col gap-16 items-center px-10 py-12 md:py-20 w-full"
+            style={{
+              background:
+                "linear-gradient(to bottom,#c7e0ff 0%,#c7e0ff 74%,#fafafa 100%)",
+            }}
+          >
             <div className="hidden w-full max-w-290 flex-col gap-6 px-4 md:px-8 lg:flex">
               <div className="max-w-230 text-[clamp(28px,4vw,52px)] font-bold leading-[1.22] tracking-[-0.04em] text-ink">
                 한 해동안 함께할
@@ -880,7 +982,10 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
 
             <EventScrollShowcase />
 
-            <button onClick={navigateActivity} className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
+            <button
+              onClick={navigateActivity}
+              className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group"
+            >
               <span className="font-medium text-ink text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
                 활동 더 보기 →
               </span>
@@ -893,8 +998,16 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
           <SectionTitle text="PEOPLE" />
 
           <div className="flex flex-col gap-10 items-center pb-12 md:pb-20 w-full">
-            <FadeUp threshold={0.2} className="flex flex-col items-center text-ink text-center px-10">
-              <span className="font-bold tracking-[-1.14px] leading-[1.3]" style={{ fontSize: "clamp(22px,3vw,38px)" }}>올해 게임웍스를 이끄는 팀이에요</span>
+            <FadeUp
+              threshold={0.2}
+              className="flex flex-col items-center text-ink text-center px-10"
+            >
+              <span
+                className="font-bold tracking-[-1.14px] leading-[1.3]"
+                style={{ fontSize: "clamp(22px,3vw,38px)" }}
+              >
+                올해 게임웍스를 이끄는 팀이에요
+              </span>
             </FadeUp>
 
             <MembersCarousel />
@@ -914,7 +1027,6 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
 
         {/* ── Footer ────────────────────────────────────────────── */}
         <Footer />
-
       </div>
     </>
   );
