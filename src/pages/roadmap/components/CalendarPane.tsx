@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { DAY_LABELS, EASE, EVENTS, MONTH_NAMES, ROADMAP_INDICATOR_COLOR, ROADMAP_INDICATOR_LABEL } from "@/pages/roadmap/constants";
+import { DAY_LABELS, EASE, EVENTS, MONTH_NAMES, ROADMAP_INDICATOR_COLOR } from "@/pages/roadmap/constants";
 import type { useRoadmapCalendar } from "@/pages/roadmap/hooks/useRoadmapCalendar";
 import { toKey } from "@/pages/roadmap/utils";
 
@@ -250,17 +250,6 @@ export function CalendarPane({ state }: CalendarPaneProps) {
             </AnimatePresence>
           </div>
 
-          <div className="mt-3 flex flex-col gap-2 px-0.5 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[10px] font-medium tracking-wide text-[#ccc] select-none">
-              ← → ↑ ↓ 탐색
-            </p>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 sm:justify-end">
-              <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: ROADMAP_INDICATOR_COLOR }} />
-                <span className="text-[10px] text-[#bbb] font-medium">{ROADMAP_INDICATOR_LABEL}</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

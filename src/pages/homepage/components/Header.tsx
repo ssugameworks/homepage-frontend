@@ -158,7 +158,7 @@ export function Header({
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
               aria-expanded={menuOpen}>
-              <HamburgerIcon open={menuOpen} color={menuOpen ? panel.textColor : chrome.textColor} />
+              <HamburgerIcon open={menuOpen} color={(menuOpen ? panel.textColor : chrome.textColor) as MotionValue<string>} />
             </button>
           </div>
         </div>

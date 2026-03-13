@@ -1,5 +1,5 @@
-import React, { memo, useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, type MotionValue } from "framer-motion";
 import { GameworksLogo } from "@/pages/homepage/components";
 import type { PageProps } from "@/lib/header-config";
 import { TimelineSection } from "@/pages/homepage/components/TimelineSection";
@@ -54,13 +54,13 @@ const glowColors = [
 ];
 
 const MEMBERS = [
-  { role: "회장", name: "장윤아", img: imgFrame7, delay: 0, style: { height: "112.66%", left: "-3.52%", top: "-3.54%", width: "106.8%" } },
-  { role: "회장", name: "조영찬", img: imgFrame8, delay: 80, style: { height: "115.78%", left: "-4.82%", top: "-5.19%", width: "109.76%" } },
-  { role: "총무", name: "박서영", img: imgFrame9, delay: 160, style: { height: "121.45%", left: "-10.96%", top: "-7.3%", width: "115.94%" } },
-  { role: "부회장", name: "유다은", img: imgFrame10, delay: 0, style: { height: "111.61%", left: "-3.17%", top: "-5.98%", width: "105.81%" } },
-  { role: "부회장", name: "최서정", img: imgFrame11, delay: 80, style: { height: "111.78%", left: "-3.15%", top: "-5.74%", width: "105.97%" } },
-  { role: "부회장", name: "최지원", img: imgFrame12, delay: 160, style: { height: "110.35%", left: "-2.37%", top: "-5.22%", width: "104.61%" } },
-  { role: "부회장", name: "홍준우", img: imgFrame13, delay: 240, style: { height: "102.78%", left: "-12.76%", top: "-2.86%", width: "124.99%" } },
+  { role: "회장", name: "장윤아", desc: "기획과 디자인을 중심으로 팀의 방향과 흐름을 잡습니다.", img: imgFrame7, delay: 0, style: { height: "112.66%", left: "-3.52%", top: "-3.54%", width: "106.8%" } },
+  { role: "회장", name: "조영찬", desc: "프론트엔드 구현과 개발 운영으로 팀의 속도를 만듭니다.", img: imgFrame8, delay: 80, style: { height: "115.78%", left: "-4.82%", top: "-5.19%", width: "109.76%" } },
+  { role: "총무", name: "박서영", desc: "일정과 운영을 꼼꼼하게 챙기며 팀 전체의 기반을 다집니다.", img: imgFrame9, delay: 160, style: { height: "121.45%", left: "-10.96%", top: "-7.3%", width: "115.94%" } },
+  { role: "부회장", name: "유다은", desc: "UX와 디자인으로 결과물을 더 선명하게 만듭니다.", img: imgFrame10, delay: 0, style: { height: "111.61%", left: "-3.17%", top: "-5.98%", width: "105.81%" } },
+  { role: "부회장", name: "최서정", desc: "백엔드와 구조 설계로 팀의 안정적인 기반을 만듭니다.", img: imgFrame11, delay: 80, style: { height: "111.78%", left: "-3.15%", top: "-5.74%", width: "105.97%" } },
+  { role: "부회장", name: "최지원", desc: "홍보와 콘텐츠 기획으로 팀의 에너지를 바깥으로 확장합니다.", img: imgFrame12, delay: 160, style: { height: "110.35%", left: "-2.37%", top: "-5.22%", width: "104.61%" } },
+  { role: "부회장", name: "홍준우", desc: "프론트엔드 실전 경험으로 팀의 구현 수준을 끌어올립니다.", img: imgFrame13, delay: 240, style: { height: "102.78%", left: "-12.76%", top: "-2.86%", width: "124.99%" } },
 ] as const;
 
 
@@ -138,35 +138,214 @@ function EventCard({
 }
 
 /* ─── Member card ────────────────────────────────────────────────────── */
-const MemberCard = memo(function MemberCard({ role, name, img, style, delay = 0 }: {
-  role: string; name: string; img: string; style: React.CSSProperties; delay?: number;
+const MemberCard = memo(function MemberCard({ role, name, desc, img, style, open, onToggle }: {
+  role: string; name: string; desc: string; img: string; style: React.CSSProperties;
+  open: boolean; onToggle: () => void;
 }) {
-  const { ref, visible } = useInView(0.03);
+  const pointerDownX = useRef(0);
+
   return (
-    <div ref={ref as React.RefObject<HTMLDivElement>}
-      className="group bg-ink flex flex-col gap-2.5 items-start overflow-hidden p-2.5 rounded-4 shadow-[0_10px_24px_rgba(12,12,13,0.12)] cursor-default transition-transform duration-300 hover:-translate-y-1.5"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0) scale(1)" : "translateY(32px) scale(0.94)",
-        transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ${EASE} ${delay}ms`,
-        willChange: "transform, opacity",
-        contain: "layout paint",
-      }}>
-      <div className="relative h-62.5 w-50 md:h-75 md:w-60 overflow-hidden rounded-lg">
-        <img alt={name} className="absolute max-w-none transition-transform duration-300 group-hover:scale-[1.03]"
-          decoding="async"
-          loading="lazy"
-          src={img} style={style} />
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-[#1a7aff]/80 to-transparent
-                        translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-      </div>
-      <div className="flex flex-col items-start px-1 text-snow w-full">
-        <span className="font-bold text-[16px] tracking-[-0.48px] leading-[1.4]">{role}</span>
-        <span className="font-medium text-[22px] tracking-[-0.66px] leading-[1.3]">{name}</span>
-      </div>
+    <div
+      onPointerDown={(e) => { pointerDownX.current = e.clientX; }}
+      onClick={(e) => {
+        if (Math.abs(e.clientX - pointerDownX.current) > 6) return;
+        onToggle();
+      }}
+      className="relative shrink-0 overflow-hidden rounded-[22px] cursor-pointer select-none w-[185px] sm:w-[220px] md:w-[245px] aspect-[4/5]"
+      style={{ contain: "layout paint" }}
+    >
+      {/* Background photo */}
+      <img
+        alt={name}
+        className="absolute max-w-none"
+        src={img}
+        decoding="async"
+        loading="lazy"
+        style={style}
+      />
+
+      {/* Bottom gradient + default label */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/70 to-transparent" />
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 p-3.5"
+        animate={{ opacity: open ? 0 : 1, y: open ? -36 : 0 }}
+        transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="text-[11px] font-semibold tracking-[0.14em] text-white/65 uppercase leading-none">{role}</div>
+        <div className="mt-1.5 text-[22px] font-bold tracking-[-0.5px] text-white leading-[1.2]">{name}</div>
+      </motion.div>
+
+      {/* Blur layer — exits slowly so photo is revealed gradually */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="blur"
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            style={{ backdropFilter: "blur(16px)", background: "rgba(12,12,13,0.52)" }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Content layer — exits faster so blur lingers after text is gone */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="content"
+            className="absolute inset-0 flex flex-col justify-end p-4"
+            initial={{ opacity: 0, y: 36 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 28 }}
+            transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="text-[11px] font-semibold tracking-[0.14em] text-white/55 uppercase">{role}</div>
+            <div className="mt-1.5 text-[26px] font-bold tracking-[-0.6px] text-white leading-[1.15]">{name}</div>
+            <p className="mt-2.5 text-[15px] leading-[1.65] tracking-[-0.02em] text-white/78">{desc}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 });
+
+/* ─── Carousel hooks ─────────────────────────────────────────────────── */
+type AnimRef = React.MutableRefObject<ReturnType<typeof animate> | null>;
+
+function useCarouselLoop(
+  trackRef: React.RefObject<HTMLDivElement | null>,
+  x: MotionValue<number>,
+  animRef: AnimRef,
+) {
+  const isHovering = useRef(false);
+  const isCardOpen = useRef(false);
+
+  // loopFnRef is updated every call so closures inside always read latest refs
+  const loopFnRef = useRef<() => void>(() => {});
+  loopFnRef.current = () => {
+    if (isHovering.current || isCardOpen.current) return;
+    const half = trackRef.current ? trackRef.current.scrollWidth / 2 : 0;
+    if (!half) return;
+    const mod = x.get() % half;
+    const curr = mod > 0 ? mod - half : mod;
+    x.set(curr);
+    animRef.current = animate(x, -half, {
+      duration: Math.abs(-half - curr) / 50,
+      ease: "linear",
+      onComplete: () => { x.set(0); loopFnRef.current(); },
+    });
+  };
+
+  const pause = useCallback(() => {
+    isHovering.current = true;
+    animRef.current?.stop();
+  }, [animRef]);
+
+  const resume = useCallback(() => {
+    isHovering.current = false;
+    loopFnRef.current();
+  }, []);
+
+  const notifyCardOpen = useCallback((open: boolean) => {
+    isCardOpen.current = open;
+    animRef.current?.stop();
+    if (!open && !isHovering.current) loopFnRef.current();
+  }, [animRef]);
+
+  useEffect(() => {
+    const id = setTimeout(() => loopFnRef.current(), 200);
+    return () => { clearTimeout(id); animRef.current?.stop(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return { pause, resume, notifyCardOpen };
+}
+
+function useCarouselWheel(
+  outerRef: React.RefObject<HTMLDivElement | null>,
+  trackRef: React.RefObject<HTMLDivElement | null>,
+  x: MotionValue<number>,
+  animRef: AnimRef,
+  onIdle: () => void,
+) {
+  const onIdleRef = useRef(onIdle);
+  onIdleRef.current = onIdle;
+
+  useEffect(() => {
+    const el = outerRef.current;
+    if (!el) return;
+    let resumeTimer: ReturnType<typeof setTimeout> | null = null;
+    const onWheel = (e: WheelEvent) => {
+      const isHorizontalIntent =
+        Math.abs(e.deltaX) > Math.abs(e.deltaY) || (e.shiftKey && e.deltaY !== 0);
+      if (!isHorizontalIntent) return;
+      e.preventDefault();
+      const half = trackRef.current ? trackRef.current.scrollWidth / 2 : 0;
+      if (!half) return;
+      const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      const mod = (x.get() - delta) % half;
+      x.set(mod > 0 ? mod - half : mod);
+      animRef.current?.stop();
+      if (resumeTimer) clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => onIdleRef.current(), 1500);
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      if (resumeTimer) clearTimeout(resumeTimer);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}
+
+/* ─── Members carousel ───────────────────────────────────────────────── */
+const DOUBLED_MEMBERS = [...MEMBERS, ...MEMBERS] as const;
+const DOUBLED_KEYS = DOUBLED_MEMBERS.map((m, i) => `${i}-${m.name}`);
+
+function MembersCarousel() {
+  const outerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const animRef = useRef<ReturnType<typeof animate> | null>(null);
+  const [openKey, setOpenKey] = useState<string | null>(null);
+
+  const { pause, resume, notifyCardOpen } = useCarouselLoop(trackRef, x, animRef);
+  useCarouselWheel(outerRef, trackRef, x, animRef, resume);
+
+  useEffect(() => { notifyCardOpen(openKey !== null); }, [openKey, notifyCardOpen]);
+
+  // Stable toggler per slot — ensures MemberCard memo is effective
+  const togglers = useMemo(
+    () => DOUBLED_KEYS.map((key) => () => setOpenKey(prev => prev === key ? null : key)),
+    [],
+  );
+
+  return (
+    <div
+      ref={outerRef}
+      className="w-full overflow-hidden"
+      onMouseEnter={pause}
+      onMouseLeave={() => { setOpenKey(null); resume(); }}
+    >
+      <motion.div
+        ref={trackRef}
+        style={{ x, width: "max-content" }}
+        className="flex gap-3 sm:gap-4"
+      >
+        {DOUBLED_MEMBERS.map((member, i) => (
+          <MemberCard
+            key={DOUBLED_KEYS[i]}
+            {...member}
+            open={openKey === DOUBLED_KEYS[i]}
+            onToggle={togglers[i]!}
+          />
+        ))}
+      </motion.div>
+    </div>
+  );
+}
 
 /* ─── Main ───────────────────────────────────────────────────────────── */
 export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
@@ -266,7 +445,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             ))}
             <motion.button
               onClick={() => scrollTo("apply")}
-              className="mt-8 px-8 py-3.5 rounded-full font-semibold text-[18px] tracking-[-0.54px] leading-none cursor-pointer transition-all duration-300 whitespace-nowrap"
+              className="mt-8 px-8 py-3.5 rounded-full font-semibold text-[18px] tracking-[-0.54px] leading-none cursor-pointer whitespace-nowrap"
               style={{ color: "#fafafa", border: "1px solid rgba(255,255,255,0.4)", backdropFilter: "blur(8px)" }}
               initial={reducedMotion ? { opacity: 1, background: "rgba(255,255,255,0.15)" } : { opacity: 0, background: "rgba(255,255,255,0.15)" }}
               animate={{ opacity: 1, background: "rgba(255,255,255,0.15)" }}
@@ -432,17 +611,13 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
         <section id="people" className="flex flex-col items-center w-full">
           <SectionTitle text="PEOPLE" />
 
-          <div className="flex flex-col gap-10 items-center px-10 pb-12 md:pb-20 w-full">
-            <FadeUp threshold={0.2} className="flex flex-col items-center text-ink text-center">
+          <div className="flex flex-col gap-10 items-center pb-12 md:pb-20 w-full">
+            <FadeUp threshold={0.2} className="flex flex-col items-center text-ink text-center px-10">
               <span className="font-medium tracking-[-2.4px] leading-[1.3]" style={{ fontSize: "clamp(36px,6vw,80px)" }}>2026 GAMEWORKS</span>
               <span className="font-bold tracking-[-1.14px] leading-[1.3]" style={{ fontSize: "clamp(22px,3vw,38px)" }}>임원진을 소개합니다</span>
             </FadeUp>
 
-            <div className="flex flex-wrap justify-center gap-4 md:gap-6 lg:gap-10 w-full">
-              {MEMBERS.map((member) => (
-                <MemberCard key={`${member.role}-${member.name}`} {...member} />
-              ))}
-            </div>
+            <MembersCarousel />
 
             <button
               className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group"
