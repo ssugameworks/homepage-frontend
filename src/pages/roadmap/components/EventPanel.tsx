@@ -20,6 +20,18 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <div className="relative h-full w-full flex flex-col items-stretch pr-0">
       
+      {/* Stacked Paper Effect - Background Layer */}
+      <div 
+        className="absolute inset-y-4 left-0 right-0 z-10 rounded-l-[20px] rounded-r-none"
+        style={{ 
+          background: "linear-gradient(73deg, rgba(255, 255, 255, 0.50) -26.79%, rgba(102, 102, 102, 0.00) 74.1%), linear-gradient(207deg, rgba(255, 255, 255, 0.50) -10.35%, rgba(102, 102, 102, 0.00) 52.35%), #00204D",
+          boxShadow: "0 4px 4px 0 rgba(0, 0, 0, 0.25)",
+          transform: "translateX(-20px) rotate(-1.2deg)",
+          transformOrigin: "center right",
+          pointerEvents: "none"
+        }}
+      />
+      
       {/* Main Panel Content: Responsive rounding and height */}
       <div 
         className="relative z-20 flex flex-col w-full pl-8 pr-8 pt-12 pb-10 lg:pl-[56px] lg:pr-0 lg:pt-[47px] lg:pb-[47px] rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-none shadow-[0_20px_50px_rgba(0,0,0,0.15)] lg:shadow-[-30px_0_80px_rgba(0,0,0,0.3)] min-h-[500px] h-[640px] lg:h-[867px]"
