@@ -60,7 +60,7 @@ export function CalendarPane() {
   };
 
   return (
-    <div className="relative flex items-center justify-center w-full max-w-[640px]">
+    <div className="relative flex items-center justify-center w-full max-w-[648px]">
 
       {/* Main Content */}
       <div className="relative flex flex-col w-full max-w-[420px]">

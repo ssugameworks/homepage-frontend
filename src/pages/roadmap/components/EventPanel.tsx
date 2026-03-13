@@ -22,11 +22,11 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
       
       {/* Main Panel Content: Responsive rounding and height */}
       <div 
-        className="relative z-20 flex flex-col w-full pl-8 pr-8 lg:pl-12 lg:pr-0 pt-12 pb-10 rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-0 shadow-[0_20px_50px_rgba(0,0,0,0.15)] lg:shadow-[-30px_0_80px_rgba(0,0,0,0.3)] min-h-[500px] h-[640px] lg:h-[720px]"
+        className="relative z-20 flex flex-col w-full pl-8 pr-8 pt-12 pb-10 lg:pl-[56px] lg:pr-0 lg:pt-[47px] lg:pb-[47px] rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-0 shadow-[0_20px_50px_rgba(0,0,0,0.15)] lg:shadow-[-30px_0_80px_rgba(0,0,0,0.3)] min-h-[500px] h-[640px] lg:h-[867px]"
         style={{ background: "linear-gradient(73deg, rgba(255, 255, 255, 0.50) -26.79%, rgba(102, 102, 102, 0.00) 74.1%), linear-gradient(207deg, rgba(255, 255, 255, 0.50) -10.35%, rgba(102, 102, 102, 0.00) 52.35%), #00204D" }}
       >
         {/* Date Header */}
-        <div className="mb-6 flex flex-row lg:flex-col items-baseline lg:items-start gap-3 lg:gap-1 pr-0 lg:pr-12">
+        <div className="mb-6 flex flex-row lg:flex-col items-baseline lg:items-start gap-3 lg:gap-1 pr-0 lg:pr-[56px]">
           <div className="text-[38px] lg:text-[50px] font-medium leading-none text-white tracking-tighter">
             {day}
           </div>
@@ -36,10 +36,10 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
         </div>
 
         {/* Divider */}
-        <div className="mb-8 lg:mb-10 h-[4px] w-[calc(100%-32px)] lg:w-[calc(100%-48px)] bg-white" />
+        <div className="mb-8 lg:mb-10 h-[4px] w-[calc(100%-32px)] lg:w-full bg-white" style={{ borderRadius: "100px 0 0 100px" }} />
 
         {/* Event Area */}
-        <div className="flex-1 relative overflow-hidden">
+        <div className="flex-1 relative overflow-hidden pr-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={`${year}-${month}-${day}`}
@@ -50,7 +50,7 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
               className="h-full w-full flex flex-col gap-4 lg:gap-5 overflow-y-auto pr-0 lg:pr-0 custom-scrollbar"
             >
               {selectedEvents.length === 0 ? (
-                <div className="flex flex-col gap-2 opacity-25 pr-8 lg:pr-12">
+                <div className="flex flex-col gap-2 opacity-25 pr-8 lg:pr-[56px]">
                   <div className="h-[120px] lg:h-[140px] w-full rounded-[20px] border-2 border-dashed border-white/20 flex items-center justify-center text-white/60 font-medium text-[18px] lg:text-[24px]">
                     일정이 없습니다
                   </div>
@@ -62,18 +62,18 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
                   return (
                     <div
                       key={event.id}
-                      className="flex flex-col justify-center p-6 lg:p-8 transition-all duration-300 shrink-0 rounded-[20px] lg:rounded-r-0 lg:rounded-l-[20px]"
+                      className="flex flex-col justify-center p-6 lg:p-8 transition-all duration-300 shrink-0 rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-0"
                       style={{
                         background: "rgba(255, 255, 255, 0.30)",
                         boxShadow: "0 4px 4px 0 rgba(0, 0, 0, 0.25)"
                       }}
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                      <div className="flex flex-col sm:flex-row sm:items-end lg:items-center justify-between gap-4">
                         <div className="flex-1">
                           <div className="text-[18px] lg:text-[28px] font-normal tracking-tight text-white mb-2 leading-tight group-hover:text-blue-300 transition-colors">
                             {event.title}
                           </div>
-                          <div className="text-[18px] lg:text-[28px] font-normal text-white">
+                          <div className="text-[18px] lg:text-[25px] font-normal text-white">
                             {fmtRange(event)}
                           </div>
                         </div>

@@ -45,17 +45,17 @@ export function RoadmapPage() {
         />
       </div>
 
-      <main className="flex min-h-screen w-full justify-center bg-white overflow-x-hidden">
+      <main className="flex min-h-screen w-full justify-start bg-white overflow-x-hidden">
         {/* Sync Container: This wrapper ensures both components stay together at 42px gap */}
-        <div className="flex flex-col lg:flex-row w-full max-w-[1440px] min-h-screen items-center lg:items-start justify-center lg:gap-[42px] px-6 lg:px-12">
+        <div className="flex flex-col lg:flex-row w-full min-h-screen items-center lg:items-start justify-start lg:gap-[42px] px-6 lg:px-0">
           
-          {/* Left Side: Calendar (Reduced top padding on mobile) */}
-          <div className="w-full lg:flex-1 flex flex-col items-center lg:items-end justify-start pt-32 lg:pt-40 pb-12 lg:pb-20">
+          {/* Left Side: Calendar (Positioned 114px from edge to ensure arrow is at 40px) */}
+          <div className="w-full lg:w-[648px] flex flex-col items-center lg:items-start justify-start pt-32 lg:pt-[180px] pb-12 lg:pb-20">
             <CalendarPane />
           </div>
 
-          {/* Right Side: Event Detail (Full width on mobile, fixed width on desktop) */}
-          <div className="w-full lg:w-[440px] xl:w-[480px] flex flex-col items-stretch pb-20 lg:pt-40">
+          {/* Right Side: Event Detail (Full width on mobile, fills remaining space to the edge on desktop) */}
+          <div className="w-full lg:flex-1 flex flex-col items-stretch pb-20 lg:pt-[130px]">
             <EventPanel reducedMotion={!!reducedMotion} />
           </div>
           
