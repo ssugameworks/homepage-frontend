@@ -7,17 +7,17 @@ export function CTASection() {
             className="w-full font-semibold tracking-[-3.2px] leading-[1.3]"
             style={{ fontSize: "clamp(36px,6vw,80px)" }}
           >
-            같이 만들 다음 25년,
+            들어오면 6가지 프로그램을
             <br />
-            여기서 시작합니다
+            전부 경험할 수 있어요
           </span>
           <span
             className="w-full font-medium tracking-[-1.44px] leading-[1.3]"
             style={{ fontSize: "clamp(20px,2.8vw,36px)" }}
           >
-            기획, 개발, 디자인.
+            봄나들이부터 아이디어톤, MT까지 —
             <br />
-            분야를 넘어 함께 성장하는 곳
+            포트폴리오에 쓸 결과물도 만들어요.
           </span>
         </div>
         <button
