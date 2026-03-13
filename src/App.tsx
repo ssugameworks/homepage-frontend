@@ -8,6 +8,7 @@ import { HistoryPage } from "@/pages/history";
 import { Homepage } from "@/pages/homepage";
 import { MembersPage } from "@/pages/members";
 import { RoadmapPage } from "@/pages/roadmap";
+import { NotFoundPage } from "@/pages/not-found";
 import { useEffect } from "react";
 
 function useRoute() {
@@ -29,6 +30,11 @@ export function App() {
   });
 
   const isHome = path === ROUTES.home;
+  const isKnownRoute = isHome
+    || path === ROUTES.history
+    || path === ROUTES.members
+    || path === ROUTES.activity
+    || path === ROUTES.activityLegacy;
   const onScrollTop = isHome
     ? () => window.scrollTo({ top: 0, behavior: "smooth" })
     : navigateHome;
@@ -59,6 +65,9 @@ export function App() {
       )}
       {(path === ROUTES.activity || path === ROUTES.activityLegacy) && (
         <RoadmapPage onHeaderConfig={onHeaderConfig} onHeroReady={onHeroReady} />
+      )}
+      {!isKnownRoute && (
+        <NotFoundPage onHeaderConfig={onHeaderConfig} onHeroReady={onHeroReady} />
       )}
     </>
   );
