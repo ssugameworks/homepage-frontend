@@ -5,11 +5,11 @@ export function CTASection() {
         <div className="flex w-full flex-col items-center gap-8 text-center text-ink">
           <span
             className="w-full font-semibold tracking-[-3.2px] leading-[1.3]"
-            style={{ fontSize: "clamp(36px,6vw,80px)" }}
+            style={{ fontSize: "clamp(36px,5vw,64px)" }}
           >
-            들어오면 6가지 프로그램을
+            즐겁게 몰입하고
             <br />
-            전부 경험할 수 있어요
+            크게 성장할 사람을 구해요
           </span>
           <span
             className="w-full font-medium tracking-[-1.44px] leading-[1.3]"

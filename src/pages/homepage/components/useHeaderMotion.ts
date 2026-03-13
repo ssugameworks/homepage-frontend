@@ -9,6 +9,13 @@ import {
 
 const CHROME_RANGE  = [0, 60];
 const DARK_SECTIONS = new Set(["home", "about", "history"]);
+const SKY_TONE_SECTIONS = new Set(["history-bridge", "event"]);
+
+function getToneValue(section: string) {
+  if (DARK_SECTIONS.has(section)) return 0;
+  if (SKY_TONE_SECTIONS.has(section)) return 1;
+  return 2;
+}
 
 export function useHeaderMotion(activeSection: string, initialDark = true) {
   const { scrollY } = useScroll();
@@ -16,8 +23,13 @@ export function useHeaderMotion(activeSection: string, initialDark = true) {
 
   // 0 = light section, 1 = dark section — 부드럽게 전환
   const darkProgress = useMotionValue(DARK_SECTIONS.has(activeSection) ? 1 : 0);
+  const toneProgress = useMotionValue(getToneValue(activeSection));
   useEffect(() => {
     animate(darkProgress, DARK_SECTIONS.has(activeSection) ? 1 : 0, {
+      duration: 0.45,
+      ease: "easeInOut",
+    });
+    animate(toneProgress, getToneValue(activeSection), {
       duration: 0.45,
       ease: "easeInOut",
     });
@@ -35,10 +47,10 @@ export function useHeaderMotion(activeSection: string, initialDark = true) {
     });
   }, [scrollY]);
 
-  // 스크롤됐을 때 배경색 (dark=어두운, light=흰색)
-  const bgR = useTransform(darkProgress, [0, 1], [255, 18]);
-  const bgG = useTransform(darkProgress, [0, 1], [255, 18]);
-  const bgB = useTransform(darkProgress, [0, 1], [255, 20]);
+  // tone: 0=dark, 1=sky, 2=light
+  const bgR = useTransform(toneProgress, [0, 1, 2], [18, 199, 255]);
+  const bgG = useTransform(toneProgress, [0, 1, 2], [18, 224, 255]);
+  const bgB = useTransform(toneProgress, [0, 1, 2], [20, 255, 255]);
   const bgA = useTransform(navProgress,  [0, 1], [0,   0.88]);
 
   // 스크롤됐을 때 텍스트색 (dark=흰색, light=검정)
@@ -46,14 +58,15 @@ export function useHeaderMotion(activeSection: string, initialDark = true) {
   // initialDark=false(밝은 페이지): 최상단부터 검정
   const initText = initialDark ? 250 : 12;
   const scrolledTextColor = useTransform(
-    [navProgress, darkProgress],
-    ([nav, dark]) => {
+    [navProgress, toneProgress],
+    ([nav, tone]) => {
       const n = nav as number;
-      const d = dark as number;
-      const scrolledR = 250 * d + 12 * (1 - d);
-      const scrolledB = 250 * d + 13 * (1 - d);
+      const t = tone as number;
+      const scrolledR = t <= 1 ? 250 - (246 * t) : 4 + 8 * (t - 1);
+      const scrolledGB = t <= 1 ? 250 - (218 * t) : 32 - 20 * (t - 1);
+      const scrolledB = t <= 1 ? 250 - (174 * t) : 76 - 63 * (t - 1);
       const r  = Math.round(initText + (scrolledR - initText) * n);
-      const gb = Math.round(initText + (scrolledR - initText) * n);
+      const gb = Math.round(initText + (scrolledGB - initText) * n);
       const b  = Math.round(initText + (scrolledB - initText) * n);
       return `rgb(${r} ${gb} ${b})`;
     }
@@ -61,14 +74,13 @@ export function useHeaderMotion(activeSection: string, initialDark = true) {
 
   // 테두리
   const borderColor = useTransform(
-    [navProgress, darkProgress],
-    ([nav, dark]) => {
+    [navProgress, toneProgress],
+    ([nav, tone]) => {
       const n = nav as number;
-      const d = dark as number;
-      const a = n * (d > 0.5 ? 0.12 : 0.08);
-      return d > 0.5
-        ? `1px solid rgba(255,255,255,${a})`
-        : `1px solid rgba(12,12,13,${a})`;
+      const t = tone as number;
+      if (t < 0.5) return `1px solid rgba(255,255,255,${n * 0.12})`;
+      if (t < 1.5) return `1px solid rgba(0,32,77,${n * 0.14})`;
+      return `1px solid rgba(12,12,13,${n * 0.08})`;
     }
   );
 
@@ -89,14 +101,19 @@ export function useHeaderMotion(activeSection: string, initialDark = true) {
     background: useMotionTemplate`rgba(${bgR},${bgG},${bgB},${bgA})`,
     border: borderColor,
     shellBorder: useTransform(
-      [navProgress, darkProgress],
-      ([nav, dark]) => {
+      [navProgress, toneProgress],
+      ([nav, tone]) => {
         const n = nav as number;
-        const d = dark as number;
+        const t = tone as number;
+        if (t < 0.5) {
+          const a = 0.85 - n * (0.85 - 0.2);
+          return `rgba(250,250,250,${a})`;
+        }
+        if (t < 1.5) {
+          return `rgba(0,32,77,${0.22 + n * 0.16})`;
+        }
         const a = 0.85 - n * (0.85 - 0.2);
-        return d > 0.5
-          ? `rgba(250,250,250,${a})`
-          : `rgba(12,12,13,${a})`;
+        return `rgba(12,12,13,${a})`;
       }
     ),
     blur: useMotionTemplate`blur(${useTransform(navProgress, [0, 1], [0, 12])}px)`,
