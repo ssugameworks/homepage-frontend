@@ -664,7 +664,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
         {/* ── Hero ──────────────────────────────────────────────── */}
         <div
           id="home"
-          className="relative h-screen min-h-225 w-full shrink-0 overflow-hidden bg-ink"
+          className="relative h-svh w-full shrink-0 overflow-hidden bg-ink"
         >
           {/* 배경 레이어 — overflow-hidden 없이 mask가 직접 이미지를 fade */}
           <motion.div
@@ -708,7 +708,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
           </motion.div>
 
           {/* Hero tagline */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 select-none pb-20">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 select-none">
             {["배우고 도전하며", "가치를 만드는 사람으로 성장해요"].map(
               (line, i) => (
                 <motion.div
@@ -734,7 +734,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             )}
             <motion.button
               onClick={() => scrollTo("apply")}
-              className="mt-8 px-8 py-3.5 rounded-full font-semibold text-[18px] tracking-[-0.54px] leading-none cursor-pointer whitespace-nowrap"
+              className="mt-4 px-8 py-3.5 rounded-full font-semibold text-[18px] tracking-[-0.54px] leading-none cursor-pointer whitespace-nowrap"
               style={{
                 color: "#fafafa",
                 border: "1px solid rgba(255,255,255,0.4)",
@@ -786,10 +786,10 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
         {/* ── About ─────────────────────────────────────────────── */}
         <section
           id="about"
-          className="flex flex-col gap-25 items-center pt-0 pb-30 w-full bg-ink -mt-px"
+          className="flex flex-col gap-25 items-center pt-40 pb-30 w-full bg-ink -mt-px"
         >
           <FadeUp
-            threshold={0.3}
+            threshold={0.12}
             className="flex flex-col items-center font-bold tracking-[-1.5px] text-center px-4"
           >
             <span
