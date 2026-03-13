@@ -20,9 +20,9 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <div className="relative h-full w-full flex flex-col items-stretch pr-0">
       
-      {/* Stacked Paper Effect - Background Layer */}
+      {/* Stacked Paper Effect - Background Layer (Desktop only) */}
       <div 
-        className="absolute inset-y-4 left-0 right-0 z-10 rounded-l-[20px] rounded-r-none"
+        className="hidden lg:block absolute inset-y-4 left-0 right-0 z-10 rounded-l-[20px] rounded-r-none"
         style={{ 
           background: "linear-gradient(73deg, rgba(255, 255, 255, 0.50) -26.79%, rgba(102, 102, 102, 0.00) 74.1%), linear-gradient(207deg, rgba(255, 255, 255, 0.50) -10.35%, rgba(102, 102, 102, 0.00) 52.35%), #00204D",
           boxShadow: "0 4px 4px 0 rgba(0, 0, 0, 0.25)",
