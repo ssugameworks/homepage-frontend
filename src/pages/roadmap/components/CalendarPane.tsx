@@ -13,6 +13,8 @@ const calendarGridVariants = {
 };
 
 export function CalendarPane() {
+  const maxEventSlots = 5;
+
   const { viewYear, viewMonth, navDir, shiftView } = useRoadmapStore(
     useShallow((s) => ({
       viewYear: s.viewYear,
@@ -175,16 +177,19 @@ export function CalendarPane() {
                   return b.end.localeCompare(a.end);
                 });
 
-                // 3. 슬롯 패킹 (3개 슬롯까지)
-                const slots: [string[], string[], string[]] = [[], [], []];
+                // 3. 슬롯 패킹 (5개 슬롯까지)
+                const slots = Array.from({ length: maxEventSlots }, () => [] as string[]);
                 uniqueEventsInRow.forEach(ev => {
-                  for (let i = 0; i < 3; i++) {
-                    const hasOverlap = slots[i].some(slotEvId => {
+                  for (let i = 0; i < maxEventSlots; i++) {
+                    const slot = slots[i];
+                    if (!slot) continue;
+
+                    const hasOverlap = slot.some(slotEvId => {
                       const slotEv = events.find(e => e.id === slotEvId)!;
                       return Math.max(dayjs(ev.start).unix(), dayjs(slotEv.start).unix()) <= Math.min(dayjs(ev.end).unix(), dayjs(slotEv.end).unix());
                     });
                     if (!hasOverlap) {
-                      slots[i].push(ev.id);
+                      slot.push(ev.id);
                       break;
                     }
                   }
@@ -219,7 +224,7 @@ export function CalendarPane() {
                           </div>
                           
                           {/* Event Bars - Fixed Packed Slots per Week */}
-                          <div className="mt-1 flex w-full flex-col gap-[2px] h-[20px] lg:h-[32px]">
+                          <div className="mt-1 flex h-[26px] w-full flex-col gap-[2px] lg:h-[26px]">
                             {slots.map((slotEventIds, i) => {
                               const eventIdInSlot = slotEventIds.find(id => dailyBars.some(b => b.eventId === id));
                               const bar = dailyBars.find(b => b.eventId === eventIdInSlot);
