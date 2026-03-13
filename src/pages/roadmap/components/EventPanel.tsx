@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useShallow } from "zustand/react/shallow";
-import { MONTH_NAMES, EASE } from "@/pages/roadmap/constants";
+import { MONTH_NAMES, EASE, EVENT_COLORS, CAT_COLOR, ROADMAP_INDICATOR_COLOR } from "@/pages/roadmap/constants";
 import { useRoadmapStore } from "@/pages/roadmap/store/roadmap-store";
 import { fmtRange, getEventsOn } from "@/pages/roadmap/utils";
 
@@ -14,7 +14,17 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
     }))
   );
 
-  const selectedEvents = getEventsOn(events, year, month, day);
+  const rawSelectedEvents = getEventsOn(events, year, month, day);
+  
+  // Sort events: those with links first
+  const selectedEvents = [...rawSelectedEvents].sort((a, b) => {
+    const hasLinkA = !!(a.link || a["링크"] || a.url || a.URL);
+    const hasLinkB = !!(b.link || b["링크"] || b.url || b.URL);
+    if (hasLinkA && !hasLinkB) return -1;
+    if (!hasLinkA && hasLinkB) return 1;
+    return 0;
+  });
+
   const monthName = MONTH_NAMES[month];
 
   return (
@@ -74,7 +84,7 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
                   return (
                     <div
                       key={event.id}
-                      className="flex flex-col justify-center p-6 lg:p-8 transition-all duration-300 shrink-0 rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-none"
+                      className="relative flex flex-col justify-center p-6 lg:p-8 transition-all duration-300 shrink-0 rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-none"
                       style={{
                         background: "rgba(255, 255, 255, 0.30)",
                         boxShadow: "0 4px 4px 0 rgba(0, 0, 0, 0.25)"
