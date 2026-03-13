@@ -246,63 +246,121 @@ function EventScrollShowcase() {
   return (
     <div
       ref={sectionRef}
-      className="relative hidden w-full lg:block"
+      className="relative w-full"
       style={{ height: `calc(${EVENTS.length} * 140vh)` }}
     >
-      <div className="sticky top-0 flex h-screen items-start pt-28 pb-10">
-        <div className="mx-auto grid h-full w-full max-w-[1240px] grid-cols-[220px_minmax(0,1fr)] gap-10 px-10">
-          <div className="flex flex-col gap-3 pt-10">
-            {EVENTS.map((event, index) => {
-              const active = index === activeIndex;
-              return (
-                <div key={event.titleHighlight} className="flex items-center gap-3">
-                  <div className="relative h-12 w-[2px] overflow-hidden rounded-full bg-black/10">
-                    <motion.div
-                      className="absolute inset-x-0 bottom-0 rounded-full bg-[#1a7aff]"
-                      initial={false}
-                      animate={{ height: active ? "100%" : "24%" }}
-                      transition={{ duration: reducedMotion ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <div className={`text-[12px] font-semibold tracking-[0.16em] ${active ? "text-black/55" : "text-black/28"}`}>
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
-                    <div className={`mt-1 text-[17px] font-semibold tracking-[-0.03em] ${active ? "text-ink" : "text-black/35"}`}>
-                      {event.titleHighlight}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+      <div className="sticky top-0 h-screen">
 
-          <div className="relative h-full">
+        {/* ── Mobile layout ── */}
+        <div className="flex h-full flex-col px-4 pt-28 pb-8 lg:hidden">
+          <div className="shrink-0 pb-5">
+            <div className="text-[clamp(26px,7vw,36px)] font-bold leading-[1.22] tracking-[-0.04em] text-ink">
+              한 해동안 함께할
+              <br />
+              활동들이에요.
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center justify-start gap-1.5 pb-5">
+            {EVENTS.map((_, i) => (
+              <motion.div
+                key={i}
+                className="rounded-full bg-brand"
+                animate={{ width: i === activeIndex ? 20 : 6, opacity: i === activeIndex ? 1 : 0.3 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                style={{ height: 6 }}
+              />
+            ))}
+          </div>
+          <div className="relative min-h-0 flex-1">
             <AnimatePresence mode="popLayout" initial={false}>
               {EVENTS.map((event, index) =>
                 index === activeIndex ? (
                   <motion.div
                     key={event.titleHighlight}
-                    className="absolute inset-0"
-                    initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 28 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -28 }}
-                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-0 flex flex-col gap-5"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
                   >
-                    <EventSpotlightCard
-                      index={index + 1}
-                      title={event.title}
-                      titleHighlight={event.titleHighlight}
-                      description={event.description}
-                      imgSrc={event.imgSrc}
-                      imgStyle={event.imgStyle}
-                    />
+                    <div className="w-full shrink-0">
+                      <MacFrame>
+                        <img alt="" className="absolute inset-0 h-full w-full object-cover object-center" src={event.imgSrc} />
+                      </MacFrame>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-col font-bold tracking-[-1.5px]" style={{ fontSize: "clamp(26px,7vw,36px)" }}>
+                        <span className="leading-[1.3] text-ink">{event.title}</span>
+                        <span className="leading-[1.3] text-brand">{event.titleHighlight}</span>
+                      </div>
+                      <div className="font-medium leading-[1.3] tracking-[-0.03em] text-black/58" style={{ fontSize: "clamp(14px,4vw,17px)" }}>
+                        {event.description}
+                      </div>
+                    </div>
                   </motion.div>
                 ) : null,
               )}
             </AnimatePresence>
           </div>
         </div>
+
+        {/* ── Desktop layout ── */}
+        <div className="hidden h-full items-start pt-28 pb-10 lg:flex">
+          <div className="mx-auto grid h-full w-full max-w-[1240px] grid-cols-[220px_minmax(0,1fr)] gap-10 px-10">
+            <div className="flex flex-col gap-3 pt-10">
+              {EVENTS.map((event, index) => {
+                const active = index === activeIndex;
+                return (
+                  <div key={event.titleHighlight} className="flex items-center gap-3">
+                    <div className="relative h-12 w-[2px] overflow-hidden rounded-full bg-black/10">
+                      <motion.div
+                        className="absolute inset-x-0 bottom-0 rounded-full bg-[#1a7aff]"
+                        initial={false}
+                        animate={{ height: active ? "100%" : "24%" }}
+                        transition={{ duration: reducedMotion ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <div className={`text-[12px] font-semibold tracking-[0.16em] ${active ? "text-black/55" : "text-black/28"}`}>
+                        {String(index + 1).padStart(2, "0")}
+                      </div>
+                      <div className={`mt-1 text-[17px] font-semibold tracking-[-0.03em] ${active ? "text-ink" : "text-black/35"}`}>
+                        {event.titleHighlight}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="relative h-full">
+              <AnimatePresence mode="popLayout" initial={false}>
+                {EVENTS.map((event, index) =>
+                  index === activeIndex ? (
+                    <motion.div
+                      key={event.titleHighlight}
+                      className="absolute inset-0"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                    >
+                      <EventSpotlightCard
+                        index={index + 1}
+                        title={event.title}
+                        titleHighlight={event.titleHighlight}
+                        description={event.description}
+                        imgSrc={event.imgSrc}
+                        imgStyle={event.imgStyle}
+                      />
+                    </motion.div>
+                  ) : null,
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
@@ -812,7 +870,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
 
           <div className="flex flex-col gap-16 items-center px-10 py-12 md:py-20 w-full"
             style={{ background: "linear-gradient(to bottom,#c7e0ff 0%,#c7e0ff 74%,#fafafa 100%)" }}>
-            <div className="flex w-full max-w-290 flex-col gap-6 px-4 md:px-8">
+            <div className="hidden w-full max-w-290 flex-col gap-6 px-4 md:px-8 lg:flex">
               <div className="max-w-230 text-[clamp(28px,4vw,52px)] font-bold leading-[1.22] tracking-[-0.04em] text-ink">
                 한 해동안 함께할
                 <br />
@@ -821,21 +879,6 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             </div>
 
             <EventScrollShowcase />
-
-            <div className="flex w-full flex-col gap-16 md:gap-24 lg:hidden">
-              {EVENTS.map((event, index) => (
-                <EventCard
-                  key={event.titleHighlight}
-                  index={index + 1}
-                  reverse={index % 2 === 1}
-                  title={event.title}
-                  titleHighlight={event.titleHighlight}
-                  description={event.description}
-                  imgSrc={event.imgSrc}
-                  imgStyle={event.imgStyle}
-                />
-              ))}
-            </div>
 
             <button onClick={navigateActivity} className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
               <span className="font-medium text-ink text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
