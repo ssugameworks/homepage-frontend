@@ -3,13 +3,11 @@ import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, use
 import { GameworksLogo } from "@/pages/homepage/components";
 import type { PageProps } from "@/lib/header-config";
 import { TimelineSection } from "@/pages/homepage/components/TimelineSection";
-import { EASE, FadeUp, SectionTitle, SlideIn } from "@/pages/homepage/components/motion";
+import { FadeUp, SlideIn } from "@/pages/homepage/components/motion";
 import { TIMELINE } from "@/pages/homepage/content/homepage";
 import {
-  prefersReducedMotion,
   scrollTo,
   useCursorFollower,
-  useInView,
   useParallaxEffect,
   useScrollProgress,
   useSectionBackground,
@@ -17,7 +15,7 @@ import {
 import { CTASection } from "@/pages/homepage/sections/CTASection";
 import { StatsSection } from "@/pages/homepage/sections/StatsSection";
 import { Footer } from "@/components/Footer";
-import { navigateActivity, navigateMembers } from "@/lib/navigation";
+import { navigateActivity } from "@/lib/navigation";
 
 /* ─── Local assets ────────────────────────────────────────────────────── */
 import imgFrame1    from "@/assets/layer-2-img-1.webp";
@@ -46,6 +44,8 @@ const glowColors = [
   "#2563EB","#7C3AED","#6D28D9","#4338CA",
   "#3B82F6","#60A5FA","#818CF8","#8B5CF6",
 ];
+
+const SECTION_HEADING_SIZE = "clamp(30px, 4.2vw, 52px)";
 
 const MEMBERS = [
   { role: "회장", name: "장윤아", desc: "기획과 디자인으로 팀의 방향을 함께 만들어가요.", img: imgFrame7, delay: 0, style: { height: "112.66%", left: "-3.52%", top: "-3.54%", width: "106.8%" } },
@@ -87,11 +87,39 @@ const EVENTS = [
     imgStyle: { height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" } as React.CSSProperties,
   },
   {
+    title: "더 큰 현장과 연결돼요.",
+    titleHighlight: "Flow: Startup Bridge",
+    description: <>스타트업과 창업 생태계 이야기를 가까이에서 들어요.<br />밖으로 이어지는 감각을 키우는 시간이에요.</>,
+    imgSrc: eventImg5,
+    imgStyle: { height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" } as React.CSSProperties,
+  },
+  {
+    title: "꾸준히 풀며 실력을 쌓아요.",
+    titleHighlight: "잔디심기 챌린지",
+    description: <>백준 문제 풀이 마라톤으로 매일 한 칸씩 잔디를 심어요.<br />꾸준함으로 실력을 만드는 시간이에요.</>,
+    imgSrc: eventImg4,
+    imgStyle: { height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" } as React.CSSProperties,
+  },
+  {
+    title: "배운 걸 무대에서 보여줘요.",
+    titleHighlight: "경찰과 도둑",
+    description: <>팀으로 준비한 결과물을 대회에서 직접 선보여요.<br />실전의 긴장감 속에서 더 크게 성장해요.</>,
+    imgSrc: eventImg5,
+    imgStyle: { height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" } as React.CSSProperties,
+  },
+  {
     title: "나만의 서비스를 기획해요.",
     titleHighlight: "아이디어톤",
     description: <>팀으로 부딪히며 아이디어를 실제 서비스로 만들어요.<br />포트폴리오에 쓸 수 있는 결과물이 나와요.</>,
     imgSrc: eventImg5,
     imgStyle: { height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" } as React.CSSProperties,
+  },
+  {
+    title: "작품을 직접 보고 느껴요.",
+    titleHighlight: "미디어 아트 전시회",
+    description: <>미디어 아트를 함께 보며 시야를 넓혀요.<br />콘텐츠와 경험을 보는 감각도 함께 자라요.</>,
+    imgSrc: eventImg6,
+    imgStyle: { height: "231.99%", left: "0", top: "-82.61%", width: "100%" } as React.CSSProperties,
   },
   {
     title: "1박 2일로 같이 떠나요.",
@@ -111,69 +139,6 @@ function MacFrame({ children }: { children: React.ReactNode }) {
       <div className="absolute overflow-hidden rounded-3" style={{ top: '3.7%', left: '2.17%', right: '2.17%', bottom: '3.7%' }}>
         {children}
       </div>
-    </div>
-  );
-}
-
-/* ─── Event card ─────────────────────────────────────────────────────── */
-function EventCard({
-  index, reverse, title, titleHighlight, description, imgSrc, imgStyle,
-}: {
-  index: number;
-  reverse?: boolean;
-  title: string;
-  titleHighlight: string;
-  description: React.ReactNode;
-  imgSrc: string;
-  imgStyle: React.CSSProperties;
-}) {
-  const { ref, visible } = useInView(0.04);
-  const dx = reverse ? 60 : -60;
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const imgInnerRef = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    if (prefersReducedMotion) return;
-    const onScroll = () => {
-      if (!containerRef.current || !imgInnerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const progress = (rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight;
-      imgInnerRef.current.style.transform = `translateY(${progress * -20}px)`;
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const text = (
-    <div className="flex w-full xl:flex-[1_0_0] flex-col gap-6 items-start min-w-0">
-      <div className="flex flex-col items-start font-bold tracking-[-1.5px]" style={{ fontSize: "clamp(32px,4vw,50px)" }}>
-        <span className="leading-[1.3] text-ink">{title}</span>
-        <span className="leading-[1.3] text-brand">{titleHighlight}</span>
-      </div>
-      <div className="font-medium tracking-[-0.84px] leading-[1.3] text-black/58" style={{ fontSize: "clamp(18px,2.5vw,28px)" }}>
-        {description}
-      </div>
-    </div>
-  );
-  const frame = (
-    <div ref={containerRef} className="w-full xl:w-[55%] xl:shrink-0">
-      <MacFrame>
-        <img ref={imgInnerRef} alt="" className="absolute max-w-none" src={imgSrc} style={imgStyle} />
-      </MacFrame>
-    </div>
-  );
-  return (
-    <div ref={ref as React.RefObject<HTMLDivElement>}
-      className={`flex flex-col ${reverse ? 'xl:flex-row-reverse' : 'xl:flex-row'} gap-6 xl:gap-20 items-center px-4 md:px-8 w-full`}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateX(0)" : `translateX(${dx}px)`,
-        transition: `opacity 0.8s ease, transform 0.8s ${EASE}`,
-        willChange: "transform",
-      }}>
-      {<>{frame}{text}</>}
     </div>
   );
 }
@@ -198,12 +163,12 @@ function EventSpotlightCard({
           <span className="leading-[1.3] text-ink">{title}</span>
           <span className="leading-[1.3] text-brand">{titleHighlight}</span>
         </div>
-        <div className="font-medium tracking-[-0.04em] leading-[1.22] text-black/58" style={{ fontSize: "clamp(16px,1.55vw,22px)" }}>
+        <div className="font-medium tracking-tight-xl leading-[1.22] text-black/58" style={{ fontSize: "clamp(16px,1.55vw,22px)" }}>
           {description}
         </div>
       </div>
 
-      <div className="w-full min-h-0 flex-1 max-w-[980px]">
+      <div className="w-full min-h-0 flex-1 max-w-245">
         <MacFrame>
           <img
             alt=""
@@ -239,14 +204,14 @@ function EventScrollShowcase() {
     <div
       ref={sectionRef}
       className="relative w-full"
-      style={{ height: `calc(${EVENTS.length} * 140vh)` }}
+      style={{ height: `calc(${EVENTS.length} * 112vh)` }}
     >
       <div className="sticky top-0 h-screen">
 
         {/* ── Mobile layout ── */}
         <div className="flex h-full flex-col px-4 pt-28 pb-8 lg:hidden">
           <div className="shrink-0 pb-5">
-            <div className="text-[clamp(26px,7vw,36px)] font-bold leading-[1.22] tracking-[-0.04em] text-ink">
+            <div className="text-[clamp(26px,7vw,36px)] font-bold leading-[1.22] tracking-tight-xl text-ink">
               한 해동안 함께할
               <br />
               활동들이에요.
@@ -298,15 +263,15 @@ function EventScrollShowcase() {
 
         {/* ── Desktop layout ── */}
         <div className="hidden h-full items-start pt-28 pb-10 lg:flex">
-          <div className="mx-auto grid h-full w-full max-w-[1240px] grid-cols-[220px_minmax(0,1fr)] gap-10 px-10">
+          <div className="mx-auto grid h-full w-full max-w-310 grid-cols-[220px_minmax(0,1fr)] gap-10 px-10">
             <div className="flex flex-col gap-3 pt-10">
               {EVENTS.map((event, index) => {
                 const active = index === activeIndex;
                 return (
                   <div key={event.titleHighlight} className="flex items-center gap-3">
-                    <div className="relative h-12 w-[2px] overflow-hidden rounded-full bg-black/10">
+                    <div className="relative h-12 w-0.5 overflow-hidden rounded-full bg-black/10">
                       <motion.div
-                        className="absolute inset-x-0 bottom-0 rounded-full bg-[#1a7aff]"
+                        className="absolute inset-x-0 bottom-0 rounded-full bg-brand"
                         initial={false}
                         animate={{ height: active ? "100%" : "24%" }}
                         transition={{ duration: reducedMotion ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
@@ -372,7 +337,7 @@ const MemberCard = memo(function MemberCard({ role, name, desc, img, style, open
         if (Math.abs(e.clientX - pointerDownX.current) > 6) return;
         onToggle();
       }}
-      className="relative shrink-0 overflow-hidden rounded-[22px] cursor-pointer select-none w-[185px] sm:w-[220px] md:w-[245px] aspect-[4/5]"
+      className="relative shrink-0 overflow-hidden rounded-card cursor-pointer select-none w-46.25 sm:w-55 md:w-61.25 aspect-4/5"
       style={{ contain: "layout paint" }}
     >
       {/* Background photo */}
@@ -386,7 +351,7 @@ const MemberCard = memo(function MemberCard({ role, name, desc, img, style, open
       />
 
       {/* Bottom gradient + default label */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-linear-to-t from-black/70 to-transparent" />
       <motion.div
         className="absolute bottom-0 left-0 right-0 p-3.5"
         animate={{ opacity: open ? 0 : 1, y: open ? -36 : 0 }}
@@ -572,6 +537,8 @@ function MembersCarousel() {
 export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
   const [activeSection, setActiveSection] = useState("home");
   const [bgLoaded, setBgLoaded]           = useState(false);
+  const [pastEventScroll, setPastEventScroll] = useState(false);
+  const eventEndRef = useRef<HTMLDivElement>(null);
   const reducedMotion = !!useReducedMotion();
 
   const heroBgRef    = useRef<HTMLImageElement>(null);
@@ -596,6 +563,12 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
 
     const updateActiveSection = () => {
       const viewportPivot = window.innerHeight * 0.38;
+
+      if (eventEndRef.current) {
+        const r = eventEndRef.current.getBoundingClientRect();
+        setPastEventScroll(r.top <= viewportPivot);
+      }
+
       const containingSection = sections.find(({ el }) => {
         const rect = el.getBoundingClientRect();
         return rect.top <= viewportPivot && rect.bottom >= viewportPivot;
@@ -644,11 +617,12 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
   useEffect(() => {
     const t = setTimeout(() => onHeroReady(), 80);
     return () => clearTimeout(t);
-  }, []);
+  }, [onHeroReady]);
 
   useEffect(() => {
-    onHeaderConfig({ activeSection, darkHero: true });
-  }, [activeSection]);
+    const headerSection = activeSection === "event" && pastEventScroll ? "event-post" : activeSection;
+    onHeaderConfig({ activeSection: headerSection, darkHero: true });
+  }, [activeSection, pastEventScroll, onHeaderConfig]);
 
   return (
     <>
@@ -709,7 +683,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
 
           {/* Hero tagline */}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 select-none">
-            {["배우고 도전하며", "가치를 만드는 사람으로 성장해요"].map(
+            {["배우고 도전하며", "가치를 만드는 사람으로"].map(
               (line, i) => (
                 <motion.div
                   key={i}
@@ -794,18 +768,18 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
           >
             <span
               className="leading-[1.3] text-snow"
-              style={{ fontSize: "clamp(28px,4vw,50px)" }}
+              style={{ fontSize: SECTION_HEADING_SIZE }}
             >
               기획, 개발, 디자인을 함께 익히고
             </span>
             <span
               className="leading-[1.3] text-snow"
-              style={{ fontSize: "clamp(28px,4vw,50px)" }}
+              style={{ fontSize: SECTION_HEADING_SIZE }}
             >
               배운 걸 실제 결과로 이어가요
             </span>
             <span
-              className="mt-5 max-w-[760px] text-center font-medium leading-[1.5] tracking-[-0.03em] text-white/62"
+              className="mt-5 max-w-190 text-center font-medium leading-normal tracking-[-0.03em] text-white/62"
               style={{ fontSize: "clamp(16px,2vw,24px)" }}
             >
               스터디와 멘토링으로 배우고, 아이디어톤과 해커톤으로 직접
@@ -817,7 +791,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             {/* Photos — 데스크탑에서만 표시 */}
             <SlideIn
               from="left"
-              className="hidden lg:block relative w-85 shrink-0 aspect-[124/244.75]"
+              className="hidden lg:block relative w-85 shrink-0 aspect-124/244.75"
             >
               <div
                 className="absolute overflow-hidden border border-white/20"
@@ -907,7 +881,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
           }}
         >
           <div className="w-full px-6 pt-16 text-center md:px-16 lg:px-40">
-            <div className="text-[clamp(28px,4vw,52px)] font-bold leading-[1.22] tracking-[-0.04em] text-snow">
+            <div className="font-bold leading-[1.22] tracking-[-0.04em] text-snow" style={{ fontSize: SECTION_HEADING_SIZE }}>
               지금의 게임웍스는
               <br />
               25년의 시간 위에 있어요
@@ -936,14 +910,14 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(180deg,rgba(199,224,255,0)_0%,rgba(199,224,255,0.82)_68%,#c7e0ff_100%)]" />
           </div>
 
-          <div className="relative mx-auto flex min-h-[520px] w-full max-w-[1320px] flex-col justify-center px-6 py-20 md:px-10 lg:min-h-[620px] lg:px-16">
-            <div className="max-w-[920px]">
+          <div className="relative mx-auto flex min-h-130 w-full max-w-330 flex-col justify-center px-6 py-20 md:px-10 lg:min-h-[620px] lg:px-16">
+            <div className="max-w-230">
               <h2 className="text-[clamp(34px,5.2vw,76px)] font-bold leading-[1.06] tracking-[-0.05em] text-white">
                 그 흐름을 이어받아
                 <br />
                 지금의 우리가 움직이고 있어요
               </h2>
-              <p className="mt-5 max-w-[780px] text-[clamp(18px,2.1vw,28px)] font-medium leading-[1.55] tracking-[-0.03em] text-white/76">
+              <p className="mt-5 max-w-195 text-[clamp(18px,2.1vw,28px)] font-medium leading-[1.55] tracking-[-0.03em] text-white/76">
                 선배들이 만든 친목과 성장의 흐름을, 지금의 우리가 올해의 방식으로 다시 이어가고 있어요.
               </p>
             </div>
@@ -973,7 +947,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             }}
           >
             <div className="hidden w-full max-w-290 flex-col gap-6 px-4 md:px-8 lg:flex">
-              <div className="max-w-230 text-[clamp(28px,4vw,52px)] font-bold leading-[1.22] tracking-[-0.04em] text-ink">
+              <div className="max-w-230 font-bold leading-[1.22] tracking-[-0.04em] text-ink" style={{ fontSize: SECTION_HEADING_SIZE }}>
                 한 해동안 함께할
                 <br />
                 활동들이에요.
@@ -981,6 +955,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             </div>
 
             <EventScrollShowcase />
+            <div ref={eventEndRef} />
 
             <button
               onClick={navigateActivity}
@@ -994,7 +969,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
         </section>
 
         {/* ── People ────────────────────────────────────────────── */}
-        <section id="people" className="flex flex-col items-center w-full">
+        {/* <section id="people" className="flex flex-col items-center w-full">
           <SectionTitle text="PEOPLE" />
 
           <div className="flex flex-col gap-10 items-center pb-12 md:pb-20 w-full">
@@ -1021,7 +996,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
               </span>
             </button>
           </div>
-        </section>
+        </section> */}
 
         <CTASection />
 
