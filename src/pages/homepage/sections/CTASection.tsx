@@ -5,19 +5,19 @@ export function CTASection() {
         <div className="flex w-full flex-col items-center gap-8 text-center text-ink">
           <span
             className="w-full font-semibold tracking-[-3.2px] leading-[1.3]"
-            style={{ fontSize: "clamp(36px,6vw,80px)" }}
+            style={{ fontSize: "clamp(36px,5vw,64px)" }}
           >
-            같이 만들 다음 25년,
+            즐겁게 몰입하고
             <br />
-            여기서 시작합니다
+            크게 성장할 사람을 구해요
           </span>
           <span
             className="w-full font-medium tracking-[-1.44px] leading-[1.3]"
             style={{ fontSize: "clamp(20px,2.8vw,36px)" }}
           >
-            기획, 개발, 디자인.
+            봄나들이부터 아이디어톤, MT까지 —
             <br />
-            분야를 넘어 함께 성장하는 곳
+            포트폴리오에 쓸 결과물도 만들어요.
           </span>
         </div>
         <button

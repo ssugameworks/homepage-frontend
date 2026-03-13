@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, type MotionValue } from "framer-motion";
+import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useScroll, type MotionValue } from "framer-motion";
 import { GameworksLogo } from "@/pages/homepage/components";
 import type { PageProps } from "@/lib/header-config";
 import { TimelineSection } from "@/pages/homepage/components/TimelineSection";
@@ -54,20 +54,65 @@ const glowColors = [
 ];
 
 const MEMBERS = [
-  { role: "회장", name: "장윤아", desc: "기획과 디자인을 중심으로 팀의 방향과 흐름을 잡습니다.", img: imgFrame7, delay: 0, style: { height: "112.66%", left: "-3.52%", top: "-3.54%", width: "106.8%" } },
-  { role: "회장", name: "조영찬", desc: "프론트엔드 구현과 개발 운영으로 팀의 속도를 만듭니다.", img: imgFrame8, delay: 80, style: { height: "115.78%", left: "-4.82%", top: "-5.19%", width: "109.76%" } },
-  { role: "총무", name: "박서영", desc: "일정과 운영을 꼼꼼하게 챙기며 팀 전체의 기반을 다집니다.", img: imgFrame9, delay: 160, style: { height: "121.45%", left: "-10.96%", top: "-7.3%", width: "115.94%" } },
-  { role: "부회장", name: "유다은", desc: "UX와 디자인으로 결과물을 더 선명하게 만듭니다.", img: imgFrame10, delay: 0, style: { height: "111.61%", left: "-3.17%", top: "-5.98%", width: "105.81%" } },
-  { role: "부회장", name: "최서정", desc: "백엔드와 구조 설계로 팀의 안정적인 기반을 만듭니다.", img: imgFrame11, delay: 80, style: { height: "111.78%", left: "-3.15%", top: "-5.74%", width: "105.97%" } },
-  { role: "부회장", name: "최지원", desc: "홍보와 콘텐츠 기획으로 팀의 에너지를 바깥으로 확장합니다.", img: imgFrame12, delay: 160, style: { height: "110.35%", left: "-2.37%", top: "-5.22%", width: "104.61%" } },
-  { role: "부회장", name: "홍준우", desc: "프론트엔드 실전 경험으로 팀의 구현 수준을 끌어올립니다.", img: imgFrame13, delay: 240, style: { height: "102.78%", left: "-12.76%", top: "-2.86%", width: "124.99%" } },
+  { role: "회장", name: "장윤아", desc: "기획과 디자인으로 팀의 방향을 함께 만들어가요.", img: imgFrame7, delay: 0, style: { height: "112.66%", left: "-3.52%", top: "-3.54%", width: "106.8%" } },
+  { role: "회장", name: "조영찬", desc: "프론트엔드와 개발 운영으로 팀의 속도를 만들어요.", img: imgFrame8, delay: 80, style: { height: "115.78%", left: "-4.82%", top: "-5.19%", width: "109.76%" } },
+  { role: "총무", name: "박서영", desc: "일정과 운영을 꼼꼼하게 챙겨서 팀이 잘 돌아가게 해요.", img: imgFrame9, delay: 160, style: { height: "121.45%", left: "-10.96%", top: "-7.3%", width: "115.94%" } },
+  { role: "부회장", name: "유다은", desc: "UX 디자인으로 결과물을 더 선명하게 만들어요.", img: imgFrame10, delay: 0, style: { height: "111.61%", left: "-3.17%", top: "-5.98%", width: "105.81%" } },
+  { role: "부회장", name: "최서정", desc: "백엔드 설계로 팀의 든든한 기반을 만들어요.", img: imgFrame11, delay: 80, style: { height: "111.78%", left: "-3.15%", top: "-5.74%", width: "105.97%" } },
+  { role: "부회장", name: "최지원", desc: "홍보와 콘텐츠로 게임웍스의 에너지를 밖으로 전해요.", img: imgFrame12, delay: 160, style: { height: "110.35%", left: "-2.37%", top: "-5.22%", width: "104.61%" } },
+  { role: "부회장", name: "홍준우", desc: "프론트엔드 경험으로 팀의 구현 수준을 높여요.", img: imgFrame13, delay: 240, style: { height: "102.78%", left: "-12.76%", top: "-2.86%", width: "124.99%" } },
+] as const;
+
+const EVENTS = [
+  {
+    title: "벚꽃을 보러 놀러가요.",
+    titleHighlight: "봄나들이",
+    description: <>벚꽃을 보러 밖에 나가요.<br />가볍게 친해지기 딱 좋은 시간이에요.</>,
+    imgSrc: eventImg1,
+    imgStyle: { height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" } as React.CSSProperties,
+  },
+  {
+    title: "선배에게 물어봐요.",
+    titleHighlight: "멘토링",
+    description: <>학교 생활, 전공, 소모임 활용까지 —<br />먼저 겪어본 재학생 멘토한테 뭐든 물어볼 수 있어요.</>,
+    imgSrc: eventImg2,
+    imgStyle: { height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" } as React.CSSProperties,
+  },
+  {
+    title: "미션을 풀며 친해져요.",
+    titleHighlight: "짝선짝후",
+    description: <>선배·후배 짝지어 미션을 같이 풀어요.<br />어색함이 금방 사라져요.</>,
+    imgSrc: eventImg3,
+    imgStyle: { height: "139.2%", left: "-1.69%", top: "-10.62%", width: "103.47%" } as React.CSSProperties,
+  },
+  {
+    title: "직무에 대한 이야기를 들어요.",
+    titleHighlight: "커피챗",
+    description: <>실제 일하고 있는 선배의 커리어 이야기를 직접 들어요.<br />취업, 진로 — 궁금한 거 바로 물어볼 수 있어요.</>,
+    imgSrc: eventImg4,
+    imgStyle: { height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" } as React.CSSProperties,
+  },
+  {
+    title: "나만의 서비스를 기획해요.",
+    titleHighlight: "아이디어톤",
+    description: <>팀으로 부딪히며 아이디어를 실제 서비스로 만들어요.<br />포트폴리오에 쓸 수 있는 결과물이 나와요.</>,
+    imgSrc: eventImg5,
+    imgStyle: { height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" } as React.CSSProperties,
+  },
+  {
+    title: "1박 2일로 같이 떠나요.",
+    titleHighlight: "MT",
+    description: <>학기 중엔 못 나눈 이야기까지,<br />한 번에 가까워지는 시간이에요.</>,
+    imgSrc: eventImg6,
+    imgStyle: { height: "231.99%", left: "0", top: "-82.61%", width: "100%" } as React.CSSProperties,
+  },
 ] as const;
 
 
 /* ─── MacBook display frame ─────────────────────────────────────────── */
 function MacFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative w-full" style={{ aspectRatio: '195.75 / 115' }}>
+    <div className="relative w-full max-h-full" style={{ aspectRatio: '195.75 / 115' }}>
        <div className="absolute inset-0 bg-ink rounded-5" />
       <div className="absolute overflow-hidden rounded-3" style={{ top: '3.7%', left: '2.17%', right: '2.17%', bottom: '3.7%' }}>
         {children}
@@ -78,15 +123,15 @@ function MacFrame({ children }: { children: React.ReactNode }) {
 
 /* ─── Event card ─────────────────────────────────────────────────────── */
 function EventCard({
-  reverse, title, titleHighlight, description, imgSrc, imgStyle,
+  index, reverse, title, titleHighlight, description, imgSrc, imgStyle,
 }: {
+  index: number;
   reverse?: boolean;
   title: string;
   titleHighlight: string;
   description: React.ReactNode;
   imgSrc: string;
   imgStyle: React.CSSProperties;
-  tags?: string[];
 }) {
   const { ref, visible } = useInView(0.04);
   const dx = reverse ? 60 : -60;
@@ -109,11 +154,13 @@ function EventCard({
 
   const text = (
     <div className="flex w-full xl:flex-[1_0_0] flex-col gap-6 items-start min-w-0">
-<div className="flex flex-col items-start font-bold tracking-[-1.5px]" style={{ fontSize: "clamp(32px,4vw,50px)" }}>
+      <div className="flex flex-col items-start font-bold tracking-[-1.5px]" style={{ fontSize: "clamp(32px,4vw,50px)" }}>
         <span className="leading-[1.3] text-ink">{title}</span>
         <span className="leading-[1.3] text-brand">{titleHighlight}</span>
       </div>
-      <div className="font-medium text-dim tracking-[-0.84px] leading-[1.3]" style={{ fontSize: "clamp(18px,2.5vw,28px)" }}>{description}</div>
+      <div className="font-medium tracking-[-0.84px] leading-[1.3] text-black/58" style={{ fontSize: "clamp(18px,2.5vw,28px)" }}>
+        {description}
+      </div>
     </div>
   );
   const frame = (
@@ -125,7 +172,7 @@ function EventCard({
   );
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>}
-      className={`flex flex-col ${reverse ? 'xl:flex-row-reverse' : 'xl:flex-row'} gap-10 xl:gap-20 items-center px-4 md:px-8 w-full`}
+      className={`flex flex-col ${reverse ? 'xl:flex-row-reverse' : 'xl:flex-row'} gap-6 xl:gap-20 items-center px-4 md:px-8 w-full`}
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateX(0)" : `translateX(${dx}px)`,
@@ -133,6 +180,188 @@ function EventCard({
         willChange: "transform",
       }}>
       {<>{frame}{text}</>}
+    </div>
+  );
+}
+
+function EventSpotlightCard({
+  index,
+  title,
+  titleHighlight,
+  description,
+  imgSrc,
+  imgStyle,
+}: {
+  index: number;
+  title: string;
+  titleHighlight: string;
+  description: React.ReactNode;
+  imgSrc: string;
+  imgStyle: React.CSSProperties;
+}) {
+  return (
+    <div className="flex h-full w-full flex-col items-start gap-5 px-4 md:px-8">
+      <div className="flex w-full min-w-0 shrink-0 flex-col items-start gap-3">
+        <div className="flex flex-col items-start font-bold tracking-[-1.5px]" style={{ fontSize: "clamp(32px,4vw,50px)" }}>
+          <span className="leading-[1.3] text-ink">{title}</span>
+          <span className="leading-[1.3] text-brand">{titleHighlight}</span>
+        </div>
+        <div className="font-medium tracking-[-0.04em] leading-[1.22] text-black/58" style={{ fontSize: "clamp(16px,1.55vw,22px)" }}>
+          {description}
+        </div>
+      </div>
+
+      <div className="w-full min-h-0 flex-1 max-w-[980px]">
+        <MacFrame>
+          <img
+            alt=""
+            className="absolute inset-0 h-full w-full object-contain object-center bg-black"
+            src={imgSrc}
+          />
+        </MacFrame>
+      </div>
+    </div>
+  );
+}
+
+function EventScrollShowcase() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const reducedMotion = !!useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+
+  useEffect(() => {
+    return scrollYProgress.on("change", (value) => {
+      const nextIndex = Math.min(
+        EVENTS.length - 1,
+        Math.max(0, Math.round(value * (EVENTS.length - 1))),
+      );
+      setActiveIndex((prev) => (prev === nextIndex ? prev : nextIndex));
+    });
+  }, [scrollYProgress]);
+
+  return (
+    <div
+      ref={sectionRef}
+      className="relative w-full"
+      style={{ height: `calc(${EVENTS.length} * 140vh)` }}
+    >
+      <div className="sticky top-0 h-screen">
+
+        {/* ── Mobile layout ── */}
+        <div className="flex h-full flex-col px-4 pt-28 pb-8 lg:hidden">
+          <div className="shrink-0 pb-5">
+            <div className="text-[clamp(26px,7vw,36px)] font-bold leading-[1.22] tracking-[-0.04em] text-ink">
+              한 해동안 함께할
+              <br />
+              활동들이에요.
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center justify-start gap-1.5 pb-5">
+            {EVENTS.map((_, i) => (
+              <motion.div
+                key={i}
+                className="rounded-full bg-brand"
+                animate={{ width: i === activeIndex ? 20 : 6, opacity: i === activeIndex ? 1 : 0.3 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                style={{ height: 6 }}
+              />
+            ))}
+          </div>
+          <div className="relative min-h-0 flex-1">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {EVENTS.map((event, index) =>
+                index === activeIndex ? (
+                  <motion.div
+                    key={event.titleHighlight}
+                    className="absolute inset-0 flex flex-col gap-5"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                  >
+                    <div className="w-full shrink-0">
+                      <MacFrame>
+                        <img alt="" className="absolute inset-0 h-full w-full object-cover object-center" src={event.imgSrc} />
+                      </MacFrame>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-col font-bold tracking-[-1.5px]" style={{ fontSize: "clamp(26px,7vw,36px)" }}>
+                        <span className="leading-[1.3] text-ink">{event.title}</span>
+                        <span className="leading-[1.3] text-brand">{event.titleHighlight}</span>
+                      </div>
+                      <div className="font-medium leading-[1.3] tracking-[-0.03em] text-black/58" style={{ fontSize: "clamp(14px,4vw,17px)" }}>
+                        {event.description}
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : null,
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* ── Desktop layout ── */}
+        <div className="hidden h-full items-start pt-28 pb-10 lg:flex">
+          <div className="mx-auto grid h-full w-full max-w-[1240px] grid-cols-[220px_minmax(0,1fr)] gap-10 px-10">
+            <div className="flex flex-col gap-3 pt-10">
+              {EVENTS.map((event, index) => {
+                const active = index === activeIndex;
+                return (
+                  <div key={event.titleHighlight} className="flex items-center gap-3">
+                    <div className="relative h-12 w-[2px] overflow-hidden rounded-full bg-black/10">
+                      <motion.div
+                        className="absolute inset-x-0 bottom-0 rounded-full bg-[#1a7aff]"
+                        initial={false}
+                        animate={{ height: active ? "100%" : "24%" }}
+                        transition={{ duration: reducedMotion ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <div className={`text-[12px] font-semibold tracking-[0.16em] ${active ? "text-black/55" : "text-black/28"}`}>
+                        {String(index + 1).padStart(2, "0")}
+                      </div>
+                      <div className={`mt-1 text-[17px] font-semibold tracking-[-0.03em] ${active ? "text-ink" : "text-black/35"}`}>
+                        {event.titleHighlight}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="relative h-full">
+              <AnimatePresence mode="popLayout" initial={false}>
+                {EVENTS.map((event, index) =>
+                  index === activeIndex ? (
+                    <motion.div
+                      key={event.titleHighlight}
+                      className="absolute inset-0"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                    >
+                      <EventSpotlightCard
+                        index={index + 1}
+                        title={event.title}
+                        titleHighlight={event.titleHighlight}
+                        description={event.description}
+                        imgSrc={event.imgSrc}
+                        imgStyle={event.imgStyle}
+                      />
+                    </motion.div>
+                  ) : null,
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
@@ -363,18 +592,61 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
   useSectionBackground();
 
   useEffect(() => {
-    const ids = ["home", "about", "history", "people", "event"];
-    const observers = ids.map((id) => {
-      const el = document.getElementById(id);
-      if (!el) return null;
-      const obs = new IntersectionObserver(
-        ([e]) => { if (e?.isIntersecting) setActiveSection(id); },
-        { threshold: 0.15 }
-      );
-      obs.observe(el);
-      return obs;
-    });
-    return () => observers.forEach((o) => o?.disconnect());
+    const ids = ["home", "about", "history", "history-bridge", "event", "people"];
+    const sections = ids
+      .map((id) => {
+        const el = document.getElementById(id);
+        return el ? { id, el } : null;
+      })
+      .filter((section): section is { id: string; el: HTMLElement } => section !== null);
+
+    let ticking = false;
+
+    const updateActiveSection = () => {
+      const viewportPivot = window.innerHeight * 0.38;
+      const containingSection = sections.find(({ el }) => {
+        const rect = el.getBoundingClientRect();
+        return rect.top <= viewportPivot && rect.bottom >= viewportPivot;
+      });
+
+      if (containingSection) {
+        setActiveSection((prev) => (prev === containingSection.id ? prev : containingSection.id));
+        ticking = false;
+        return;
+      }
+
+      let nearestId = sections[0]?.id ?? "home";
+      let nearestDistance = Number.POSITIVE_INFINITY;
+
+      sections.forEach(({ id, el }) => {
+        const rect = el.getBoundingClientRect();
+        const distance = Math.min(
+          Math.abs(rect.top - viewportPivot),
+          Math.abs(rect.bottom - viewportPivot),
+        );
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestId = id;
+        }
+      });
+
+      setActiveSection((prev) => (prev === nearestId ? prev : nearestId));
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(updateActiveSection);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -431,7 +703,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
 
           {/* Hero tagline */}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 select-none pb-20">
-            {["전공을 넘어서는 경험이,", "여기서 시작됩니다"].map((line, i) => (
+            {["만들고 싶은 게 있다면,", "여기서 시작해도 돼요"].map((line, i) => (
               <motion.div
                 key={i}
                 className="font-bold text-snow text-center leading-[1.2] pointer-events-none"
@@ -475,8 +747,8 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
         {/* ── About ─────────────────────────────────────────────── */}
         <section id="about" className="flex flex-col gap-25 items-center pt-0 pb-30 w-full bg-ink -mt-px">
           <FadeUp threshold={0.3} className="flex flex-col items-center font-bold tracking-[-1.5px] text-center px-4">
-            <span className="leading-[1.3] text-snow" style={{ fontSize: "clamp(28px,4vw,50px)" }}>기획, 개발, 디자인 —</span>
-            <span className="leading-[1.3] text-snow" style={{ fontSize: "clamp(28px,4vw,50px)" }}>분야를 넘어 함께 성장하는 소모임</span>
+            <span className="leading-[1.3] text-snow" style={{ fontSize: "clamp(28px,4vw,50px)" }}>기획도 개발도 처음이어도,</span>
+            <span className="leading-[1.3] text-snow" style={{ fontSize: "clamp(28px,4vw,50px)" }}>여기선 괜찮아요</span>
           </FadeUp>
 
           <div className="mx-auto flex w-full max-w-290 flex-col items-center gap-10 px-4 md:px-10 lg:flex-row lg:justify-center lg:gap-12">
@@ -514,9 +786,9 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
               {/* 본문 — 모바일 핵심 콘텐츠 */}
               <p className="font-bold text-snow leading-[1.4] text-center lg:text-left"
                 style={{ fontSize: "clamp(26px,3.5vw,42px)", letterSpacing: "-0.03em" }}>
-                게임웍스는 2000년대 초<br />
-                글로벌미디어학부의 시작을<br />
-                함께한 학술 소모임입니다.
+                스터디, 멘토링, 아이디어톤 —<br />
+                배운 걸 직접 서비스로 만들어가는<br />
+                소모임이에요.
               </p>
             </SlideIn>
           </div>
@@ -534,70 +806,79 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
           </div>
         </section>
 
-        {/* ── Marquee / Desktop-26 ──────────────────────────────── */}
-        <div className="overflow-hidden relative shrink-0 w-full h-75 md:h-100 lg:h-120" style={{ contain: "paint" }}>
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <img ref={marqueeBgRef} alt="" className="absolute block max-w-none size-full object-cover" src={imgDesktop26}
-              style={{ willChange: "transform" }} />
+        {/* ── History Bridge ────────────────────────────────────── */}
+        <section id="history-bridge" className="relative isolate w-full overflow-hidden">
+          <div className="absolute inset-0">
+            <img
+              ref={marqueeBgRef}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-center"
+              src={imgDesktop26}
+              style={{ willChange: "transform" }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(1,10,26,0.82)_0%,rgba(5,20,48,0.72)_36%,rgba(12,44,92,0.54)_72%,rgba(178,211,255,0.88)_100%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.16),transparent_36%),radial-gradient(circle_at_78%_28%,rgba(26,122,255,0.22),transparent_30%)]" />
           </div>
 
-          <div className="absolute top-8 w-full overflow-hidden" aria-hidden="true">
-            <div className="flex whitespace-nowrap font-semibold text-[#ececec] text-[240px] leading-none"
-              style={{ animation: "marquee-left 20s linear infinite" }}>
-              {Array(4).fill("GAMEWORKS\u00A0\u00A0\u00A0").map((t, i) => <span key={i}>{t}</span>)}
+          <div className="relative mx-auto flex min-h-[520px] w-full max-w-[1320px] flex-col justify-center gap-10 px-6 py-20 md:px-10 lg:min-h-[620px] lg:px-16">
+            <div className="max-w-[860px]">
+              <div className="inline-flex items-center rounded-full border border-white/15 bg-white/8 px-4 py-2 text-[12px] font-semibold tracking-[0.2em] text-white/72">
+                FROM HISTORY TO NEXT
+              </div>
+              <h2 className="mt-6 text-[clamp(34px,5.2vw,76px)] font-bold leading-[1.08] tracking-[-0.05em] text-white">
+                25년의 시간 위에서,
+                <br />
+                지금의 우리가 다음 장을 써가고 있어요
+              </h2>
+              <p className="mt-5 max-w-[760px] text-[clamp(18px,2.1vw,28px)] font-medium leading-[1.55] tracking-[-0.03em] text-white/76">
+                게임웍스의 역사는 기록에서 끝나지 않아요.
+                선배들이 만들어온 흐름을 지금의 우리가 이어받고, 다음 사람에게 넘겨주는 소모임이에요.
+              </p>
             </div>
-          </div>
 
-          <div className="absolute bottom-8 w-full overflow-hidden" aria-hidden="true">
-            <div className="flex whitespace-nowrap font-semibold text-[#ececec] text-[240px] leading-none"
-              style={{ animation: "marquee-right 20s linear infinite" }}>
-              {Array(4).fill("GAMEWORKS\u00A0\u00A0\u00A0").map((t, i) => <span key={i}>{t}</span>)}
+            <div className="grid gap-4 md:grid-cols-3 md:gap-5">
+              <div className="rounded-[26px] border border-white/12 bg-white/[0.08] p-5 backdrop-blur-md">
+                <div className="text-[12px] font-semibold tracking-[0.18em] text-white/55">STARTED</div>
+                <div className="mt-2 text-[30px] font-bold tracking-[-0.04em] text-white">2000</div>
+                <div className="mt-2 text-[15px] font-medium leading-[1.5] text-white/70">
+                  글로미 출범과 함께 문을 열었고, 매해 새로운 방식으로 이어져 왔어요.
+                </div>
+              </div>
+              <div className="rounded-[26px] border border-white/12 bg-white/[0.08] p-5 backdrop-blur-md">
+                <div className="text-[12px] font-semibold tracking-[0.18em] text-white/55">ACCUMULATED</div>
+                <div className="mt-2 text-[30px] font-bold tracking-[-0.04em] text-white">25년의 시간</div>
+                <div className="mt-2 text-[15px] font-medium leading-[1.5] text-white/70">
+                  방식은 해마다 달라져도, 사람을 잇는 본질은 그대로예요.
+                </div>
+              </div>
+              <div className="rounded-[26px] border border-[#1a7aff]/25 bg-[#0f2f62]/55 p-5 backdrop-blur-md">
+                <div className="text-[12px] font-semibold tracking-[0.18em] text-white/55">NEXT WE MAKE</div>
+                <div className="mt-2 text-[30px] font-bold tracking-[-0.04em] text-white">2026 활동</div>
+                <div className="mt-2 text-[15px] font-medium leading-[1.5] text-white/72">
+                  아래 소개하는 활동들이 그 흐름을 지금도 이어가고 있어요.
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4">
-            <div className="h-30 w-31 md:h-45 md:w-46.5 lg:h-60 lg:w-62 relative shrink-0"
-              style={{ animation: "float 6s ease-in-out infinite" }}>
-              <img alt="GAMEWORKS" className="absolute block max-w-none size-full" src={imgVector2} />
-            </div>
-            <span className="font-medium text-[16px] tracking-[0.2em] text-white/70 uppercase whitespace-nowrap">
-              25 Years of Passion &amp; Growth
-            </span>
-          </div>
-        </div>
+        </section>
 
         {/* ── Event ─────────────────────────────────────────────── */}
         <section id="event" className="flex flex-col items-center w-full">
-          <div className="w-full" style={{ background: "linear-gradient(to bottom,#fafafa,#b2d3ff)" }}>
+          <div className="w-full" style={{ background: "#c7e0ff" }}>
             <SectionTitle text="EVENT" />
           </div>
 
-          <div className="flex flex-col gap-16 md:gap-24 items-center px-10 py-12 md:py-20 w-full"
-            style={{ background: "linear-gradient(to bottom,#b2d3ff 0%,#b2d3ff 76%,#fafafa 100%)" }}>
-            <EventCard title="벚꽃과 함께" titleHighlight="봄나들이"
-              description={<>봄에 같이 나갑니다.<br />가볍게 친해지기 좋은 시간이에요.</>}
-              imgSrc={eventImg1} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }}
-              tags={["OUTING", "SOCIAL"]} />
-            <EventCard reverse title="가르치고 배우는" titleHighlight="멘토링"
-              description={<>서로 아는 걸 나눕니다.<br />실무 감각도 같이 익힐 수 있어요.</>}
-              imgSrc={eventImg2} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }}
-              tags={["MENTORING", "GROWTH"]} />
-            <EventCard title="서로 친해지는" titleHighlight="짝선짝후"
-              description={<>미션을 같이 풀면서<br />어색함 없이 가까워집니다.</>}
-              imgSrc={eventImg3} imgStyle={{ height: "139.2%", left: "-1.69%", top: "-10.62%", width: "103.47%" }}
-              tags={["NETWORKING", "SOCIAL"]} />
-            <EventCard reverse title="멋진 선배님과의" titleHighlight="커피챗"
-              description="커피 한 잔 하면서 경험을 듣고, 궁금한 걸 바로 물어볼 수 있어요."
-              imgSrc={eventImg4} imgStyle={{ height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" }}
-              tags={["COFFEE CHAT", "NETWORKING"]} />
-            <EventCard title="대회를 경험해보는" titleHighlight="아이디어톤"
-              description={<>팀으로 부딪혀 보면서<br />아이디어가 결과가 되는 과정을 배웁니다.</>}
-              imgSrc={eventImg5} imgStyle={{ height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" }}
-              tags={["IDEATHON", "ACADEMIC"]} />
-            <EventCard reverse title="다가온 여름에 함께" titleHighlight="MT"
-              description={<>학기 중엔 못 나눈 얘기까지,<br />한 번에 가까워지는 시간이에요.</>}
-              imgSrc={eventImg6} imgStyle={{ height: "231.99%", left: "0", top: "-82.61%", width: "100%" }}
-              tags={["MT", "SUMMER"]} />
+          <div className="flex flex-col gap-16 items-center px-10 py-12 md:py-20 w-full"
+            style={{ background: "linear-gradient(to bottom,#c7e0ff 0%,#c7e0ff 74%,#fafafa 100%)" }}>
+            <div className="hidden w-full max-w-290 flex-col gap-6 px-4 md:px-8 lg:flex">
+              <div className="max-w-230 text-[clamp(28px,4vw,52px)] font-bold leading-[1.22] tracking-[-0.04em] text-ink">
+                한 해동안 함께할
+                <br />
+                활동들이에요.
+              </div>
+            </div>
+
+            <EventScrollShowcase />
 
             <button onClick={navigateActivity} className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group">
               <span className="font-medium text-ink text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
@@ -613,8 +894,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
 
           <div className="flex flex-col gap-10 items-center pb-12 md:pb-20 w-full">
             <FadeUp threshold={0.2} className="flex flex-col items-center text-ink text-center px-10">
-              <span className="font-medium tracking-[-2.4px] leading-[1.3]" style={{ fontSize: "clamp(36px,6vw,80px)" }}>2026 GAMEWORKS</span>
-              <span className="font-bold tracking-[-1.14px] leading-[1.3]" style={{ fontSize: "clamp(22px,3vw,38px)" }}>임원진을 소개합니다</span>
+              <span className="font-bold tracking-[-1.14px] leading-[1.3]" style={{ fontSize: "clamp(22px,3vw,38px)" }}>올해 게임웍스를 이끄는 팀이에요</span>
             </FadeUp>
 
             <MembersCarousel />
