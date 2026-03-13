@@ -60,7 +60,7 @@ export function Header({
   const [menuOpen, setMenuOpen] = useState(false);
   const { wordmarkHidden, chrome, cta, panel } = useHeaderMotion(activeSection, darkHero);
   const isDarkTone = activeSection === "home" || activeSection === "about" || activeSection === "history";
-  const brandState = useHeaderBrandState({ pageTitle, wordmarkHidden });
+  const brandState = useHeaderBrandState({ pageTitle: menuOpen ? undefined : pageTitle, wordmarkHidden: wordmarkHidden || menuOpen });
 
   useEffect(() => { if (!isMobile) setMenuOpen(false); }, [isMobile]);
   useEffect(() => {
