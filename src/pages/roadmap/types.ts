@@ -23,6 +23,7 @@ export type DateMotion = {
 export type EventStatus = "completed" | "ongoing" | "upcoming";
 
 export type CellBar = {
+  eventId: string;
   color: string;
   role: "solo" | "start" | "end" | "middle";
 };

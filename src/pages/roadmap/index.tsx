@@ -45,22 +45,20 @@ export function RoadmapPage() {
         />
       </div>
 
-      <main className="flex min-h-screen w-full flex-col lg:flex-row">
-        {/* Left Side: Calendar */}
-        <div className="flex-[1.2] flex flex-col items-center justify-center pt-40 pb-20 px-8 lg:px-12">
-          {isLoading ? (
-            <div className="text-black/20 font-medium">일정을 불러오는 중...</div>
-          ) : error ? (
-            <div className="text-red-400 font-medium">일정을 불러오지 못했습니다.</div>
-          ) : (
+      <main className="flex min-h-screen w-full justify-center bg-white overflow-x-hidden">
+        {/* Sync Container: This wrapper ensures both components stay together at 42px gap */}
+        <div className="flex flex-col lg:flex-row w-full max-w-[1440px] min-h-screen items-center lg:items-start justify-center lg:gap-[42px] px-6 lg:px-12">
+          
+          {/* Left Side: Calendar (Reduced top padding on mobile) */}
+          <div className="w-full lg:flex-1 flex flex-col items-center lg:items-end justify-start pt-32 lg:pt-40 pb-12 lg:pb-20">
             <CalendarPane />
-          )}
-        </div>
+          </div>
 
-        {/* Right Side: Event Detail (Touches the right wall) */}
-        {/* Increased top margin to LG (Header height) to prevent overlap */}
-        <div className="w-full lg:w-[42%] xl:w-[38%] relative z-10 pt-24 lg:pt-32">
-          <EventPanel reducedMotion={!!reducedMotion} />
+          {/* Right Side: Event Detail (Full width on mobile, fixed width on desktop) */}
+          <div className="w-full lg:w-[440px] xl:w-[480px] flex flex-col items-stretch pb-20 lg:pt-40">
+            <EventPanel reducedMotion={!!reducedMotion} />
+          </div>
+          
         </div>
       </main>
     </div>

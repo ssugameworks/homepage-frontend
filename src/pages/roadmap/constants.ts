@@ -55,6 +55,19 @@ export const CAT_LABEL: Record<Category, string> = {
   trip: "여행",
 };
 
+export const EVENT_COLORS = [
+  "#1a7aff", // Blue
+  "#8b5cf6", // Purple
+  "#ec4899", // Pink
+  "#10b981", // Emerald
+  "#f97316", // Orange
+  "#0ea5e9", // Sky
+  "#f43f5e", // Rose
+  "#84cc16", // Lime
+  "#eab308", // Yellow
+  "#06b6d4", // Cyan
+];
+
 export const ROADMAP_INDICATOR_COLOR = "#1a7aff";
 export const ROADMAP_INDICATOR_LABEL = "일정";
 

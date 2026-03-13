@@ -40,10 +40,13 @@ export const useRoadmapStore = create<RoadmapState>()(
       events: [],
 
       setEvents: (newEvents) => {
+        const sorted = [...newEvents].sort((a, b) => {
+          if (a.start !== b.start) return a.start.localeCompare(b.start);
+          return a.end.localeCompare(b.end);
+        });
         const { events } = get();
-        // 간단한 비교로 불필요한 상태 업데이트 방지
-        if (JSON.stringify(events) === JSON.stringify(newEvents)) return;
-        set({ events: newEvents });
+        if (JSON.stringify(events) === JSON.stringify(sorted)) return;
+        set({ events: sorted });
       },
 
       setView: (year, month, dir) => 

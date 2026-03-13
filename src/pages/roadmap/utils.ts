@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { CAT_COLOR, ROADMAP_INDICATOR_COLOR } from "@/pages/roadmap/constants";
+import { CAT_COLOR, EVENT_COLORS, ROADMAP_INDICATOR_COLOR } from "@/pages/roadmap/constants";
 import type { CellBar, DayCell, EventStatus, GameEvent } from "@/pages/roadmap/types";
 
 export function createDayjsDate(year: number, month: number, day: number) {
@@ -87,8 +87,15 @@ export function getCellBarsForDate(events: GameEvent[], year: number, month: num
     const isStart = event.start === key;
     const isEnd = event.end === key;
 
+    // Find the index of this event in the original sorted events list to assign a stable color
+    const globalIndex = events.findIndex(e => e.id === event.id);
+    const color = globalIndex !== -1 
+      ? EVENT_COLORS[globalIndex % EVENT_COLORS.length] 
+      : (CAT_COLOR[event.category] || ROADMAP_INDICATOR_COLOR);
+
     return {
-      color: CAT_COLOR[event.category] || ROADMAP_INDICATOR_COLOR,
+      eventId: event.id,
+      color,
       role: isStart && isEnd ? "solo" : isStart ? "start" : isEnd ? "end" : "middle",
     };
   });
