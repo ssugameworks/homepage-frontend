@@ -62,12 +62,17 @@ const server = serve({
             const nameKey = Object.keys(props).find(k => k.toLowerCase() === "name" || k === "이름" || k === "제목") || "Name";
             const title = props[nameKey]?.title?.[0]?.plain_text || "Untitled Event";
 
+            // 4. Find Link (Flexible name, assume URL type)
+            const linkKey = Object.keys(props).find(k => k.toLowerCase() === "link" || k === "링크" || k.toLowerCase() === "url") || "link";
+            const link = props[linkKey]?.url || null;
+
             return {
               id: page.id,
               category,
               title,
               start,
               end,
+              link,
             };
           }).sort((a: any, b: any) => a.start.localeCompare(b.start)); // 클라이언트측 정렬로 안전하게 처리
 

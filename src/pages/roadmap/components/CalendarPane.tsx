@@ -97,11 +97,11 @@ export function CalendarPane() {
               transition={{ duration: 0.3, ease: EASE }}
               className="flex flex-col items-start"
             >
-              <div className="text-[24px] lg:text-[32px] font-medium leading-none tracking-tight text-black/40">
+              <div className="text-[24px] lg:text-[38px] font-medium leading-none tracking-tight text-black">
                 {viewYear}
               </div>
               <div className="mt-2 flex items-center justify-between w-full">
-                <div className="text-[40px] lg:text-[56px] font-extrabold leading-none tracking-tight text-black uppercase">
+                <div className="text-[40px] lg:text-[50px] font-medium leading-none tracking-tight text-black uppercase">
                   {MONTH_NAMES[viewMonth]}
                 </div>
                 
@@ -176,7 +176,7 @@ export function CalendarPane() {
                 });
 
                 // 3. 슬롯 패킹 (3개 슬롯까지)
-                const slots: string[][] = [[], [], []];
+                const slots: [string[], string[], string[]] = [[], [], []];
                 uniqueEventsInRow.forEach(ev => {
                   for (let i = 0; i < 3; i++) {
                     const hasOverlap = slots[i].some(slotEvId => {

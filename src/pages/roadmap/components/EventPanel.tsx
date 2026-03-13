@@ -22,21 +22,21 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
       
       {/* Main Panel Content: Responsive rounding and height */}
       <div 
-        className="relative z-20 flex flex-col w-full px-8 lg:px-12 pt-12 pb-10 rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-0 shadow-[0_20px_50px_rgba(0,0,0,0.15)] lg:shadow-[-30px_0_80px_rgba(0,0,0,0.3)] min-h-[500px] h-[640px] lg:h-[720px]"
-        style={{ background: "#23344d" }}
+        className="relative z-20 flex flex-col w-full pl-8 pr-8 lg:pl-12 lg:pr-0 pt-12 pb-10 rounded-[20px] lg:rounded-l-[20px] lg:rounded-r-0 shadow-[0_20px_50px_rgba(0,0,0,0.15)] lg:shadow-[-30px_0_80px_rgba(0,0,0,0.3)] min-h-[500px] h-[640px] lg:h-[720px]"
+        style={{ background: "linear-gradient(73deg, rgba(255, 255, 255, 0.50) -26.79%, rgba(102, 102, 102, 0.00) 74.1%), linear-gradient(207deg, rgba(255, 255, 255, 0.50) -10.35%, rgba(102, 102, 102, 0.00) 52.35%), #00204D" }}
       >
         {/* Date Header */}
-        <div className="mb-6 flex flex-col items-start gap-1">
-          <div className="text-[52px] lg:text-[64px] font-bold leading-none text-white tracking-tighter">
+        <div className="mb-6 flex flex-row lg:flex-col items-baseline lg:items-start gap-3 lg:gap-1 pr-0 lg:pr-12">
+          <div className="text-[38px] lg:text-[50px] font-medium leading-none text-white tracking-tighter">
             {day}
           </div>
-          <div className="text-[24px] lg:text-[32px] font-medium leading-none tracking-tight text-white/90">
+          <div className="text-[22px] lg:text-[32px] font-medium leading-none tracking-tight text-white/90">
             {monthName}
           </div>
         </div>
 
         {/* Divider */}
-        <div className="mb-8 lg:mb-10 h-[2px] w-full bg-white/20" />
+        <div className="mb-8 lg:mb-10 h-[4px] w-[calc(100%-32px)] lg:w-[calc(100%-48px)] bg-white" />
 
         {/* Event Area */}
         <div className="flex-1 relative overflow-hidden">
@@ -47,28 +47,65 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="h-full w-full flex flex-col gap-4 lg:gap-5 overflow-y-auto pr-2 custom-scrollbar"
+              className="h-full w-full flex flex-col gap-4 lg:gap-5 overflow-y-auto pr-0 lg:pr-0 custom-scrollbar"
             >
               {selectedEvents.length === 0 ? (
-                <div className="flex flex-col gap-2 opacity-25">
+                <div className="flex flex-col gap-2 opacity-25 pr-8 lg:pr-12">
                   <div className="h-[120px] lg:h-[140px] w-full rounded-[20px] border-2 border-dashed border-white/20 flex items-center justify-center text-white/60 font-medium text-[18px] lg:text-[24px]">
                     일정이 없습니다
                   </div>
                 </div>
               ) : (
-                selectedEvents.map((event) => (
-                  <div
-                    key={event.id}
-                    className="flex flex-col justify-center rounded-[20px] bg-white/[0.12] p-6 lg:p-8 shadow-[0_12px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl border border-white/10 group hover:bg-white/[0.16] transition-all duration-300 shrink-0"
-                  >
-                    <div className="text-[18px] lg:text-[28px] font-bold tracking-tight text-white mb-2 leading-tight group-hover:text-blue-300 transition-colors">
-                      {event.title}
+                selectedEvents.map((event) => {
+                  const applyLink = event.link || event["링크"] || event.url || event.URL;
+
+                  return (
+                    <div
+                      key={event.id}
+                      className="flex flex-col justify-center p-6 lg:p-8 transition-all duration-300 shrink-0 rounded-[20px] lg:rounded-r-0 lg:rounded-l-[20px]"
+                      style={{
+                        background: "rgba(255, 255, 255, 0.30)",
+                        boxShadow: "0 4px 4px 0 rgba(0, 0, 0, 0.25)"
+                      }}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="text-[18px] lg:text-[28px] font-normal tracking-tight text-white mb-2 leading-tight group-hover:text-blue-300 transition-colors">
+                            {event.title}
+                          </div>
+                          <div className="text-[18px] lg:text-[28px] font-normal text-white">
+                            {fmtRange(event)}
+                          </div>
+                        </div>
+                        
+                        {applyLink ? (
+                          <motion.a 
+                            href={applyLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 lg:px-6 lg:py-3 rounded-full text-white shadow-[0_4px_15px_rgba(0,75,178,0.4)] transition-all text-[14px] lg:text-[16px] font-bold shrink-0"
+                            style={{ backgroundColor: "#004BB2" }}
+                            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#0059D6")}
+                            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#004BB2")}
+                            onMouseDown={(e) => (e.currentTarget.style.backgroundColor = "#003D8F")}
+                            onMouseUp={(e) => (e.currentTarget.style.backgroundColor = "#0059D6")}
+                          >
+                            <span>신청하기</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="lg:w-[20px] lg:h-[20px]">
+                              <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </motion.a>
+                        ) : (
+                          <div className="inline-flex items-center justify-center gap-2 px-4 py-2 lg:px-6 lg:py-3 rounded-full bg-white/[0.05] text-white/20 border border-white/5 text-[14px] lg:text-[16px] font-bold shrink-0 cursor-not-allowed">
+                            <span>준비 중</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-[14px] lg:text-[20px] font-medium text-white/60">
-                      {fmtRange(event)}
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </motion.div>
           </AnimatePresence>

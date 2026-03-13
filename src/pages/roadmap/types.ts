@@ -6,6 +6,10 @@ export type GameEvent = {
   category: Category;
   start: string;
   end: string;
+  link?: string;
+  "링크"?: string;
+  url?: string;
+  URL?: string;
 };
 
 export type DayCell = {
