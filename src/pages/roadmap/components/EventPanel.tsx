@@ -36,7 +36,7 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
         </div>
 
         {/* Divider */}
-        <div className="mb-8 lg:mb-10 h-[4px] w-[calc(100%-32px)] lg:w-full bg-white" style={{ borderRadius: "100px 0 0 100px" }} />
+        <div className="mb-8 lg:mb-10 h-[4px] w-full bg-white rounded-full lg:rounded-none lg:rounded-l-full" style={{ borderRadius: undefined }} />
 
         {/* Event Area */}
         <div className="flex-1 relative overflow-hidden pr-0">
