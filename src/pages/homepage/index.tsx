@@ -171,8 +171,8 @@ const MemberCard = memo(function MemberCard({ role, name, desc, img, style, open
         animate={{ opacity: open ? 0 : 1, y: open ? -36 : 0 }}
         transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="text-[11px] font-semibold tracking-[0.14em] text-white/65 uppercase leading-none">{role}</div>
-        <div className="mt-1.5 text-[22px] font-bold tracking-[-0.5px] text-white leading-[1.2]">{name}</div>
+        <div className="text-[12px] font-semibold tracking-[0.14em] text-white/65 uppercase leading-none">{role}</div>
+        <div className="mt-1.5 text-[24px] font-bold tracking-[-0.5px] text-white leading-[1.2]">{name}</div>
       </motion.div>
 
       {/* Blur layer — exits slowly so photo is revealed gradually */}
@@ -201,8 +201,8 @@ const MemberCard = memo(function MemberCard({ role, name, desc, img, style, open
             exit={{ opacity: 0, y: 28 }}
             transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="text-[11px] font-semibold tracking-[0.14em] text-white/55 uppercase">{role}</div>
-            <div className="mt-1.5 text-[26px] font-bold tracking-[-0.6px] text-white leading-[1.15]">{name}</div>
+            <div className="text-[12px] font-semibold tracking-[0.14em] text-white/55 uppercase">{role}</div>
+            <div className="mt-1.5 text-[28px] font-bold tracking-[-0.6px] text-white leading-[1.15]">{name}</div>
             <p className="mt-2.5 text-[15px] leading-[1.65] tracking-[-0.02em] text-white/78">{desc}</p>
           </motion.div>
         )}
