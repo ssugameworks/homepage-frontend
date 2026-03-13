@@ -141,7 +141,7 @@ export function CalendarPane() {
           }}
         >
           {/* Weekday Labels */}
-          <div className="grid grid-cols-7 mb-4 border-b border-[#f3f4f6] pb-3">
+          <div className="grid grid-cols-7 mb-4 border-b-[3px] border-[#f3f4f6] pb-3">
             {DAY_LABELS.map((label, index) => (
               <div key={index} className="flex h-8 items-center justify-center text-[18px] font-semibold text-black/60">
                 {label}
@@ -203,7 +203,7 @@ export function CalendarPane() {
                         <button
                           key={cellIndex}
                           onClick={() => onSelect(cell)}
-                          className="relative flex flex-col items-center pt-2 pb-2 bg-transparent hover:bg-black/[0.01] transition-colors rounded-lg cursor-pointer"
+                          className="relative flex flex-col items-center pt-1 pb-1 lg:pt-2 lg:pb-2 bg-transparent hover:bg-black/[0.01] transition-colors rounded-lg cursor-pointer"
                         >
                           <div
                             className={`flex h-8 w-8 items-center justify-center text-[18px] transition-all`}
@@ -219,7 +219,7 @@ export function CalendarPane() {
                           </div>
                           
                           {/* Event Bars - Fixed Packed Slots per Week */}
-                          <div className="mt-1 flex w-full flex-col gap-[2px] h-[32px]">
+                          <div className="mt-1 flex w-full flex-col gap-[2px] h-[20px] lg:h-[32px]">
                             {slots.map((slotEventIds, i) => {
                               const eventIdInSlot = slotEventIds.find(id => dailyBars.some(b => b.eventId === id));
                               const bar = dailyBars.find(b => b.eventId === eventIdInSlot);
