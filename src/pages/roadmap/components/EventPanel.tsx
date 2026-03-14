@@ -83,6 +83,7 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
                 selectedEvents.map((event) => {
                   const applyLink = event.link || event["링크"] || event.url || event.URL;
                   const isPast = todayKey > event.end;
+                  const isUpcoming = todayKey < event.start;
 
                   return (
                     <div
@@ -107,6 +108,10 @@ export function EventPanel({ reducedMotion }: { reducedMotion: boolean }) {
                           isPast ? (
                             <div className="inline-flex items-center justify-center gap-2 px-5 py-2.5 lg:px-6 lg:py-3 rounded-full bg-white/[0.1] text-white/40 border border-white/10 text-[14px] lg:text-[16px] font-bold shrink-0 cursor-not-allowed">
                               <span>신청 마감</span>
+                            </div>
+                          ) : isUpcoming ? (
+                            <div className="inline-flex items-center justify-center gap-2 px-5 py-2.5 lg:px-6 lg:py-3 rounded-full bg-white/[0.1] text-white/40 border border-white/10 text-[14px] lg:text-[16px] font-bold shrink-0 cursor-not-allowed">
+                              <span>모집 예정</span>
                             </div>
                           ) : (
                             <motion.a 
