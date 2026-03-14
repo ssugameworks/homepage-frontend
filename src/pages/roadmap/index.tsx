@@ -1,40 +1,66 @@
 import { useEffect } from "react";
 import { useReducedMotion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { navigateByNavId, navigateHome } from "@/lib/navigation";
+import { Header } from "@/pages/homepage/components";
+import { NAV_ITEMS, logoSrc } from "@/pages/roadmap/constants";
 import { CalendarPane } from "@/pages/roadmap/components/CalendarPane";
 import { EventPanel } from "@/pages/roadmap/components/EventPanel";
-import { useRoadmapCalendar } from "@/pages/roadmap/hooks/useRoadmapCalendar";
-import type { PageProps } from "@/lib/header-config";
-import { Footer } from "@/components/Footer";
+import { useRoadmapStore } from "@/pages/roadmap/store/roadmap-store";
+import type { GameEvent } from "@/pages/roadmap/types";
 
-/* ── Page ────────────────────────────────────────────────────────────────────── */
-export function RoadmapPage({ onHeaderConfig, onHeroReady }: PageProps) {
+export function RoadmapPage() {
   const reducedMotion = useReducedMotion();
-  const state = useRoadmapCalendar();
+  const setEvents = useRoadmapStore((s) => s.setEvents);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["roadmap-events"],
+    queryFn: async () => {
+      const response = await api.get<GameEvent[]>("/roadmap");
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
-    onHeaderConfig({ activeSection: "people", pageTitle: "다가오는 일정", darkHero: false });
-    onHeroReady();
-  }, []);
-
-  useEffect(() => {
-    const prev = document.documentElement.style.scrollbarGutter;
-    document.documentElement.style.scrollbarGutter = "auto";
-    return () => {
-      document.documentElement.style.scrollbarGutter = prev;
-    };
-  }, []);
+    if (data) {
+      setEvents(data);
+    }
+  }, [data, setEvents]);
 
   return (
-    <div className="bg-surface relative overflow-x-hidden">
-      <main className="flex min-h-[calc(100vh-4rem)] w-full flex-col gap-4 px-4 pb-6 pt-20 md:px-6 md:pb-8 lg:flex-row lg:items-start lg:justify-between lg:gap-6 lg:pl-8 lg:pr-0 lg:pt-24 xl:gap-8 xl:pl-10">
-        <div className="order-2 w-full lg:order-1 lg:flex-1 lg:self-center">
-          <CalendarPane state={state} />
-        </div>
-        <div className="order-1 w-full lg:order-2 lg:w-auto">
-          <EventPanel reducedMotion={!!reducedMotion} state={state} />
+    <div className="min-h-screen bg-white relative font-pretendard overflow-x-hidden">
+      {/* Header Container */}
+      <div className="fixed top-0 inset-x-0 z-[100] bg-white/80 backdrop-blur-md">
+        <Header
+          activeSection="roadmap"
+          heroReady={true}
+          logoSrc={logoSrc}
+          navItems={NAV_ITEMS}
+          pageTitle="다가오는 일정"
+          onScrollTop={navigateHome}
+          onNavigate={navigateByNavId}
+          darkHero={false}
+        />
+      </div>
+
+      <main className="flex min-h-screen w-full justify-start bg-white overflow-x-hidden">
+        {/* Sync Container: This wrapper ensures both components stay together at 42px gap */}
+        <div className="flex flex-col lg:flex-row w-full min-h-screen items-center lg:items-start justify-start lg:gap-[42px] px-6 lg:px-0">
+          
+          {/* Left Side: Calendar (Positioned 114px from edge to ensure arrow is at 40px) */}
+          <div className="w-full lg:w-[648px] flex flex-col items-center lg:items-start justify-start pt-32 lg:pt-[180px] pb-12 lg:pb-20">
+            <CalendarPane />
+          </div>
+
+          {/* Right Side: Event Detail (Full width on mobile, fills remaining space to the edge on desktop) */}
+          <div className="w-full lg:flex-1 flex flex-col items-stretch pb-20 lg:pt-[130px]">
+            <EventPanel reducedMotion={!!reducedMotion} />
+          </div>
+          
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

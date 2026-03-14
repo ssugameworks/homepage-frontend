@@ -10,8 +10,11 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { App } from "@/App";
 
+// @ts-ignore - Handle possible ESM/CJS interop issues in some environments
+const QClient = (QueryClient as any).default || QueryClient;
+
 function start() {
-  const queryClient = new QueryClient({
+  const queryClient = new QClient({
     defaultOptions: {
       queries: {
         staleTime: 30_000,

@@ -38,12 +38,12 @@ export const DATE_HEADER_VARIANTS = {
 };
 
 export const CAT_COLOR: Record<Category, string> = {
-  recruitment: "#f59e0b",
-  gathering: "#8b5cf6",
-  social: "#ec4899",
-  networking: "#0ea5e9",
-  competition: "#10b981",
-  trip: "#f97316",
+  recruitment: "#1a7aff", // Blue
+  gathering: "#8b5cf6",    // Purple
+  social: "#ec4899",       // Pink
+  networking: "#0ea5e9",    // Sky
+  competition: "#10b981",  // Emerald
+  trip: "#f97316",         // Orange
 };
 
 export const CAT_LABEL: Record<Category, string> = {
@@ -54,6 +54,19 @@ export const CAT_LABEL: Record<Category, string> = {
   competition: "경연",
   trip: "여행",
 };
+
+export const EVENT_COLORS = [
+  "#1a7aff", // Blue
+  "#8b5cf6", // Purple
+  "#ec4899", // Pink
+  "#10b981", // Emerald
+  "#f97316", // Orange
+  "#0ea5e9", // Sky
+  "#f43f5e", // Rose
+  "#84cc16", // Lime
+  "#eab308", // Yellow
+  "#06b6d4", // Cyan
+];
 
 export const ROADMAP_INDICATOR_COLOR = "#1a7aff";
 export const ROADMAP_INDICATOR_LABEL = "일정";

@@ -1,257 +1,273 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { DAY_LABELS, EASE, EVENTS, MONTH_NAMES, ROADMAP_INDICATOR_COLOR } from "@/pages/roadmap/constants";
-import type { useRoadmapCalendar } from "@/pages/roadmap/hooks/useRoadmapCalendar";
-import { toKey } from "@/pages/roadmap/utils";
-
-type CalendarState = ReturnType<typeof useRoadmapCalendar>;
-
-type CalendarPaneProps = {
-  state: CalendarState;
-};
+import dayjs from "dayjs";
+import { useShallow } from "zustand/react/shallow";
+import { DAY_LABELS, EASE, MONTH_NAMES } from "@/pages/roadmap/constants";
+import { useRoadmapStore } from "@/pages/roadmap/store/roadmap-store";
+import { buildCalendarRows, getCellBarsForDate } from "@/pages/roadmap/utils";
+import type { DayCell, GameEvent } from "@/pages/roadmap/types";
 
 const calendarGridVariants = {
-  enter: {
-    opacity: 0,
-  },
-  center: {
-    opacity: 1,
-    transition: {
-      duration: 0.22,
-      ease: EASE,
-    },
-  },
-  exit: {
-    opacity: 0,
-    transition: {
-      duration: 0.18,
-      ease: EASE,
-    },
-  },
+  enter: { opacity: 0, scale: 0.98 },
+  center: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: EASE } },
+  exit: { opacity: 0, scale: 0.98, transition: { duration: 0.2, ease: EASE } },
 };
 
-type RowSegment = {
-  id: string;
-  start: number;
-  end: number;
-  lane: number;
-  roundLeft: boolean;
-  roundRight: boolean;
-};
+export function CalendarPane() {
+  const maxEventSlots = 5;
 
-function buildRowSegments(
-  row: CalendarState["rows"][number],
-  getCellDate: CalendarState["getCellDate"],
-) {
-  const rowKeys = row.map((cell) => {
-    const [year, month, day] = getCellDate(cell);
-    return toKey(year, month, day);
-  });
-  const rowStart = rowKeys[0];
-  const rowEnd = rowKeys[rowKeys.length - 1];
+  const { viewYear, viewMonth, navDir, shiftView } = useRoadmapStore(
+    useShallow((s) => ({
+      viewYear: s.viewYear,
+      viewMonth: s.viewMonth,
+      navDir: s.navDir,
+      shiftView: s.shiftView,
+    }))
+  );
 
-  if (!rowStart || !rowEnd) {
-    return [];
-  }
+  const { selectedYear, selectedMonth, selectedDay, selectDate } = useRoadmapStore(
+    useShallow((s) => ({
+      selectedYear: s.selectedYear,
+      selectedMonth: s.selectedMonth,
+      selectedDay: s.selectedDay,
+      selectDate: s.selectDate,
+    }))
+  );
 
-  const overlappingEvents = EVENTS
-    .filter((event) => event.start <= rowEnd && event.end >= rowStart)
-    .sort((a, b) => a.start.localeCompare(b.start));
+  const events = useRoadmapStore((s) => s.events);
+  const rows = buildCalendarRows(viewYear, viewMonth);
 
-  const laneEnds: number[] = [];
-  const segments: RowSegment[] = [];
+  const getCellDate = (cell: DayCell): [number, number, number] => {
+    let y = viewYear, m = viewMonth;
+    if (cell.kind === "prev") { m -= 1; if (m < 0) { m = 11; y -= 1; } }
+    if (cell.kind === "next") { m += 1; if (m > 11) { m = 0; y += 1; } }
+    return [y, m, cell.day];
+  };
 
-  for (const event of overlappingEvents) {
-    let start = -1;
-    let end = -1;
+  const isSelectedCell = (cell: DayCell) => {
+    const [y, m, d] = getCellDate(cell);
+    return y === selectedYear && m === selectedMonth && d === selectedDay;
+  };
 
-    rowKeys.forEach((key, index) => {
-      if (event.start <= key && key <= event.end) {
-        if (start === -1) start = index;
-        end = index;
-      }
-    });
+  const isTodayCell = (cell: DayCell) => {
+    const [y, m, d] = getCellDate(cell);
+    const now = dayjs();
+    return y === now.year() && m === now.month() && d === now.date();
+  };
 
-    if (start === -1 || end === -1) continue;
+  const onSelect = (cell: DayCell) => {
+    const [y, m, d] = getCellDate(cell);
+    if (cell.kind === "prev") shiftView(-1);
+    if (cell.kind === "next") shiftView(1);
+    selectDate(y, m, d);
+  };
 
-    let lane = laneEnds.findIndex((laneEnd) => laneEnd < start);
-    if (lane === -1) {
-      lane = laneEnds.length;
-      laneEnds.push(end);
-    } else {
-      laneEnds[lane] = end;
-    }
-
-    segments.push({
-      id: event.id,
-      start,
-      end,
-      lane,
-      roundLeft: start === 0 || event.start === rowKeys[start],
-      roundRight: end === row.length - 1 || event.end === rowKeys[end],
-    });
-  }
-
-  return segments.slice(0, 3);
-}
-
-export function CalendarPane({ state }: CalendarPaneProps) {
   return (
-    <section className="min-w-0 flex-1">
-      <div className="mx-auto w-full max-w-[620px] lg:max-w-[540px] xl:max-w-[580px]">
-        <div className="min-w-0">
-          <div className="mb-3 flex items-end justify-between sm:mb-4">
-            <AnimatePresence mode="wait" custom={state.navDir}>
-              <motion.div
-                key={`title-${state.viewYear}-${state.viewMonth}`}
-                custom={state.navDir}
-                initial={{ opacity: 0, x: state.navDir * 14 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -state.navDir * 14 }}
-                transition={{ duration: 0.16, ease: EASE }}
-                className="ml-2 sm:ml-3"
-              >
-                <div className="text-[13px] font-medium leading-none tracking-[-0.02em] text-muted sm:text-[16px]">
-                  {state.viewYear}
-                </div>
-                <div
-                  className="mt-0.5 text-ink font-bold leading-none tracking-[-0.04em]"
-                  style={{ fontSize: "clamp(22px, 5vw, 42px)" }}
-                >
-                  {MONTH_NAMES[state.viewMonth]}
-                </div>
-              </motion.div>
-            </AnimatePresence>
+    <div className="relative flex items-center justify-center w-full max-w-[648px]">
 
-            <div className="mb-0.5 flex items-center gap-1.5 sm:gap-2">
-              <AnimatePresence>
-                {!state.isCurrentMonth && (
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.85 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.85 }}
-                    transition={{ duration: 0.14 }}
-                    onClick={state.goToday}
-                    className="rounded-full border border-[#00204d]/30 bg-transparent px-2.5 py-1 text-[10px] font-semibold text-navy transition-all hover:bg-navy hover:text-white cursor-pointer sm:px-3 sm:text-[11px]"
+      {/* Main Content */}
+      <div className="relative flex flex-col w-full max-w-[420px]">
+
+        {/* Desktop Navigation Buttons (Hidden on mobile) */}
+        <div className="hidden lg:flex absolute inset-y-0 lg:left-[-74px] lg:right-[-74px] lg:top-[60%] items-center justify-between pointer-events-none" style={{ height: "fit-content" }}>
+          <button 
+            onClick={() => shiftView(-1)}
+            className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#9da1ab] shadow-lg transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <button 
+            onClick={() => shiftView(1)}
+            className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#9da1ab] shadow-lg transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18L15 12L9 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Typography Header */}
+        <div className="mb-6 lg:mb-8 px-2">
+          <AnimatePresence mode="wait" custom={navDir}>
+            <motion.div
+              key={`title-${viewYear}-${viewMonth}`}
+              custom={navDir}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: EASE }}
+              className="flex flex-col items-start"
+            >
+              <div className="text-[24px] lg:text-[38px] font-medium leading-none tracking-tight text-black">
+                {viewYear}
+              </div>
+              <div className="mt-2 flex items-center justify-between w-full">
+                <div className="text-[40px] lg:text-[50px] font-medium leading-none tracking-tight text-black uppercase">
+                  {MONTH_NAMES[viewMonth]}
+                </div>
+                
+                {/* Mobile Navigation Mini-Buttons (Reduced size & Pushed to right) */}
+                <div className="flex lg:hidden items-center gap-1 mt-1">
+                  <button 
+                    onClick={() => shiftView(-1)}
+                    className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f0f2f5] active:bg-[#e2e4e7] transition-colors"
                   >
-                    오늘
-                  </motion.button>
-                )}
-              </AnimatePresence>
-              <button
-                onClick={() => state.shiftView(-1)}
-                aria-label="이전 달"
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/8 bg-white transition-all hover:bg-black/4 active:scale-95 cursor-pointer sm:h-9 sm:w-9"
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M9 2.5L4 7L9 11.5" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-              <button
-                onClick={() => state.shiftView(1)}
-                aria-label="다음 달"
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/8 bg-white transition-all hover:bg-black/4 active:scale-95 cursor-pointer sm:h-9 sm:w-9"
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M5 2.5L10 7L5 11.5" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <path d="M15 18L9 12L15 6" stroke="#000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  <button 
+                    onClick={() => shiftView(1)}
+                    className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f0f2f5] active:bg-[#e2e4e7] transition-colors"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 18L15 12L9 6" stroke="#000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Calendar Card with Swipe (Drag) Functionality */}
+        <motion.div 
+          className="rounded-[24px] bg-white p-6 shadow-[0_25px_70px_rgba(0,0,0,0.12)] border border-[#f0f2f5] touch-pan-y"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={(_, info) => {
+            const threshold = 50;
+            if (info.offset.x < -threshold) shiftView(1);
+            else if (info.offset.x > threshold) shiftView(-1);
+          }}
+        >
+          {/* Weekday Labels */}
+          <div className="grid grid-cols-7 mb-4 border-b-[3px] border-[#f3f4f6] pb-3">
+            {DAY_LABELS.map((label, index) => (
+              <div key={index} className="flex h-8 items-center justify-center text-[18px] font-semibold text-black/60">
+                {label}
+              </div>
+            ))}
           </div>
 
-          <div className="overflow-hidden rounded-[22px] border border-black/[0.06] bg-white shadow-[0_12px_30px_rgba(12,12,13,0.05)] sm:rounded-2xl">
-            <div className="grid grid-cols-7 border-b border-black/[0.05]">
-              {DAY_LABELS.map((label, index) => (
-                <div key={index} className="flex h-8 items-center justify-center text-[10px] font-medium tracking-wide text-[#bbb] sm:h-9 sm:text-[11px]">
-                  {label}
-                </div>
-              ))}
-            </div>
+          <AnimatePresence mode="wait" custom={navDir}>
+            <motion.div
+              key={`grid-${viewYear}-${viewMonth}`}
+              variants={calendarGridVariants}
+              initial="enter" animate="center" exit="exit"
+              className="flex flex-col gap-1"
+            >
+              {rows.map((row, rowIndex) => {
+                // 1. 해당 주(row)에 존재하는 모든 고유 이벤트 ID 수집
+                const rowEventIdsSet = new Set<string>();
+                row.forEach(cell => {
+                  const [cy, cm, cd] = getCellDate(cell);
+                  const bars = getCellBarsForDate(events, cy, cm, cd);
+                  bars.forEach(b => rowEventIdsSet.add(b.eventId));
+                });
+                
+                const uniqueEventsInRow = Array.from(rowEventIdsSet)
+                  .map(id => events.find(e => e.id === id))
+                  .filter(Boolean) as GameEvent[];
 
-            <AnimatePresence mode="wait" custom={state.navDir}>
-              <motion.div
-                key={`grid-${state.viewYear}-${state.viewMonth}`}
-                variants={calendarGridVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="py-1"
-              >
-                {state.rows.map((row, rowIndex) => (
-                  <div key={rowIndex} className="relative grid grid-cols-7">
-                    {(() => {
-                      const segments = buildRowSegments(row, state.getCellDate);
-                      const laneHeight = 4;
-                      const laneGap = 2;
-                      const baseBottom = 6;
+                // 2. 시작 날짜 순으로 정렬 (같으면 기간이 긴 것 우선)
+                uniqueEventsInRow.sort((a, b) => {
+                  if (a.start !== b.start) return a.start.localeCompare(b.start);
+                  return b.end.localeCompare(a.end);
+                });
 
-                      return segments.length > 0 ? (
-                        <div className="pointer-events-none absolute inset-x-0 bottom-0 top-0 z-0">
-                          {segments.map((segment) => {
-                            const left = `calc(${(segment.start / 7) * 100}% + 8px)`;
-                            const width = `calc(${((segment.end - segment.start + 1) / 7) * 100}% - 16px)`;
+                // 3. 슬롯 패킹 (5개 슬롯까지)
+                const slots = Array.from({ length: maxEventSlots }, () => [] as string[]);
+                uniqueEventsInRow.forEach(ev => {
+                  for (let i = 0; i < maxEventSlots; i++) {
+                    const slot = slots[i];
+                    if (!slot) continue;
 
-                            return (
-                              <div
-                                key={segment.id}
-                                className="absolute"
-                                style={{
-                                  left,
-                                  width,
-                                  height: `${laneHeight}px`,
-                                  bottom: `${baseBottom + segment.lane * (laneHeight + laneGap)}px`,
-                                  background: ROADMAP_INDICATOR_COLOR,
-                                  borderTopLeftRadius: segment.roundLeft ? 999 : 2,
-                                  borderBottomLeftRadius: segment.roundLeft ? 999 : 2,
-                                  borderTopRightRadius: segment.roundRight ? 999 : 2,
-                                  borderBottomRightRadius: segment.roundRight ? 999 : 2,
-                                  opacity: 0.82,
-                                }}
-                              />
-                            );
-                          })}
-                        </div>
-                      ) : null;
-                    })()}
+                    const hasOverlap = slot.some(slotEvId => {
+                      const slotEv = events.find(e => e.id === slotEvId)!;
+                      return Math.max(dayjs(ev.start).unix(), dayjs(slotEv.start).unix()) <= Math.min(dayjs(ev.end).unix(), dayjs(slotEv.end).unix());
+                    });
+                    if (!hasOverlap) {
+                      slot.push(ev.id);
+                      break;
+                    }
+                  }
+                });
+
+                return (
+                  <div key={rowIndex} className="grid grid-cols-7">
                     {row.map((cell, cellIndex) => {
-                      const isSelected = state.isSelectedCell(cell);
-                      const isToday = state.isTodayCell(cell);
+                      const selected = isSelectedCell(cell);
+                      const today = isTodayCell(cell);
                       const isDimmed = cell.kind !== "cur";
-                      const textColor = isSelected ? "#fff" : isToday ? "#00204d" : isDimmed ? "#ccc" : "#222";
+                      const [cy, cm, cd] = getCellDate(cell);
+                      const dailyBars = getCellBarsForDate(events, cy, cm, cd);
 
                       return (
                         <button
                           key={cellIndex}
-                          onClick={() => state.selectCell(cell)}
-                          className="relative z-10 flex h-12 flex-col items-center border-0 bg-transparent transition-colors hover:bg-black/[0.025] cursor-pointer sm:h-[58px]"
-                          aria-label={`${cell.day}일`}
-                          aria-pressed={isSelected}
+                          onClick={() => onSelect(cell)}
+                          className="relative flex flex-col items-center pt-1 pb-1 lg:pt-2 lg:pb-2 bg-transparent hover:bg-black/[0.01] transition-colors rounded-lg cursor-pointer"
                         >
                           {/* Date circle */}
                           <div
-                            className="relative z-10 mt-1.5 flex h-7 w-7 items-center justify-center rounded-full text-[12px] transition-all duration-150 sm:mt-2 sm:h-8 sm:w-8 sm:text-[13px]"
+                            className={`flex h-8 w-8 items-center justify-center text-[18px] transition-all`}
                             style={{
-                              background: isSelected
-                                ? "#00204d"
-                                : "transparent",
-                              outline: isToday && !isSelected ? "2px solid #00204d" : "none",
-                              outlineOffset: "-2px",
-                              color: textColor,
-                              fontWeight: isSelected || isToday ? 600 : 400,
+                              background: today ? "#003580" : "transparent",
+                              color: today ? "#fff" : selected ? "#003580" : isDimmed ? "#bbb" : "#000",
+                              boxShadow: selected && !today ? "inset 0 0 0 2px #003580" : "none",
+                              fontWeight: selected || today ? 700 : 500,
+                              borderRadius: "50%",
                             }}
                           >
                             {cell.day}
+                          </div>
+                          
+                          {/* Event Bars - Fixed Packed Slots per Week */}
+                          <div className="mt-1 flex h-[26px] w-full flex-col gap-[2px] lg:h-[26px]">
+                            {slots.map((slotEventIds, i) => {
+                              const eventIdInSlot = slotEventIds.find(id => dailyBars.some(b => b.eventId === id));
+                              const bar = dailyBars.find(b => b.eventId === eventIdInSlot);
+
+                              if (!bar) return <div key={i} className="h-[3.5px]" />; 
+
+                              const isStart = bar.role === "start" || bar.role === "solo";
+                              const isEnd = bar.role === "end" || bar.role === "solo";
+                              
+                              const isWeekStart = cellIndex === 0;
+                              const isWeekEnd = cellIndex === 6;
+
+                              const shouldRoundLeft = isStart || isWeekStart;
+                              const shouldRoundRight = isEnd || isWeekEnd;
+
+                              return (
+                                <div
+                                  key={i}
+                                  className="h-[3.5px]"
+                                  style={{
+                                    backgroundColor: bar.color,
+                                    opacity: isDimmed ? 0.3 : 1,
+                                    borderRadius: `${shouldRoundLeft ? "100px" : "0"} ${shouldRoundRight ? "100px" : "0"} ${shouldRoundRight ? "100px" : "0"} ${shouldRoundLeft ? "100px" : "0"}`,
+                                    marginLeft: shouldRoundLeft ? "4px" : "0",
+                                    marginRight: shouldRoundRight ? "4px" : "0",
+                                    width: (shouldRoundLeft && shouldRoundRight) ? "calc(100% - 8px)" : (shouldRoundLeft || shouldRoundRight) ? "calc(100% - 4px)" : "100%",
+                                  }}
+                                />
+                              );
+                            })}
                           </div>
                         </button>
                       );
                     })}
                   </div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-        </div>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
       </div>
-    </section>
+
+    </div>
   );
 }

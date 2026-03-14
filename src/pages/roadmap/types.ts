@@ -6,6 +6,10 @@ export type GameEvent = {
   category: Category;
   start: string;
   end: string;
+  link?: string;
+  "링크"?: string;
+  url?: string;
+  URL?: string;
 };
 
 export type DayCell = {
@@ -23,6 +27,7 @@ export type DateMotion = {
 export type EventStatus = "completed" | "ongoing" | "upcoming";
 
 export type CellBar = {
+  eventId: string;
   color: string;
   role: "solo" | "start" | "end" | "middle";
 };

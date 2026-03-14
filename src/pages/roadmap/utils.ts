@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { EVENTS, ROADMAP_INDICATOR_COLOR } from "@/pages/roadmap/constants";
+import { CAT_COLOR, EVENT_COLORS, ROADMAP_INDICATOR_COLOR } from "@/pages/roadmap/constants";
 import type { CellBar, DayCell, EventStatus, GameEvent } from "@/pages/roadmap/types";
 
 export function createDayjsDate(year: number, month: number, day: number) {
@@ -10,20 +10,20 @@ export function toKey(year: number, month: number, day: number) {
   return createDayjsDate(year, month, day).format("YYYY-MM-DD");
 }
 
-export function getEventsOn(year: number, month: number, day: number) {
+export function getEventsOn(events: GameEvent[], year: number, month: number, day: number) {
   const key = toKey(year, month, day);
-  return EVENTS.filter((event) => event.start <= key && key <= event.end);
+  return events.filter((event) => event.start <= key && key <= event.end);
 }
 
 export function fmtRange(event: GameEvent) {
   return event.start === event.end
     ? dayjs(event.start).format("YYYY.MM.DD")
-    : `${dayjs(event.start).format("YYYY.MM.DD")} – ${dayjs(event.end).format("YYYY.MM.DD")}`;
+    : `${dayjs(event.start).format("YYYY.MM.DD")} ~ ${dayjs(event.end).format("YYYY.MM.DD")}`;
 }
 
-export function getNearestUpcoming(year: number, month: number, day: number): GameEvent | null {
+export function getNearestUpcoming(events: GameEvent[], year: number, month: number, day: number): GameEvent | null {
   const key = toKey(year, month, day);
-  return EVENTS.filter((event) => event.end >= key).sort((a, b) => a.start.localeCompare(b.start))[0] ?? null;
+  return events.filter((event) => event.end >= key).sort((a, b) => a.start.localeCompare(b.start))[0] ?? null;
 }
 
 export function getStatus(event: GameEvent, todayKey: string): EventStatus {
@@ -80,15 +80,22 @@ export function buildCalendarRows(year: number, month: number) {
   return rows;
 }
 
-export function getCellBarsForDate(year: number, month: number, day: number): CellBar[] {
+export function getCellBarsForDate(events: GameEvent[], year: number, month: number, day: number): CellBar[] {
   const key = toKey(year, month, day);
 
-  return EVENTS.filter((event) => event.start <= key && key <= event.end).map((event) => {
+  return events.filter((event) => event.start <= key && key <= event.end).map((event) => {
     const isStart = event.start === key;
     const isEnd = event.end === key;
 
+    // Find the index of this event in the original sorted events list to assign a stable color
+    const globalIndex = events.findIndex(e => e.id === event.id);
+    const color = globalIndex !== -1 
+      ? EVENT_COLORS[globalIndex % EVENT_COLORS.length] 
+      : (CAT_COLOR[event.category] || ROADMAP_INDICATOR_COLOR);
+
     return {
-      color: ROADMAP_INDICATOR_COLOR,
+      eventId: event.id,
+      color,
       role: isStart && isEnd ? "solo" : isStart ? "start" : isEnd ? "end" : "middle",
     };
   });
