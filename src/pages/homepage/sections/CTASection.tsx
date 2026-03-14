@@ -1,6 +1,6 @@
 export function CTASection() {
   return (
-    <section className="flex min-h-100 w-full items-center justify-center px-10 py-20 lg:h-150 lg:py-0">
+    <section className="flex min-h-100 w-full items-center justify-center px-10 pt-10 pb-20 lg:h-150 lg:py-0">
       <div className="flex w-full max-w-184 flex-col items-center gap-10">
         <div className="flex w-full flex-col items-center gap-8 text-center text-ink">
           <span

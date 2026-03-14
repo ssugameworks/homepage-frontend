@@ -15,7 +15,6 @@ import {
 import { CTASection } from "@/pages/homepage/sections/CTASection";
 import { StatsSection } from "@/pages/homepage/sections/StatsSection";
 import { Footer } from "@/components/Footer";
-import { navigateActivity } from "@/lib/navigation";
 
 /* ─── Local assets ────────────────────────────────────────────────────── */
 import imgFrame1    from "@/assets/layer-2-img-1.webp";
@@ -61,72 +60,162 @@ const EVENTS = [
   {
     title: "벚꽃을 보러 놀러가요.",
     titleHighlight: "봄나들이",
-    description: <>벚꽃을 보러 밖에 나가요.<br />가볍게 친해지기 딱 좋은 시간이에요.</>,
+    description: (
+      <>
+        벚꽃을 보러 밖에 나가요.
+        <br />
+        가볍게 친해지기 딱 좋은 시간이에요.
+      </>
+    ),
     imgSrc: eventImg1,
-    imgStyle: { height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" } as React.CSSProperties,
+    imgStyle: {
+      height: "135.94%",
+      left: "-0.44%",
+      top: "-25.25%",
+      width: "103.47%",
+    } as React.CSSProperties,
   },
   {
     title: "선배에게 물어봐요.",
     titleHighlight: "멘토링",
-    description: <>학교 생활, 전공, 소모임 활용까지 —<br />먼저 겪어본 재학생 멘토한테 뭐든 물어볼 수 있어요.</>,
+    description: (
+      <>
+        학교 생활, 전공, 소모임 활용까지 —<br />
+        먼저 겪어본 재학생 멘토한테 뭐든 물어볼 수 있어요.
+      </>
+    ),
     imgSrc: eventImg2,
-    imgStyle: { height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" } as React.CSSProperties,
+    imgStyle: {
+      height: "135.94%",
+      left: "-0.44%",
+      top: "-25.25%",
+      width: "103.47%",
+    } as React.CSSProperties,
   },
   {
     title: "미션을 풀며 친해져요.",
     titleHighlight: "짝선짝후",
-    description: <>선배·후배 짝지어 미션을 같이 풀어요.<br />어색함이 금방 사라져요.</>,
+    description: (
+      <>
+        선배·후배 짝지어 미션을 같이 풀어요.
+        <br />
+        어색함이 금방 사라져요.
+      </>
+    ),
     imgSrc: eventImg3,
-    imgStyle: { height: "139.2%", left: "-1.69%", top: "-10.62%", width: "103.47%" } as React.CSSProperties,
+    imgStyle: {
+      height: "139.2%",
+      left: "-1.69%",
+      top: "-10.62%",
+      width: "103.47%",
+    } as React.CSSProperties,
   },
   {
     title: "직무에 대한 이야기를 들어요.",
     titleHighlight: "커피챗",
-    description: <>실제 일하고 있는 선배의 커리어 이야기를 직접 들어요.<br />취업, 진로 — 궁금한 거 바로 물어볼 수 있어요.</>,
+    description: (
+      <>
+        실제 일하고 있는 선배의 커리어 이야기를 직접 들어요.
+        <br />
+        취업, 진로 — 궁금한 거 바로 물어볼 수 있어요.
+      </>
+    ),
     imgSrc: eventImg4,
-    imgStyle: { height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" } as React.CSSProperties,
+    imgStyle: {
+      height: "135.94%",
+      left: "-0.44%",
+      top: "-25.25%",
+      width: "103.47%",
+    } as React.CSSProperties,
   },
   {
-    title: "더 큰 현장과 연결돼요.",
+    title: "서비스로 구현하고 모의 투자를 받아요.",
     titleHighlight: "Flow: Startup Bridge",
-    description: <>스타트업과 창업 생태계 이야기를 가까이에서 들어요.<br />밖으로 이어지는 감각을 키우는 시간이에요.</>,
+    description: (
+      <>
+        아이디어톤에서 나아가 사업화까지 해요.
+        <br />
+        투자자 앞에서 IR 피칭으로 모의 투자를 받아요.
+      </>
+    ),
     imgSrc: eventImg5,
-    imgStyle: { height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" } as React.CSSProperties,
+    imgStyle: {
+      height: "138.49%",
+      left: "-1.85%",
+      top: "-24.48%",
+      width: "103.68%",
+    } as React.CSSProperties,
   },
   {
     title: "꾸준히 풀며 실력을 쌓아요.",
     titleHighlight: "잔디심기 챌린지",
-    description: <>백준 문제 풀이 마라톤으로 매일 한 칸씩 잔디를 심어요.<br />꾸준함으로 실력을 만드는 시간이에요.</>,
+    description: (
+      <>
+        매일 백준 문제를 풀며 점수를 쌓아요.
+        <br />
+        점수가 쌓이면 상품으로 돌아와요.
+      </>
+    ),
     imgSrc: eventImg4,
-    imgStyle: { height: "135.94%", left: "-0.44%", top: "-25.25%", width: "103.47%" } as React.CSSProperties,
-  },
-  {
-    title: "배운 걸 무대에서 보여줘요.",
-    titleHighlight: "경찰과 도둑",
-    description: <>팀으로 준비한 결과물을 대회에서 직접 선보여요.<br />실전의 긴장감 속에서 더 크게 성장해요.</>,
-    imgSrc: eventImg5,
-    imgStyle: { height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" } as React.CSSProperties,
+    imgStyle: {
+      height: "135.94%",
+      left: "-0.44%",
+      top: "-25.25%",
+      width: "103.47%",
+    } as React.CSSProperties,
   },
   {
     title: "나만의 서비스를 기획해요.",
     titleHighlight: "아이디어톤",
-    description: <>팀으로 부딪히며 아이디어를 실제 서비스로 만들어요.<br />포트폴리오에 쓸 수 있는 결과물이 나와요.</>,
+    description: (
+      <>
+        팀이랑 사업 아이템을 기획하고,
+        <br />
+        멘토와 심사위원에게 직접 피드백을 받아요.
+      </>
+    ),
     imgSrc: eventImg5,
-    imgStyle: { height: "138.49%", left: "-1.85%", top: "-24.48%", width: "103.68%" } as React.CSSProperties,
+    imgStyle: {
+      height: "138.49%",
+      left: "-1.85%",
+      top: "-24.48%",
+      width: "103.68%",
+    } as React.CSSProperties,
   },
   {
-    title: "작품을 직접 보고 느껴요.",
+    title: "내 작품을 직접 전시해요.",
     titleHighlight: "미디어 아트 전시회",
-    description: <>미디어 아트를 함께 보며 시야를 넓혀요.<br />콘텐츠와 경험을 보는 감각도 함께 자라요.</>,
+    description: (
+      <>
+        감각적인 미디어 아트를 직접 만들고,
+        <br />
+        전시회를 열어 관람객을 맞이해요.
+      </>
+    ),
     imgSrc: eventImg6,
-    imgStyle: { height: "231.99%", left: "0", top: "-82.61%", width: "100%" } as React.CSSProperties,
+    imgStyle: {
+      height: "231.99%",
+      left: "0",
+      top: "-82.61%",
+      width: "100%",
+    } as React.CSSProperties,
   },
   {
     title: "1박 2일로 같이 떠나요.",
     titleHighlight: "MT",
-    description: <>학기 중엔 못 나눈 이야기까지,<br />한 번에 가까워지는 시간이에요.</>,
+    description: (
+      <>
+        학기 중엔 못 나눈 이야기까지,
+        <br />한 번에 가까워지는 시간이에요.
+      </>
+    ),
     imgSrc: eventImg6,
-    imgStyle: { height: "231.99%", left: "0", top: "-82.61%", width: "100%" } as React.CSSProperties,
+    imgStyle: {
+      height: "231.99%",
+      left: "0",
+      top: "-82.61%",
+      width: "100%",
+    } as React.CSSProperties,
   },
 ] as const;
 
@@ -940,7 +1029,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
         {/* ── Event ─────────────────────────────────────────────── */}
         <section id="event" className="flex flex-col items-center w-full">
           <div
-            className="flex flex-col gap-16 items-center px-10 py-12 md:py-20 w-full"
+            className="flex flex-col gap-16 items-center px-10 pt-12 pb-6 md:py-20 w-full"
             style={{
               background:
                 "linear-gradient(to bottom,#c7e0ff 0%,#c7e0ff 74%,#fafafa 100%)",
@@ -957,14 +1046,6 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             <EventScrollShowcase />
             <div ref={eventEndRef} />
 
-            <button
-              onClick={navigateActivity}
-              className="border-b border-[#0c0c0d] flex items-center p-2 bg-transparent cursor-pointer group"
-            >
-              <span className="font-medium text-ink text-[20px] leading-none transition-opacity duration-300 group-hover:opacity-50">
-                활동 더 보기 →
-              </span>
-            </button>
           </div>
         </section>
 
