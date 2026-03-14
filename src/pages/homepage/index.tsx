@@ -5,6 +5,9 @@ import type { PageProps } from "@/lib/header-config";
 import { TimelineSection } from "@/pages/homepage/components/TimelineSection";
 import { FadeUp, SlideIn } from "@/pages/homepage/components/motion";
 import { TIMELINE } from "@/pages/homepage/content/homepage";
+import { EVENTS } from "@/pages/homepage/content/events";
+import { MEMBERS } from "@/pages/homepage/content/members";
+import { useActiveSectionTracker } from "@/pages/homepage/hooks/useActiveSectionTracker";
 import {
   scrollTo,
   useCursorFollower,
@@ -20,19 +23,6 @@ import { Footer } from "@/components/Footer";
 import imgFrame1    from "@/assets/layer-2-img-1.webp";
 import imgFrame2    from "@/assets/layer-2-img-2.webp";
 import imgDesktop26 from "@/assets/layer-3-img-1.webp";
-import imgFrame7    from "@/assets/exec-img-1.webp";
-import imgFrame8    from "@/assets/exec-img-2.webp";
-import imgFrame9    from "@/assets/exec-img-3.webp";
-import imgFrame10   from "@/assets/exec-img-4.webp";
-import imgFrame11   from "@/assets/exec-img-5.webp";
-import imgFrame12   from "@/assets/exec-img-6.webp";
-import imgFrame13   from "@/assets/exec-img-7.webp";
-import eventImg1    from "@/assets/event-img-1.webp";
-import eventImg2    from "@/assets/event-img-2.webp";
-import eventImg3    from "@/assets/event-img-3.webp";
-import eventImg4    from "@/assets/event-img-4.webp";
-import eventImg5    from "@/assets/event-img-5.webp";
-import eventImg6    from "@/assets/event-img-6.webp";
 
 /* ─── Figma assets (no local equivalent yet) ─────────────────────────── */
 const imgRectangle = "https://www.figma.com/api/mcp/asset/f844113f-1290-4f7b-b756-c9535804cb22";
@@ -46,188 +36,21 @@ const glowColors = [
 
 const SECTION_HEADING_SIZE = "clamp(30px, 4.2vw, 52px)";
 
-const MEMBERS = [
-  { role: "회장", name: "장윤아", desc: "기획과 디자인으로 팀의 방향을 함께 만들어가요.", img: imgFrame7, delay: 0, style: { height: "112.66%", left: "-3.52%", top: "-3.54%", width: "106.8%" } },
-  { role: "회장", name: "조영찬", desc: "프론트엔드와 개발 운영으로 팀의 속도를 만들어요.", img: imgFrame8, delay: 80, style: { height: "115.78%", left: "-4.82%", top: "-5.19%", width: "109.76%" } },
-  { role: "총무", name: "박서영", desc: "일정과 운영을 꼼꼼하게 챙겨서 팀이 잘 돌아가게 해요.", img: imgFrame9, delay: 160, style: { height: "121.45%", left: "-10.96%", top: "-7.3%", width: "115.94%" } },
-  { role: "부회장", name: "유다은", desc: "UX 디자인으로 결과물을 더 선명하게 만들어요.", img: imgFrame10, delay: 0, style: { height: "111.61%", left: "-3.17%", top: "-5.98%", width: "105.81%" } },
-  { role: "부회장", name: "최서정", desc: "백엔드 설계로 팀의 든든한 기반을 만들어요.", img: imgFrame11, delay: 80, style: { height: "111.78%", left: "-3.15%", top: "-5.74%", width: "105.97%" } },
-  { role: "부회장", name: "최지원", desc: "홍보와 콘텐츠로 게임웍스의 에너지를 밖으로 전해요.", img: imgFrame12, delay: 160, style: { height: "110.35%", left: "-2.37%", top: "-5.22%", width: "104.61%" } },
-  { role: "부회장", name: "홍준우", desc: "프론트엔드 경험으로 팀의 구현 수준을 높여요.", img: imgFrame13, delay: 240, style: { height: "102.78%", left: "-12.76%", top: "-2.86%", width: "124.99%" } },
-] as const;
+const KEYFRAMES = `
+  @keyframes marquee-left  { from{transform:translateX(0)}    to{transform:translateX(-50%)} }
+  @keyframes marquee-right { from{transform:translateX(-50%)} to{transform:translateX(0)}    }
+  @keyframes float         { 0%,100%{transform:translateY(0)}   50%{transform:translateY(-14px)} }
+  @keyframes pulse-glow    { 0%,100%{opacity:.7;transform:scale(1)}  50%{opacity:1;transform:scale(1.08)} }
+  @keyframes scroll-bounce { 0%,100%{transform:translateY(0)}  50%{transform:translateY(8px)} }
+`;
 
-const EVENTS = [
-  {
-    title: "벚꽃을 보러 놀러가요.",
-    titleHighlight: "봄나들이",
-    description: (
-      <>
-        벚꽃을 보러 밖에 나가요.
-        <br />
-        가볍게 친해지기 딱 좋은 시간이에요.
-      </>
-    ),
-    imgSrc: eventImg1,
-    imgStyle: {
-      height: "135.94%",
-      left: "-0.44%",
-      top: "-25.25%",
-      width: "103.47%",
-    } as React.CSSProperties,
-  },
-  {
-    title: "선배에게 물어봐요.",
-    titleHighlight: "멘토링",
-    description: (
-      <>
-        학교 생활, 전공, 소모임 활용까지 —<br />
-        먼저 겪어본 재학생 멘토한테 뭐든 물어볼 수 있어요.
-      </>
-    ),
-    imgSrc: eventImg2,
-    imgStyle: {
-      height: "135.94%",
-      left: "-0.44%",
-      top: "-25.25%",
-      width: "103.47%",
-    } as React.CSSProperties,
-  },
-  {
-    title: "미션을 풀며 친해져요.",
-    titleHighlight: "짝선짝후",
-    description: (
-      <>
-        선배·후배 짝지어 미션을 같이 풀어요.
-        <br />
-        어색함이 금방 사라져요.
-      </>
-    ),
-    imgSrc: eventImg3,
-    imgStyle: {
-      height: "139.2%",
-      left: "-1.69%",
-      top: "-10.62%",
-      width: "103.47%",
-    } as React.CSSProperties,
-  },
-  {
-    title: "직무에 대한 이야기를 들어요.",
-    titleHighlight: "커피챗",
-    description: (
-      <>
-        실제 일하고 있는 선배의 커리어 이야기를 직접 들어요.
-        <br />
-        취업, 진로 — 궁금한 거 바로 물어볼 수 있어요.
-      </>
-    ),
-    imgSrc: eventImg4,
-    imgStyle: {
-      height: "135.94%",
-      left: "-0.44%",
-      top: "-25.25%",
-      width: "103.47%",
-    } as React.CSSProperties,
-  },
-  {
-    title: "서비스로 구현하고 모의 투자를 받아요.",
-    titleHighlight: "Flow: Startup Bridge",
-    description: (
-      <>
-        아이디어톤에서 나아가 사업화까지 해요.
-        <br />
-        투자자 앞에서 IR 피칭으로 모의 투자를 받아요.
-      </>
-    ),
-    imgSrc: eventImg5,
-    imgStyle: {
-      height: "138.49%",
-      left: "-1.85%",
-      top: "-24.48%",
-      width: "103.68%",
-    } as React.CSSProperties,
-  },
-  {
-    title: "꾸준히 풀며 실력을 쌓아요.",
-    titleHighlight: "잔디심기 챌린지",
-    description: (
-      <>
-        매일 백준 문제를 풀며 점수를 쌓아요.
-        <br />
-        점수가 쌓이면 상품으로 돌아와요.
-      </>
-    ),
-    imgSrc: eventImg4,
-    imgStyle: {
-      height: "135.94%",
-      left: "-0.44%",
-      top: "-25.25%",
-      width: "103.47%",
-    } as React.CSSProperties,
-  },
-  {
-    title: "나만의 서비스를 기획해요.",
-    titleHighlight: "아이디어톤",
-    description: (
-      <>
-        팀이랑 사업 아이템을 기획하고,
-        <br />
-        멘토와 심사위원에게 직접 피드백을 받아요.
-      </>
-    ),
-    imgSrc: eventImg5,
-    imgStyle: {
-      height: "138.49%",
-      left: "-1.85%",
-      top: "-24.48%",
-      width: "103.68%",
-    } as React.CSSProperties,
-  },
-  {
-    title: "내 작품을 직접 전시해요.",
-    titleHighlight: "미디어 아트 전시회",
-    description: (
-      <>
-        감각적인 미디어 아트를 직접 만들고,
-        <br />
-        전시회를 열어 관람객을 맞이해요.
-      </>
-    ),
-    imgSrc: eventImg6,
-    imgStyle: {
-      height: "231.99%",
-      left: "0",
-      top: "-82.61%",
-      width: "100%",
-    } as React.CSSProperties,
-  },
-  {
-    title: "1박 2일로 같이 떠나요.",
-    titleHighlight: "MT",
-    description: (
-      <>
-        학기 중엔 못 나눈 이야기까지,
-        <br />한 번에 가까워지는 시간이에요.
-      </>
-    ),
-    imgSrc: eventImg6,
-    imgStyle: {
-      height: "231.99%",
-      left: "0",
-      top: "-82.61%",
-      width: "100%",
-    } as React.CSSProperties,
-  },
-] as const;
 
 
 /* ─── MacBook display frame ─────────────────────────────────────────── */
 function MacFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative w-full max-h-full" style={{ aspectRatio: '195.75 / 115' }}>
-       <div className="absolute inset-0 bg-ink rounded-5" />
-      <div className="absolute overflow-hidden rounded-3" style={{ top: '3.7%', left: '2.17%', right: '2.17%', bottom: '3.7%' }}>
-        {children}
-      </div>
+    <div className="relative w-full max-h-full overflow-hidden rounded-2xl" style={{ aspectRatio: '195.75 / 115' }}>
+      {children}
     </div>
   );
 }
@@ -243,7 +66,6 @@ function EventSpotlightCard({
   titleHighlight: string;
   description: React.ReactNode;
   imgSrc: string;
-  imgStyle: React.CSSProperties;
 }) {
   return (
     <div className="flex h-full w-full flex-col items-start gap-5 px-4 md:px-8">
@@ -261,7 +83,7 @@ function EventSpotlightCard({
         <MacFrame>
           <img
             alt=""
-            className="absolute inset-0 h-full w-full object-contain object-center bg-black"
+            className="absolute inset-0 h-full w-full object-cover object-center"
             src={imgSrc}
           />
         </MacFrame>
@@ -397,7 +219,6 @@ function EventScrollShowcase() {
                         titleHighlight={event.titleHighlight}
                         description={event.description}
                         imgSrc={event.imgSrc}
-                        imgStyle={event.imgStyle}
                       />
                     </motion.div>
                   ) : null,
@@ -426,7 +247,7 @@ const MemberCard = memo(function MemberCard({ role, name, desc, img, style, open
         if (Math.abs(e.clientX - pointerDownX.current) > 6) return;
         onToggle();
       }}
-      className="relative shrink-0 overflow-hidden rounded-card cursor-pointer select-none w-46.25 sm:w-55 md:w-61.25 aspect-4/5"
+      className="relative shrink-0 overflow-hidden rounded-card cursor-pointer select-none w-46 sm:w-55 md:w-61 aspect-4/5"
       style={{ contain: "layout paint" }}
     >
       {/* Background photo */}
@@ -624,11 +445,11 @@ function MembersCarousel() {
 
 /* ─── Main ───────────────────────────────────────────────────────────── */
 export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
-  const [activeSection, setActiveSection] = useState("home");
-  const [bgLoaded, setBgLoaded]           = useState(false);
-  const [pastEventScroll, setPastEventScroll] = useState(false);
+  const [bgLoaded, setBgLoaded] = useState(false);
   const eventEndRef = useRef<HTMLDivElement>(null);
   const reducedMotion = !!useReducedMotion();
+
+  const { activeSection, pastEventScroll } = useActiveSectionTracker(eventEndRef);
 
   const heroBgRef    = useRef<HTMLImageElement>(null);
   const marqueeBgRef = useRef<HTMLImageElement>(null);
@@ -638,70 +459,6 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
   useCursorFollower();
   useScrollProgress();
   useSectionBackground();
-
-  useEffect(() => {
-    const ids = ["home", "about", "history", "history-bridge", "event", "people"];
-    const sections = ids
-      .map((id) => {
-        const el = document.getElementById(id);
-        return el ? { id, el } : null;
-      })
-      .filter((section): section is { id: string; el: HTMLElement } => section !== null);
-
-    let ticking = false;
-
-    const updateActiveSection = () => {
-      const viewportPivot = window.innerHeight * 0.38;
-
-      if (eventEndRef.current) {
-        const r = eventEndRef.current.getBoundingClientRect();
-        setPastEventScroll(r.top <= viewportPivot);
-      }
-
-      const containingSection = sections.find(({ el }) => {
-        const rect = el.getBoundingClientRect();
-        return rect.top <= viewportPivot && rect.bottom >= viewportPivot;
-      });
-
-      if (containingSection) {
-        setActiveSection((prev) => (prev === containingSection.id ? prev : containingSection.id));
-        ticking = false;
-        return;
-      }
-
-      let nearestId = sections[0]?.id ?? "home";
-      let nearestDistance = Number.POSITIVE_INFINITY;
-
-      sections.forEach(({ id, el }) => {
-        const rect = el.getBoundingClientRect();
-        const distance = Math.min(
-          Math.abs(rect.top - viewportPivot),
-          Math.abs(rect.bottom - viewportPivot),
-        );
-        if (distance < nearestDistance) {
-          nearestDistance = distance;
-          nearestId = id;
-        }
-      });
-
-      setActiveSection((prev) => (prev === nearestId ? prev : nearestId));
-      ticking = false;
-    };
-
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(updateActiveSection);
-    };
-
-    updateActiveSection();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => onHeroReady(), 80);
@@ -715,13 +472,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
 
   return (
     <>
-      <style>{`
-        @keyframes marquee-left  { from{transform:translateX(0)}    to{transform:translateX(-50%)} }
-        @keyframes marquee-right { from{transform:translateX(-50%)} to{transform:translateX(0)}    }
-        @keyframes float         { 0%,100%{transform:translateY(0)}   50%{transform:translateY(-14px)} }
-        @keyframes pulse-glow    { 0%,100%{opacity:.7;transform:scale(1)}  50%{opacity:1;transform:scale(1.08)} }
-        @keyframes scroll-bounce { 0%,100%{transform:translateY(0)}  50%{transform:translateY(8px)} }
-      `}</style>
+      <style>{KEYFRAMES}</style>
 
       <div className="flex flex-col items-start w-full bg-snow">
         {/* ── Hero ──────────────────────────────────────────────── */}
@@ -880,7 +631,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             {/* Photos — 데스크탑에서만 표시 */}
             <SlideIn
               from="left"
-              className="hidden lg:block relative w-85 shrink-0 aspect-124/244.75"
+              className="hidden lg:block relative w-85 shrink-0 aspect-[124/245]"
             >
               <div
                 className="absolute overflow-hidden border border-white/20"
@@ -935,7 +686,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
               {/* 로고 — 데스크탑에서만 */}
               <div className="hidden lg:flex flex-col gap-4 items-start shrink-0">
                 <div
-                  className="relative h-73.25 w-75"
+                  className="relative h-73 w-75"
                   style={{ animation: "float 5s ease-in-out 1s infinite" }}
                 >
                   <GameworksLogo
@@ -996,10 +747,10 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(1,10,26,0.82)_0%,rgba(5,20,48,0.72)_30%,rgba(12,44,92,0.46)_58%,rgba(178,211,255,0.54)_78%,rgba(199,224,255,0.94)_100%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.16),transparent_36%),radial-gradient(circle_at_78%_28%,rgba(26,122,255,0.22),transparent_30%)]" />
-            <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(180deg,rgba(199,224,255,0)_0%,rgba(199,224,255,0.82)_68%,#c7e0ff_100%)]" />
+            <div className="absolute inset-x-0 bottom-0 h-20 bg-[linear-gradient(180deg,rgba(199,224,255,0)_0%,rgba(199,224,255,0.82)_68%,#c7e0ff_100%)]" />
           </div>
 
-          <div className="relative mx-auto flex min-h-130 w-full max-w-330 flex-col justify-center px-6 py-20 md:px-10 lg:min-h-[620px] lg:px-16">
+          <div className="relative mx-auto flex min-h-100 w-full max-w-330 flex-col justify-center px-6 pt-20 pb-4 md:px-10 lg:min-h-[620px] lg:px-16">
             <div className="max-w-230">
               <h2 className="text-[clamp(34px,5.2vw,76px)] font-bold leading-[1.06] tracking-[-0.05em] text-white">
                 그 흐름을 이어받아
@@ -1029,7 +780,7 @@ export function Homepage({ onHeaderConfig, onHeroReady }: PageProps) {
         {/* ── Event ─────────────────────────────────────────────── */}
         <section id="event" className="flex flex-col items-center w-full">
           <div
-            className="flex flex-col gap-16 items-center px-10 pt-12 pb-6 md:py-20 w-full"
+            className="flex flex-col gap-16 items-center px-10 pt-6 pb-6 md:py-20 w-full"
             style={{
               background:
                 "linear-gradient(to bottom,#c7e0ff 0%,#c7e0ff 74%,#fafafa 100%)",

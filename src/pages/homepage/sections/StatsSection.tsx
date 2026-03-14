@@ -25,6 +25,7 @@ export function StatsSection() {
     const refs = [ref1, ref2, ref3];
     const duration = 1800;
     const start = performance.now();
+    let rafId: number;
 
     const tick = (now: number) => {
       const elapsed = now - start;
@@ -36,10 +37,11 @@ export function StatsSection() {
         if (el) el.textContent = Math.round(eased * target).toString();
       });
 
-      if (progress < 1) requestAnimationFrame(tick);
+      if (progress < 1) rafId = requestAnimationFrame(tick);
     };
 
-    requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, [visible]);
 
   return (

@@ -33,6 +33,8 @@ export function useHeaderMotion(activeSection: string, initialDark = true) {
       duration: 0.45,
       ease: "easeInOut",
     });
+    // darkProgress and toneProgress are stable MotionValue instances (never replaced)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSection]);
 
   // wordmark 토글 (hysteresis)

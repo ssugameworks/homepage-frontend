@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import type { GlobalNavId } from "@/lib/navigation";
 import { useHeaderBrandState } from "@/pages/homepage/components/useHeaderBrandState";
 import { useHeaderMotion } from "@/pages/homepage/components/useHeaderMotion";
+import { useIsMobile } from "@/pages/homepage/hooks/useMobile";
 
 type NavItem = { label: string; id: GlobalNavId };
 
@@ -22,22 +23,9 @@ type HeaderProps = {
   darkHero?: boolean;
 };
 
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth < 768 : false
-  );
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-  return isMobile;
-}
-
 function HamburgerIcon({ open, color }: { open: boolean; color: MotionValue<string> }) {
   return (
-    <div className="relative flex h-5 w-5 flex-col items-center justify-center gap-[5px]">
+    <div className="relative flex h-5 w-5 flex-col items-center justify-center gap-1.5">
       <motion.span className="block h-[1.5px] w-full origin-center rounded-full" style={{ background: color }}
         animate={open ? { rotate: 45, y: 6.5 } : { rotate: 0, y: 0 }}
         transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} />
@@ -133,10 +121,10 @@ export function Header({
 
           <div className="flex items-center gap-3">
             {/* 데스크탑 네비게이션 */}
-            <motion.div className="hidden md:flex items-start rounded-14 p-1.5" style={{ border: chrome.shellBorder }}>
+            <motion.div className="hidden md:flex items-start rounded-cta p-1.5" style={{ border: chrome.shellBorder }}>
               {navItems.map(({ label, id }) => (
                 <motion.button key={id} onClick={() => onNavigate(id)}
-                  className="flex cursor-pointer items-center justify-center rounded-25 px-6 py-1.5">
+                  className="flex cursor-pointer items-center justify-center rounded-full px-6 py-1.5">
                   <motion.span className="font-medium text-[17px] tracking-[-0.68px] leading-[1.3]"
                     style={{ color: chrome.textColor }}>
                     {label}
@@ -147,7 +135,7 @@ export function Header({
 
             {/* 데스크탑 CTA */}
             <motion.button
-              className="hidden md:block cursor-pointer whitespace-nowrap rounded-[56px] px-5 py-1.5 font-semibold text-[15px]"
+              className="hidden md:block cursor-pointer whitespace-nowrap rounded-cta px-5 py-1.5 font-semibold text-[15px]"
               style={{ background: cta.background, color: cta.color, border: cta.border }}>
               지금 가입하기
             </motion.button>
@@ -199,7 +187,7 @@ export function Header({
 
                 <motion.button
                   onClick={() => setMenuOpen(false)}
-                  className="mt-5 w-full rounded-[16px] py-4 font-semibold text-[17px] tracking-[-0.4px] text-white active:opacity-80 cursor-pointer"
+                  className="mt-5 w-full rounded-2xl py-4 font-semibold text-[17px] tracking-[-0.4px] text-white active:opacity-80 cursor-pointer"
                   style={{ background: "#1a7aff" }}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
