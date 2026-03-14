@@ -210,6 +210,7 @@ export function CalendarPane() {
                           onClick={() => onSelect(cell)}
                           className="relative flex flex-col items-center pt-1 pb-1 lg:pt-2 lg:pb-2 bg-transparent hover:bg-black/[0.01] transition-colors rounded-lg cursor-pointer"
                         >
+                          {/* Date circle */}
                           <div
                             className={`flex h-8 w-8 items-center justify-center text-[18px] transition-all`}
                             style={{

@@ -45,28 +45,46 @@ export function StatsSection() {
   return (
     <section ref={sectionRef as React.RefObject<HTMLElement>} className="w-full bg-ink py-20">
       <div className="flex w-full flex-wrap justify-center gap-y-8">
-        <div className="flex flex-col items-center gap-2 border-r border-white/10 px-8 md:px-14 lg:px-20">
+        <div className="flex flex-col items-center gap-2 px-8 md:px-14 lg:px-20">
           <div className="flex items-end gap-1">
-            <span ref={ref1} className="font-bold leading-none tracking-[-3.2px] text-snow" style={{ fontSize: "clamp(44px,6vw,80px)" }}>0</span>
+            <span
+              ref={ref1}
+              className="inline-flex min-w-[2ch] justify-end font-bold leading-none tracking-[-3.2px] text-snow tabular-nums"
+              style={{ fontSize: "clamp(44px,6vw,80px)" }}
+            >
+              0
+            </span>
             <span className="mb-2 font-bold leading-none text-snow" style={{ fontSize: "clamp(22px,3vw,40px)" }}>년</span>
           </div>
-          <span className="font-medium text-white/40" style={{ fontSize: "clamp(14px,1.5vw,18px)" }}>설립</span>
-        </div>
-
-        <div className="flex flex-col items-center gap-2 border-r border-white/10 px-8 md:px-14 lg:px-20">
-          <div className="flex items-end gap-1">
-            <span ref={ref2} className="font-bold leading-none tracking-[-3.2px] text-snow" style={{ fontSize: "clamp(44px,6vw,80px)" }}>0</span>
-            <span className="mb-2 font-bold leading-none text-snow" style={{ fontSize: "clamp(22px,3vw,40px)" }}>명+</span>
-          </div>
-          <span className="font-medium text-white/40" style={{ fontSize: "clamp(14px,1.5vw,18px)" }}>함께한 사람들</span>
+          <span className="font-medium text-white/40" style={{ fontSize: "clamp(14px,1.5vw,18px)" }}>년 역사</span>
         </div>
 
         <div className="flex flex-col items-center gap-2 px-8 md:px-14 lg:px-20">
           <div className="flex items-end gap-1">
-            <span ref={ref3} className="font-bold leading-none tracking-[-3.2px] text-snow" style={{ fontSize: "clamp(44px,6vw,80px)" }}>0</span>
+            <span
+              ref={ref2}
+              className="inline-flex min-w-[3ch] justify-end font-bold leading-none tracking-[-3.2px] text-snow tabular-nums"
+              style={{ fontSize: "clamp(44px,6vw,80px)" }}
+            >
+              0
+            </span>
+            <span className="mb-2 font-bold leading-none text-snow" style={{ fontSize: "clamp(22px,3vw,40px)" }}>명+</span>
+          </div>
+          <span className="font-medium text-white/40" style={{ fontSize: "clamp(14px,1.5vw,18px)" }}>명 누적</span>
+        </div>
+
+        <div className="flex flex-col items-center gap-2 px-8 md:px-14 lg:px-20">
+          <div className="flex items-end gap-1">
+            <span
+              ref={ref3}
+              className="inline-flex min-w-[2ch] justify-end font-bold leading-none tracking-[-3.2px] text-snow tabular-nums"
+              style={{ fontSize: "clamp(44px,6vw,80px)" }}
+            >
+              0
+            </span>
             <span className="mb-2 font-bold leading-none text-snow" style={{ fontSize: "clamp(22px,3vw,40px)" }}>개+</span>
           </div>
-          <span className="font-medium text-white/40" style={{ fontSize: "clamp(14px,1.5vw,18px)" }}>매년 이어지는 활동</span>
+          <span className="font-medium text-white/40" style={{ fontSize: "clamp(14px,1.5vw,18px)" }}>개 프로그램</span>
         </div>
       </div>
     </section>
